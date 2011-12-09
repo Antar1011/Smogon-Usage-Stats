@@ -1,6 +1,9 @@
 #!/bin/bash
 mkdir Activity
-rm Activity/*
+rm -r Activity/*
+mkdir Activity/MonthLong/
+mkdir Activity/Hourly/
+mkdir Activity/Daily/
 
 maxjobs=6 #set to number of multiprocessors
 
@@ -18,4 +21,6 @@ do
 	done
 done
 
-for i in Activity/*; do python ../StatCounterOnCrack.py "$i" > "Activity/Hourly/${i/Activity}" ; done
+for i in Activity/*.txt; do python ../ActivityPlot.py "$i" -MonthLong > "Activity/MonthLong/${i/Activity}" ; done
+for i in Activity/*.txt; do python ../ActivityPlot.py "$i" -Daily > "Activity/Daily/${i/Activity}" ; done
+for i in Activity/*.txt; do python ../ActivityPlot.py "$i" -Hourly > "Activity/Hourly/${i/Activity}" ; done

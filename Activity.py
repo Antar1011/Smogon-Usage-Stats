@@ -14,9 +14,9 @@ if log[2][0:25] == '<div class="TierSection">':
 		if log[5][0:19] == '<div class="Rated">':
 			rated = log[5][string.find(log[5],"</b>")+4:len(log[5])-7]
 		else:
-			#print "Can't find the rating for "+filename
-			#for line in range(0,15):
-			#	print log[line]
+			print "Can't find the rating for "+filename
+			for line in range(0,15):
+				print log[line]
 			sys.exit()
 else:
 	if log[5][0:25] != '<div class="TierSection">':
@@ -29,9 +29,9 @@ else:
 		if log[8][0:19] == '<div class="Rated">':
 			rated = log[8][string.find(log[8],"</b>")+4:len(log[8])-7]
 		else:
-			#print "Can't find the rating for "+filename
-			#for line in range(0,15):
-			#	print log[line]
+			print "Can't find the rating for "+filename
+			for line in range(0,15):
+				print log[line]
 			sys.exit()
 
 outname = "Activity/"+tier+" "+rated+".txt"
