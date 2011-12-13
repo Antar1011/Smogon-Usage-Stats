@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import string
 import sys
 filename = str(sys.argv[1])
@@ -44,7 +45,7 @@ else:
 
 #if tier != 'Standard OU' or rated != 'Rated':
 #	sys.exit()
-if tier == 'VGC 2012':
+if tier in ['VGC 2009', 'VGC 2010', 'VGC 2011', 'VGC 2012']:
 	doubles = True
 #make sure the battle lasted at least six turns (to discard early forfeits)
 longEnough = False
@@ -52,7 +53,7 @@ for line in log:
 	if line == '<div class="BeginTurn"><b><span style=\'color:#0000ff\'>Start of turn 6</span></b></div>\n':
 		longEnough = True
 		break
-if longEnough == False:
+if (longEnough == False) and (doubles == false):
 	sys.exit()
 
 #get info on the trainers & pokes involved
