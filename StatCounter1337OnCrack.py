@@ -18,7 +18,7 @@ ratings.next()
 for line in ratings:
 	if eval(line[3]) >= 1337:
 		#print line[3]
-		elite.append(line[1])
+		elite.append(string.lower(line[1]))
 if len(elite) < 10:
 	print "Gotta lower my standards. Using 1200 instead."
 	elite = []
@@ -27,7 +27,7 @@ if len(elite) < 10:
 	for line in ratings:
 		if eval(line[3]) >= 1200:
 			#print line[3]
-			elite.append(line[1])
+			elite.append(string.lower(line[1]))
 #print elite
 #sys.exit()
 
@@ -124,7 +124,7 @@ for entry in range(0,len(species)):
 		#if you were going to compare the trainer name against a database,
 		#you'd do it here.
 		#if len(ctemp) == 6: #only count teams with all six pokemon
-		if trainer in elite:
+		if string.lower(trainer) in elite:
 			for i in range(len(ctemp)):
 				counter[ctemp[i]] = counter[ctemp[i]]+1.0 #rather than weighting equally, we
 				turnCounter[ctemp[i]] = turnCounter[ctemp[i]]+turnt[i]
