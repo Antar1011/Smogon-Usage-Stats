@@ -4,13 +4,14 @@ import sys
 filename = str(sys.argv[1])
 file = open(filename)
 log = file.readlines()
+forfeitLog = open("battles.txt","a")
 
 oldWay = False
 if len(sys.argv) > 2:
 	if sys.argv[2] == '-old':
 		oldWay = True
 
-if (len(log) < 15):
+if (len(log) < 5):
 	sys.exit()
 
 doubles = False
@@ -53,9 +54,8 @@ for line in log:
 	if line == '<div class="BeginTurn"><b><span style=\'color:#0000ff\'>Start of turn 6</span></b></div>\n':
 		longEnough = True
 		break
-if (longEnough == False) and (doubles == false):
-	sys.exit()
-
+		
+	
 #get info on the trainers & pokes involved
 ts = []
 skip = 0
@@ -81,6 +81,15 @@ if oldWay == False:
 						stemp = stemp+log[line+x][i]
 				ts.append([trainer,stemp])
 			break
+
+if rated == 'Rated':
+	forfeitLog.write(tier+"\t"+ts[0][0]+"\t"+ts[11][0])
+	if (longEnough == False) and (doubles == False):
+		forfeitLog.write("\t*\n")
+		forfeitLog.close()
+		sys.exit()
+	forfeitLog.write("\n");
+forfeitLog.close()
 
 if (line == len(log)) or oldWay == True: #it's an old log, so find pokes the old way
 	#find all "sent out" messages
