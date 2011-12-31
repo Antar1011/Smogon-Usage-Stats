@@ -42,7 +42,7 @@ def tiering(month_1, month_2, month_3):
         val_2 = m_2.get(poke, [0, 0])[1] * 3
         val_3 = m_3.get(poke, [0, 0])[1] * 20
         rating = (val_1 + val_2 + val_3) / 24.0
-        if rating > 2: # Determines number of pokes in final list
+        if rating >= 2: # Determines minimum usage percent of each poke in in final list
             datum = [m_1[poke][0], poke, rating]
             tier.append(datum)
 
