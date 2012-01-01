@@ -53,8 +53,8 @@ def tiering(month_1, month_2, month_3):
     return tier
 
 def draw_graph(input, variable):
-    header = "+ ---- + --------------- + " + "-" * len(variable) + " +\n"
-    title  = "| Rank | Pokemon         | " + variable + " |\n"
+    header = " + ---- + --------------- + " + "-" * len(variable) + " + \n"
+    title  = " | Rank | Pokemon         | " + variable + " | \n"
     output = header + title + header
 
     for index in range(len(input)):
@@ -68,12 +68,12 @@ def draw_graph(input, variable):
             var += "%"
             var = var.rjust(7)
         # You can add different behaviours for different variables in the same manner here.
-        output += "| " + str(rank).rjust(4) + " | " + poke.ljust(16) + "| " + var + " |\n"
+        output += " | " + str(rank).rjust(4) + " | " + poke.ljust(16) + "| " + var + " | \n"
 
     output += header
     return output
 
-tier = "OU" # Can be changed to "UU", "OU1337", etc.
+tier = "OU1337" # Can be changed to "UU", "OU1337", etc.
 use = "Usage.txt"
 m1 = "Oct" + tier + use
 m2 = "Nov" + tier + use
