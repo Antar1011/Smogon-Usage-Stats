@@ -43,7 +43,7 @@ def tiering(month_1, month_2, month_3):
         val_3 = m_3.get(poke, [0, 0])[1] * 20
         rating = (val_1 + val_2 + val_3) / 24.0
         if rating >= 2: # Determines minimum usage percent of each poke in in final list
-            datum = [m_1[poke][0], poke, rating]
+            datum = [m_3[poke][0], poke, rating]
             tier.append(datum)
 
     tier = sorted(tier, key=itemgetter(2), reverse=True)
@@ -64,7 +64,7 @@ def draw_graph(input, variable):
         if variable == "Change":
             var = str(var).rjust(4) + "  "
         elif variable == "Percent":
-            var = "%.2f" % var
+            var = "%.3f" % var
             var += "%"
             var = var.rjust(7)
         # You can add different behaviours for different variables in the same manner here.
@@ -73,8 +73,14 @@ def draw_graph(input, variable):
     output += header
     return output
 
-change = changes("NovOUUsage.txt", "DecOUUsage.txt")
+tier = "OU" # Can be changed to "UU", "OU1337", etc.
+use = "Usage.txt"
+m1 = "Oct" + tier + use
+m2 = "Nov" + tier + use
+m3 = "Dec" + tier + use
+
+change = changes(m2, m3)
 print draw_graph(change, "Change")
 
-percent = tiering("OctOUUsage.txt", "NovOUUsage.txt", "DecOUUsage.txt")
+percent = tiering(m1, m2, m3)
 print draw_graph(percent, "Percent")
