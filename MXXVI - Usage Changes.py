@@ -128,5 +128,6 @@ print draw_graph(change, "Change")
 percent = tiering(m1, m2, m3)
 print draw_graph(percent, "Percent")
 
-speed = base_speed(percent)
-print draw_graph(speed, "Speed")
+# Disabled because you probably won't need it.
+#speed = base_speed(percent)
+#print draw_graph(speed, "Speed")
