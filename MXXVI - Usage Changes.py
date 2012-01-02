@@ -1,5 +1,30 @@
 from operator import itemgetter
 
+def alt_table(): # Ignore; enables the base_speed() function.
+    alts = {"Deoxys": {"Normal": "-N", "Attack": "-A", "Defense": "-D", "Speed": "-S"},
+            "Wormadam": {"Plant": "", "Sandy": "-G", "Trash": "-S"},
+            "Rotom": {"Normal": "", "Heat": "-H", "Wash": "-W", "Frost": "-F", "Fan": "-S", "Mow": "-C"},
+            "Giratina": {"Altered": "", "Origin": "-O"},
+            "Shaymin": {"Land": "", "Sky": "-S"},
+            "Darmanitan": {"Standard": "", "Zen": "-Z"}}
+    return alts
+
+def speed_list(): # Ignore; enables the base_speed() function and requires 'statlist.txt' to run.
+    speed_dict = {}
+    alt_inits = alt_table()
+    liner = open("statlist.txt")
+    for line in liner:
+        line_data = line.split("\t")
+        line_stuff = line_data[2].strip().split("(")
+        line_name = line_stuff[0].strip()
+        if alt_inits.has_key(line_name):
+            for forme in alt_inits[line_name]:
+                forme_name = line_stuff[1].split()[0]
+                if forme == forme_name:
+                    line_name += alt_inits[line_name][forme]
+        speed_dict[line_name] = int(line_data[8].strip())
+    return speed_dict
+
 def stat_list(stats):
     data = open(stats)
     output = {}
@@ -52,6 +77,22 @@ def tiering(month_1, month_2, month_3):
 
     return tier
 
+def base_speed(input):
+    base_list = speed_list()
+    bases = []
+
+    for line in range(len(input)):
+        # Change banned pokes for different tiers; can add "and input[line][2] >= 3.41" to restrict to only pokes in the tier.
+        if input[line][1] != 'Deoxys-S':
+            input[line][2] = base_list[input[line][1]]
+            bases.append(input[line])
+    bases = sorted(bases, key = itemgetter(1))
+    bases = sorted(bases, key = itemgetter(2), reverse=True)
+    for line in range(len(bases)):
+        bases[line][0] = line + 1
+
+    return bases
+
 def draw_graph(input, variable):
     header = " + ---- + --------------- + " + "-" * len(variable) + " + \n"
     title  = " | Rank | Pokemon         | " + variable + " | \n"
@@ -67,20 +108,25 @@ def draw_graph(input, variable):
             var = "%.3f" % var
             var += "%"
             var = var.rjust(7)
+        elif variable == "Speed":
+            var = str(var).rjust(4) + " "
         # You can add different behaviours for different variables in the same manner here.
         output += " | " + str(rank).rjust(4) + " | " + poke.ljust(16) + "| " + var + " | \n"
 
     output += header
     return output
 
-tier = "OU1337" # Can be changed to "UU", "OU1337", etc.
-use = "Usage.txt"
-m1 = "Oct" + tier + use
-m2 = "Nov" + tier + use
-m3 = "Dec" + tier + use
+tier = "OU" # Can be changed to "UU", "OU1337", etc.
+use_file = tier + "Usage.txt"
+m1 = "Oct" + use_file
+m2 = "Nov" + use_file
+m3 = "Dec" + use_file
 
 change = changes(m2, m3)
 print draw_graph(change, "Change")
 
 percent = tiering(m1, m2, m3)
 print draw_graph(percent, "Percent")
+
+speed = base_speed(percent)
+print draw_graph(speed, "Speed")
