@@ -75,6 +75,8 @@ pokes[621][j] = pokes[621][j] + pokes[622][j] #darmanitan
 pokes[652][j] = pokes[652][j] + pokes[653][j] + pokes[654][j] + pokes[655][j] #deerling
 pokes[656][j] = pokes[656][j] + pokes[657][j] + pokes[658][j] + pokes[659][j] #sawsbuck
 pokes[721][j] = pokes[721][j] + pokes[722][j] #meloetta
+for i in range(724,len(lsnum)):
+	pokes[723][j] = pokes[723][j] + pokes[i][j] #genesect wtf?
 for i in range(507,534):
 	pokes[i][j] = 0
 pokes[173][j] = pokes[553][j] = pokes[554][j] = pokes[555][j] = pokes[551][j] = pokes[552][j] = pokes[556][j] = pokes[557][j] = pokes[558][j] = pokes[616][j] = pokes[622][j] = pokes[653][j] = pokes[654][j] = pokes[655][j] = pokes[657][j] = pokes[658][j] = pokes[659][j] = pokes[722][j] = 0
