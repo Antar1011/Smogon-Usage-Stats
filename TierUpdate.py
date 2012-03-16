@@ -725,7 +725,7 @@ for i in range(len(curTiers)):
 			newTiers[i] = 'BL3'
 	#now to prevent multi-tier drops
 	elif curTiers[i] == 'OU':
-		if newTiers[i] in ['RU','NU']:
+		if newTiers[i] in ['RU','NU','PU']:
 			newTiers[i] = 'UU'
 	elif curTiers[i] == 'UU':
 		if newTiers[i] in ['NU','PU']:
