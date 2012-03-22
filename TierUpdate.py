@@ -2,6 +2,63 @@
 import string
 import sys
 
+def readTable(filename,col,weight,usage):
+	file = open(filename)
+	table=file.readlines()
+	file.close()
+
+	#'real' usage screwed me over--I can't take total count from header
+	#using percentages is a bad idea because of roundoff
+
+	tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
+
+	for i in range(6,len(table)):
+		name = table[i][10:26]
+	
+		if (name[0] == '-'):
+			break
+
+		while name[len(name)-1] == ' ': 
+			#remove extraneous spaces
+			name = name[0:len(name)-1]
+	
+		count = table[i][28:35]
+		while count[len(count)-1] == ' ':
+			#remove extraneous spaces
+			count = count[0:len(count)-1]
+		found = False
+		for j in range(0,len(lsname)):
+			if name == lsname[j]:
+				tempUsage[j]=float(count)
+				found = True
+				break
+		if not found:
+			print name+" not found!"
+			sys.exit() 
+
+	for i in range(0,len(tempUsage)):
+		usage[i][col] = usage[i][col]+weight*6.0*tempUsage[i]/sum(tempUsage)/24
+
+def makeTable(table,name,newTiers):
+
+	print "[HIDE="+name+"][CODE]"
+	print "Three-month usage for Standard "+name
+	print " + ---- + --------------- + ------- + "
+	print " | Rank | Pokemon         | Percent | "
+	print " + ---- + --------------- + ------- + "
+	print ' [B]| %-4d | %-15s | %6.3f%% |' % (1,lsname[table[0][0]],table[0][1]*100)
+	for i in range(1,len(table)):
+		if table[i][1] < 0.0340636711:
+			start = i
+			break
+		print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[table[i][0]],100.0*table[i][1])
+	print '[/B] | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[table[i][0]],100.0*table[i][1])
+	for i in range(0,start):
+		newTiers[table[i][0]] = 'OU'
+	for i in range(start+1,len(OU)):
+		print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[OU[i][0]],100.0*OU[i][1])
+	print " + ---- + --------------- + ------- +[/CODE][/HIDE]"
+
 file = open("pokemons.txt")
 pokelist = file.readlines()
 file.close()
@@ -24,8 +81,8 @@ file = open("BL.yml")
 BLYML = file.readlines()
 file.close()
 
-curTiers = ['NU' for i in range(len(pokelist))] #any pokemon not found in the list must be NU
-usage = [[0,0,0,0] for i in range(len(pokelist))] #track usage across all three tiers
+curTiers = ['NU' for i in range(len(pokelist))] #any pokemon not found in the list must be PU
+usage = [[0,0,0,0] for i in range(len(pokelist))] #track usage across all relevant tiers [OU,UU,RU,NU]
 
 #there's a lot of unrelated stuff in tiers.yml
 for i in range(len(tiersYML)):
@@ -181,430 +238,23 @@ for i in range(1,len(BLYML)):
 
 
 
-#...first month's OU
-filename = str(sys.argv[1])+"/Stats/Standard OU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
+#...first month's...
+readTable(str(sys.argv[1])+"/Stats/Standard OU Rated.txt",0,1.0,usage) #OU
+readTable(str(sys.argv[1])+"/Stats/Standard UU Rated.txt",1,1.0,usage) #UU
+readTable(str(sys.argv[1])+"/Stats/Standard RU Rated.txt",2,1.0,usage) #RU
+readTable(str(sys.argv[1])+"/Stats/Standard NU Rated.txt",3,1.0,usage) #NU
 
-#'real' usage screwed me over--I can't take total count from header
-#using percentages is a bad idea because of roundoff
+#...second month
+readTable(str(sys.argv[2])+"/Stats/Standard OU Rated.txt",0,6.0,usage)
+readTable(str(sys.argv[2])+"/Stats/Standard UU Rated.txt",1,6.0,usage)
+readTable(str(sys.argv[2])+"/Stats/Standard RU Rated.txt",2,6.0,usage)
+readTable(str(sys.argv[2])+"/Stats/Standard NU Rated.txt",3,6.0,usage)
 
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][0] = usage[i][0]+6.0*tempUsage[i]/sum(tempUsage)/24
-
-#...first month's UU
-filename = str(sys.argv[1])+"/Stats/Standard UU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][1] = usage[i][1]+6.0*tempUsage[i]/sum(tempUsage)/24
-
-#...first month's RU
-filename = str(sys.argv[1])+"/Stats/Standard RU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][2] = usage[i][2]+6.0*tempUsage[i]/sum(tempUsage)/24
-
-#...first month's NU
-filename = str(sys.argv[1])+"/Stats/Standard NU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][3] = usage[i][3]+6.0*tempUsage[i]/sum(tempUsage)/24
-
-
-#...second month's OU
-filename = str(sys.argv[2])+"/Stats/Standard OU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][0] = usage[i][0]+3.0*6.0*tempUsage[i]/sum(tempUsage)/24
-
-#...second month's UU
-filename = str(sys.argv[2])+"/Stats/Standard UU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][1] = usage[i][1]+3.0*6.0*tempUsage[i]/sum(tempUsage)/24
-
-#...second month's RU
-filename = str(sys.argv[2])+"/Stats/Standard RU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][2] = usage[i][2]+3.0*6.0*tempUsage[i]/sum(tempUsage)/24
-
-#...second month's NU
-filename = str(sys.argv[2])+"/Stats/Standard NU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][3] = usage[i][3]+3.0*6.0*tempUsage[i]/sum(tempUsage)/24
-
-
-#...third month's OU
-filename = str(sys.argv[3])+"/Stats/Standard OU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][0] = usage[i][0]+20.0*6.0*tempUsage[i]/sum(tempUsage)/24
-
-#...third month's UU
-filename = str(sys.argv[3])+"/Stats/Standard UU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][1] = usage[i][1]+20.0*6.0*tempUsage[i]/sum(tempUsage)/24
-
-#...third month's RU
-filename = str(sys.argv[3])+"/Stats/Standard RU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][2] = usage[i][2]+20*6.0*tempUsage[i]/sum(tempUsage)/24
-
-#...third month's NU
-filename = str(sys.argv[3])+"/Stats/Standard NU Rated.txt"
-file = open(filename)
-table=file.readlines()
-file.close()
-
-tempUsage = [0 for i in range(len(pokelist))] #really dumb that I have to do this
-
-for i in range(6,len(table)):
-	name = table[i][10:26]
-	
-	if (name[0] == '-'):
-		break
-
-	while name[len(name)-1] == ' ': 
-		#remove extraneous spaces
-		name = name[0:len(name)-1]
-	
-	count = table[i][28:35]
-	while count[len(count)-1] == ' ':
-		#remove extraneous spaces
-		count = count[0:len(count)-1]
-	found = False
-	for j in range(0,len(lsname)):
-		if name == lsname[j]:
-			tempUsage[j]=float(count)
-			found = True
-			break
-	if not found:
-		print name+" not found!"
-		sys.exit() 
-
-for i in range(0,len(tempUsage)):
-	usage[i][3] = usage[i][3]+20*6.0*tempUsage[i]/sum(tempUsage)/24
+#...third month
+readTable(str(sys.argv[3])+"/Stats/Standard OU Rated.txt",0,20.0,usage)
+readTable(str(sys.argv[3])+"/Stats/Standard UU Rated.txt",1,20.0,usage)
+readTable(str(sys.argv[3])+"/Stats/Standard RU Rated.txt",2,20.0,usage)
+readTable(str(sys.argv[3])+"/Stats/Standard NU Rated.txt",3,20.0,usage)
 
 
 #generate three-month tables and start working on that new tier list
@@ -627,86 +277,12 @@ UU = sorted(UU, key=lambda UU:-UU[1])
 RU = sorted(RU, key=lambda RU:-RU[1])
 NU = sorted(NU, key=lambda NU:-NU[1])
 
-print "[HIDE=OU][CODE]"
-print "Three-month usage for Standard OU"
-print " + ---- + --------------- + ------- + "
-print " | Rank | Pokemon         | Percent | "
-print " + ---- + --------------- + ------- + "
-print ' [B]| %-4d | %-15s | %6.3f%% |' % (1,lsname[OU[0][0]],OU[0][1]*100)
-for i in range(1,len(OU)):
-	if OU[i][1] < 0.0340636711:
-		start = i
-		break
-	print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[OU[i][0]],100.0*OU[i][1])
-print '[/B] | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[OU[i][0]],100.0*OU[i][1])
-for i in range(0,start):
-	newTiers[OU[i][0]] = 'OU'
-for i in range(start+1,len(OU)):
-	print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[OU[i][0]],100.0*OU[i][1])
-print " + ---- + --------------- + ------- +[/CODE][/HIDE]"
-
-print ""
-print "[HIDE=UU][CODE]"
-print "Three-month usage for Standard UU"
-print " + ---- + --------------- + ------- + "
-print " | Rank | Pokemon         | Percent | "
-print " + ---- + --------------- + ------- + "
-print ' [B]| %-4d | %-15s | %6.3f%% |' % (1,lsname[UU[0][0]],UU[0][1]*100)
-for i in range(1,len(UU)):
-	if UU[i][1] < 0.0340636711:
-		start = i
-		break
-	print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[UU[i][0]],100.0*UU[i][1])
-print '[/B] | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[UU[i][0]],100.0*UU[i][1])
-for i in range(0,start):
-	if (newTiers[UU[i][0]] == 'PU'):
-		newTiers[UU[i][0]] = 'UU'
-for i in range(start+1,len(UU)):
-	print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[UU[i][0]],100.0*UU[i][1])
-print " + ---- + --------------- + ------- +[/CODE][/HIDE]"
-print ""
-
-print ""
-print "[HIDE=RU][CODE]"
-print "Three-month usage for Standard RU"
-print " + ---- + --------------- + ------- + "
-print " | Rank | Pokemon         | Percent | "
-print " + ---- + --------------- + ------- + "
-print ' [B]| %-4d | %-15s | %6.3f%% |' % (1,lsname[RU[0][0]],RU[0][1]*100)
-for i in range(1,len(RU)):
-	if RU[i][1] < 0.0340636711:
-		start = i
-		break
-	print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[RU[i][0]],100.0*RU[i][1])
-print '[/B] | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[RU[i][0]],100.0*RU[i][1])
-for i in range(0,start):
-	if (newTiers[RU[i][0]] == 'PU'):
-		newTiers[RU[i][0]] = 'RU'
-for i in range(start+1,len(RU)):
-	print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[RU[i][0]],100.0*RU[i][1])
-print " + ---- + --------------- + ------- +[/CODE][/HIDE]"
-print ""
-
-print ""
-print "[HIDE=NU][CODE]"
-print "Three-month usage for Standard NU"
-print " + ---- + --------------- + ------- + "
-print " | Rank | Pokemon         | Percent | "
-print " + ---- + --------------- + ------- + "
-print ' [B]| %-4d | %-15s | %6.3f%% |' % (1,lsname[NU[0][0]],NU[0][1]*100)
-for i in range(1,len(NU)):
-	if NU[i][1] < 0.0340636711:
-		start = i
-		break
-	print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[NU[i][0]],100.0*NU[i][1])
-print '[/B] | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[NU[i][0]],100.0*NU[i][1])
-for i in range(0,start):
-	if (newTiers[NU[i][0]] == 'PU'):
-		newTiers[NU[i][0]] = 'NU'
-for i in range(start+1,len(NU)):
-	print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[NU[i][0]],100.0*NU[i][1])
-print " + ---- + --------------- + ------- +[/CODE][/HIDE]"
-print ""
+print "[B]Three-month statistics[/B]"
+print "Three month usage = (20*Dec+3*Nov+1*Oct)/24"
+makeTable(OU,"OU",newTiers)
+makeTable(UU,"UU",newTiers)
+makeTable(RU,"RU",newTiers)
+makeTable(NU,"NU",newTiers)
 
 #correct based on current tiers
 poke = []
