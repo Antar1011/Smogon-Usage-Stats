@@ -54,9 +54,10 @@ def makeTable(table,name,newTiers):
 		print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[table[i][0]],100.0*table[i][1])
 	print '[/B] | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[table[i][0]],100.0*table[i][1])
 	for i in range(0,start):
-		newTiers[table[i][0]] = 'OU'
-	for i in range(start+1,len(OU)):
-		print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[OU[i][0]],100.0*OU[i][1])
+		if (newTiers[table[i][0]] == 'PU'):
+			newTiers[table[i][0]] = name
+	for i in range(start+1,len(table)):
+		print ' | %-4d | %-15s | %6.3f%% |' % (i+1,lsname[table[i][0]],100.0*table[i][1])
 	print " + ---- + --------------- + ------- +[/CODE][/HIDE]"
 
 file = open("pokemons.txt")
@@ -245,10 +246,10 @@ readTable(str(sys.argv[1])+"/Stats/Standard RU Rated.txt",2,1.0,usage) #RU
 readTable(str(sys.argv[1])+"/Stats/Standard NU Rated.txt",3,1.0,usage) #NU
 
 #...second month
-readTable(str(sys.argv[2])+"/Stats/Standard OU Rated.txt",0,6.0,usage)
-readTable(str(sys.argv[2])+"/Stats/Standard UU Rated.txt",1,6.0,usage)
-readTable(str(sys.argv[2])+"/Stats/Standard RU Rated.txt",2,6.0,usage)
-readTable(str(sys.argv[2])+"/Stats/Standard NU Rated.txt",3,6.0,usage)
+readTable(str(sys.argv[2])+"/Stats/Standard OU Rated.txt",0,3.0,usage)
+readTable(str(sys.argv[2])+"/Stats/Standard UU Rated.txt",1,3.0,usage)
+readTable(str(sys.argv[2])+"/Stats/Standard RU Rated.txt",2,3.0,usage)
+readTable(str(sys.argv[2])+"/Stats/Standard NU Rated.txt",3,3.0,usage)
 
 #...third month
 readTable(str(sys.argv[3])+"/Stats/Standard OU Rated.txt",0,20.0,usage)
