@@ -89,7 +89,7 @@ if oldWay == False:
 			break
 
 if rated == 'Rated' and oldWay == False:
-	forfeitLog.write(tier+"\t"+ts[0][0]+"\t"+ts[1][0])
+	forfeitLog.write(tier+"\t"+ts[0][0]+"\t"+ts[6][0])
 	if (longEnough == False) and (doubles == False):
 		forfeitLog.write("\t*\n")
 		forfeitLog.close()
