@@ -64,6 +64,10 @@ file = open("pokemons.txt")
 pokelist = file.readlines()
 file.close()
 
+file = open("NU.txt")
+NUlist = file.readlines()
+file.close()
+
 file = open("NFE.txt")
 NFElist = file.readlines()
 file.close()
@@ -82,7 +86,7 @@ file = open("BL.yml")
 BLYML = file.readlines()
 file.close()
 
-curTiers = ['NU' for i in range(len(pokelist))] #any pokemon not found in the list must be PU
+curTiers = ['PU' for i in range(len(pokelist))] #any pokemon not found in the list must be PU
 usage = [[0,0,0,0] for i in range(len(pokelist))] #track usage across all relevant tiers [OU,UU,RU,NU]
 
 #there's a lot of unrelated stuff in tiers.yml
@@ -124,7 +128,7 @@ for i in range(start+5,len(tiersYML)):
 	found = False
 	for j in range(0,len(lsname)):
 		if name == lsname[j]:
-			if (curTiers[j] == 'NU'):
+			if (curTiers[j] == 'PU'):
 			#higher tier trumps lower tier
 				curTiers[j] = 'Ubers'
 			found = True
@@ -150,7 +154,7 @@ for i in range(start+5,len(tiersYML)):
 	found = False
 	for j in range(0,len(lsname)):
 		if name == lsname[j]:
-			if (curTiers[j] == 'NU'):
+			if (curTiers[j] == 'PU'):
 			#higher tier trumps lower tier
 				curTiers[j] = 'OU'
 			found = True
@@ -178,7 +182,7 @@ for i in range(start+5,len(tiersYML)):
 	found = False
 	for j in range(0,len(lsname)):
 		if name == lsname[j]:
-			if (curTiers[j] == 'NU'):
+			if (curTiers[j] == 'PU'):
 			#higher tier trumps lower tier
 				curTiers[j] = 'UU'
 			found = True
@@ -206,7 +210,7 @@ for i in range(start+5,len(tiersYML)):
 	found = False
 	for j in range(0,len(lsname)):
 		if name == lsname[j]:
-			if (curTiers[j] == 'NU'):
+			if (curTiers[j] == 'PU'):
 			#higher tier trumps lower tier
 				curTiers[j] = 'RU'
 			found = True
@@ -216,6 +220,21 @@ for i in range(start+5,len(tiersYML)):
 		sys.exit()
 
 unchangedLines.append([start,len(tiersYML)]) #the rest of the file will be unchanged
+
+#read in NU list
+for i in range(0,len(NUlist)):
+	found = False
+	name = NUlist[i][0:len(NUlist[i])-1]
+	for j in range(0,len(lsname)):
+		if name == lsname[j]:
+			if (curTiers[j] == 'PU'):
+			#higher tier trumps lower tier
+				curTiers[j] = 'NU'
+			found = True
+			break
+	if not found:
+		print name+" not found!"
+		sys.exit() 
 
 #now we read in the BLs
 tier = 'BL'
@@ -401,8 +420,8 @@ for i in range(1,len(poke)):
 		continue
 	printme=lsname[poke[i][0]]
 	if newTiers[poke[i][0]] != curTiers[poke[i][0]]:
-		if newTiers[poke[i][0]] != 'PU':
-			printme="[B]"+printme
+		#if newTiers[poke[i][0]] != 'PU':
+		printme="[B]"+printme
 		if newTiers[poke[i][0]] == 'OU':
 			printme=printme+" up"
 		elif newTiers[poke[i][0]] == 'UU':
@@ -416,9 +435,14 @@ for i in range(1,len(poke)):
 			else:
 				printme=printme+" down"
 		elif newTiers[poke[i][0]] == 'NU':
+			if curTiers[poke[i][0]] == 'RU':
+				printme=printme+" down"
+			else:
+				printme=printme+" up"
+		else:
 			printme=printme+" down"
-		if newTiers[poke[i][0]] != 'PU':
-			printme=printme+" from "+curTiers[poke[i][0]]+"[/B]"
+		#if newTiers[poke[i][0]] != 'PU':
+		printme=printme+" from "+curTiers[poke[i][0]]+"[/B]"
 	print printme
 
 print "[/CODE][/HIDE]"
@@ -451,4 +475,13 @@ for i in range(start,len(poke)):
 	outfile.write("      - "+str(lsname[poke[i][0]])+"\n")
 for i in range(unchangedLines[3][0],unchangedLines[3][1]):
 	outfile.write(str(tiersYML[i]))
+outfile.close()
+
+#write new NU txt
+outfile=open('newNU.txt','w')
+for i in range (start,len(poke)):
+	if poke[i][1] >= 5.0:
+		start = i
+		break
+	outfile.write(str(lsname[poke[i][0]])+"\n")
 outfile.close()

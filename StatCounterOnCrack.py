@@ -168,12 +168,14 @@ for j in range(1,7):
 for i in range(len(lsnum)):
 	if pokes[i][2] > 0:
 		pokes[i][3] = 1.0*pokes[i][3]/pokes[i][2]
-		if pokes[i][4]/pokes[i][2]-pokes[i][3]*pokes[i][3] <0:
-			print "WTF?"
-			print pokes[i]
-			sys.exit()
-		pokes[i][4] = math.sqrt(pokes[i][4]/pokes[i][2]-pokes[i][3]*pokes[i][3])
 		pokes[i][5] = 1.0*pokes[i][5]/pokes[i][2]
+		if pokes[i][4]/pokes[i][2]-pokes[i][3]*pokes[i][3] <0:
+			#print "WTF?"
+			#print pokes[i]
+			#sys.exit()
+			pokes[i][4] = pokes[i][6] =  -1
+			break
+		pokes[i][4] = math.sqrt(pokes[i][4]/pokes[i][2]-pokes[i][3]*pokes[i][3])
 		pokes[i][6] = math.sqrt(pokes[i][6]/pokes[i][2]-pokes[i][5]*pokes[i][5])
 
 #sort by usage
