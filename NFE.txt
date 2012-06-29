@@ -198,7 +198,6 @@
 396:0 Starly
 397:0 Staravia
 399:0 Bidoof
-400:0 Bibarel
 401:0 Kricketot
 403:0 Shinx
 404:0 Luxio
@@ -236,7 +235,6 @@
 501:0 Oshawott
 502:0 Dewott
 504:0 Patrat
-505:0 Watchog
 506:0 Lillipup
 507:0 Herdier
 509:0 Purrloin
