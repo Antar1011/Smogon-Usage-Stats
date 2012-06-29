@@ -411,7 +411,7 @@ for i in range(1,len(poke)):
 			else:
 				printme=printme+" up"
 		elif newTiers[poke[i][0]] == 'RU':
-			if curTiers[poke[i][0]] in ['BL3','NU']:
+			if curTiers[poke[i][0]] in ['BL3','NU','PU']:
 				printme=printme+" up"
 			else:
 				printme=printme+" down"
