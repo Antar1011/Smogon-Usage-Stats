@@ -198,16 +198,16 @@ l=1
 print " Total battles: "+str(battleCount)
 print " Total teams: "+str(teamCount)
 print " Total pokemon: "+str(int(total))
-print " + ---- + --------------- + ------ + ------- + ------ + ------- + "
-print " | Rank | Pokemon         | Usage  | Percent | RealUse| RealPct | "
-print " + ---- + --------------- + ------ + ------- + ------ + ------- + "
+print " + ---- + ------------------ + ------ + ------- + ------ + ------- + "
+print " | Rank | Pokemon            | Usage  | Percent | RealUse| RealPct | "
+print " + ---- + ------------------ + ------ + ------- + ------ + ------- + "
 for i in range(0,len(pokes)):
 	if pokes[i][1] == 0:
 		break
-	print ' | %-4d | %-20s | %-6d | %6.3f%% | %-6d | %6.3f%% | ' % (l,pokes[i][0],pokes[i][1],100.0*pokes[i][1]/total*6.0,pokes[i][2],100.0*pokes[i][2]/realTotal*6.0)
+	print ' | %-4d | %-18s | %-6d | %6.3f%% | %-6d | %6.3f%% | ' % (l,pokes[i][0],pokes[i][1],100.0*pokes[i][1]/total*6.0,pokes[i][2],100.0*pokes[i][2]/realTotal*6.0)
 	p.append(pokes[i])
 	l=l+1
-print " + ---- + --------------- + ------ + ------- + ------ + ------- +"
+print " + ---- + ------------------ + ------ + ------- + ------ + ------- +"
 #csv output
 #for i in range(len(lsnum)):
 #	if (counter[i] > 0):
