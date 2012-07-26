@@ -164,7 +164,8 @@ aliases={
 	'Kyurem-B': ['Kyurem-Black'],
 	'Kyurem-W': ['Kyurem-White']
 }	
-
+if 'empty' in pokedict.keys(): #delete no-entry slots
+		del pokedict['empty']	
 for species in aliases:
 	#first make sure that the species is in the array
 	if species not in pokedict.keys():
@@ -173,7 +174,7 @@ for species in aliases:
 		if alias in pokedict.keys():
 			for j in range(1,6):
 				pokedict[species][j] = pokedict[species][j]+pokedict[alias][j]
-			del aliases[alias]	
+			del aliases[alias]
 
 #divide only AFTER you've summed the formes (you moron)
 for i in pokedict:

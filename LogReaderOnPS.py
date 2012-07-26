@@ -1,7 +1,10 @@
 #!/usr/bin/python
+
 import string
 import sys
 import json
+import copy
+
 filename = str(sys.argv[1])
 file = open(filename)
 raw = file.readline()
@@ -21,10 +24,22 @@ if not longEnough:
 ts = []
 trainer = log['p1']
 for i in range(0,6):
-	ts.append([trainer,log['p1team'][i]['species']])
+	if len(log['p1team'])>i:
+		if 'species' in log['p1team'][i].keys():
+			ts.append([trainer,log['p1team'][i]['species']])
+		else: #apparently randbats usually don't contain the species field?
+			ts.append([trainer,log['p1team'][i]['name']])
+	else:
+		ts.append([trainer,'empty'])
 trainer = log['p2']
 for i in range(0,6):
-	ts.append([trainer,log['p2team'][i]['species']])
+	if len(log['p2team'])>i:
+		if 'species' in log['p2team'][i].keys():
+			ts.append([trainer,log['p2team'][i]['species']])
+		else:
+			ts.append([trainer,log['p2team'][i]['name']])
+	else:
+		ts.append([trainer,'empty'])
 
 #fix species
 replacements = {
@@ -37,19 +52,43 @@ replacements = {
 	'Rotom- W' : 'Rotom-Wash',
 	'Rotom- F' : 'Rotom-Frost',
 	'Rotom- S' : 'Rotom-Fan',
-	'Rotom- C' : 'Rotom-Mow'
+	'Rotom- C' : 'Rotom-Mow',
+	'Tornadus-T' : 'Tornadus-Therian',
+	'Thundurus-T' : 'Thundurus-Therian',
+	'Landorus-T' : 'Landorus-Therian',
+	'Deoxys-D' : 'Deoxys-Defense',
+	'Deoxys-A' : 'Deoxys-Attack',
+	'Deoxys-S' : 'Deoxys-Speed',
+	'Kyurem-B' : 'Kyurem-Black',
+	'Kyurem-W' : 'Kyurem-White',
+	'Shaymin-S' : 'Shaymin-Sky',
+	#to be fair, I never observed the following, but better safe than sorry
+	'Giratina-O' : 'Giratina-Origin',
+	'Keldeo-R' : 'Keldeo-Resolution',
+	'Wormadam-G' : 'Wormadam-Sandy',
+	'Wormadam-S' : 'Wormadam-Trash'
 }
 
 for i in replacements:
 	for j in range(len(ts)):
+		if ts[j][1][0] == '(': #for some reason, sometimes species appear as "(Species)"
+			ts[j][1] = ts[j][1][1:len(ts[j][1])-1]
+		if ts[j][1][0] in string.lowercase: #very odd that this is needed
+			ts[j][1] = string.uppercase[string.lowercase.index(ts[j][1][0])]+ts[j][1][1:]
 		if ts[j][1] == i:
 			ts[j][1] = replacements[i]
 
 #nickanmes
 nicks = []
 for i in range(0,6):
-	nicks.append("p1: "+log['p1team'][i]['name'])
-	nicks.append("p2: "+log['p2team'][i]['name'])
+	if len(log['p1team'])>i:
+		nicks.append("p1: "+log['p1team'][i]['name'])
+	else:
+		nicks.append("p1: empty")
+	if len(log['p2team'])>i:
+		nicks.append("p2: "+log['p2team'][i]['name'])
+	else:
+		nicks.append("p1: empty")
 
 #determine initial pokemon
 active = [-1,-1]
@@ -132,14 +171,26 @@ for line in log['log'][start:]:
 		found = False
 		for nick in nicks:
 			if line[9:].startswith(nick):
-				found = True
-				break
-		if not found:
-			print "Uh oh!"
-			print line[9:]
-			sys.exit(1)
+				if found: #the trainer was a d-bag
+					if len(nick) < len(found):
+						continue	
+				found = nick
+		tempnicks = copy.copy(nicks)
+		while not found: #PS fucked up the names. We fix by shaving a character at a time off the nicknames
+			foundidx=-1	
+			for i in range(len(tempnicks)):
+				if len(tempnicks[i])>1:
+					tempnicks[i]=tempnicks[i][:len(tempnicks[i])-1]
+				if line[9:].startswith(tempnicks[i]):
+					if found:
+						if len(tempnicks[i]) < len(found):
+							continue	
+					found = tempnicks[i]
+					foundidx = i
+			if found:
+				nicks[i]=found
 		
-		move = line[9+len(nick)+3:string.find(line,"|",9+len(nick)+3)-1]
+		move = line[9+len(found)+3:string.find(line,"|",9+len(found)+3)-1]
 		if move in ["Roar","Whirlwind","Circle Throw","Dragon Tail"]:
 			roar = True
 		elif move in ["U-Turn","U-turn","Volt Switch","Baton Pass"]:
@@ -210,14 +261,14 @@ rated = "Rated"
 outname = "Raw/"+tier+" "+rated+".txt"
 outfile=open(outname,'a')
 
-outfile.write(str(ts[0][0]))
+outfile.write(ts[0][0].encode('ascii','replace'))
 outfile.write("\n")
 i=0
 while (ts[i][0] == ts[0][0]):
 	outfile.write(ts[i][1]+" ("+str(KOs[i])+","+str(turnsOut[i])+")\n")
 	i = i + 1
 outfile.write("***\n")
-outfile.write(str(ts[len(ts)-1][0]))
+outfile.write(ts[len(ts)-1][0].encode('ascii','replace'))
 outfile.write("\n")
 for j in range(i,len(ts)):
 	outfile.write(ts[j][1]+" ("+str(KOs[j])+","+str(turnsOut[j])+")\n")
