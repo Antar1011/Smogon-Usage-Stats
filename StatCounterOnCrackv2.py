@@ -108,8 +108,8 @@ for entry in species:
 			
 	else:
 		stemp = entry[0:string.rfind(entry," (")]
-		KOs = eval(entry[string.rfind(entry," (")+2:string.rfind(entry,",")])
-		turns = eval(entry[string.rfind(entry,",")+1:string.rfind(entry,")")])
+		KOs = float(entry[string.rfind(entry," (")+2:string.rfind(entry,",")])
+		turns = float(entry[string.rfind(entry,",")+1:string.rfind(entry,")")])
 		if stemp != "???":
 			ctemp.append(stemp)
 			turnt.append(turns)
@@ -164,8 +164,8 @@ aliases={
 	'Kyurem-B': ['Kyurem-Black'],
 	'Kyurem-W': ['Kyurem-White']
 }	
-if 'empty' in pokedict.keys(): #delete no-entry slots
-		del pokedict['empty']	
+if 'Empty' in pokedict.keys(): #delete no-entry slots
+		del pokedict['Empty']	
 for species in aliases:
 	#first make sure that the species is in the array
 	if species not in pokedict.keys():
@@ -174,7 +174,7 @@ for species in aliases:
 		if alias in pokedict.keys():
 			for j in range(1,6):
 				pokedict[species][j] = pokedict[species][j]+pokedict[alias][j]
-			del aliases[alias]
+			del pokedict[alias]
 
 #divide only AFTER you've summed the formes (you moron)
 for i in pokedict:

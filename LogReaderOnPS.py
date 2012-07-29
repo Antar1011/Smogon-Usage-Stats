@@ -13,6 +13,8 @@ log = json.loads(raw)
 
 #check for log length
 longEnough = False
+if 'log' not in log.keys():
+	sys.exit(0)
 for line in log['log']:
 	if line[2:10] == 'turn | 6':
 		longEnough = True
@@ -41,6 +43,9 @@ for i in range(0,6):
 	else:
 		ts.append([trainer,'empty'])
 
+if ts[0][0] == ts[11][0]: #trainer battling him/herself? WTF?
+	sys.exit(0)
+
 #fix species
 replacements = {
 	'Rotom-H' : 'Rotom-Heat',
@@ -53,6 +58,11 @@ replacements = {
 	'Rotom- F' : 'Rotom-Frost',
 	'Rotom- S' : 'Rotom-Fan',
 	'Rotom- C' : 'Rotom-Mow',
+	'Rotom-h' : 'Rotom-Heat',
+	'Rotom-w' : 'Rotom-Wash',
+	'Rotom-f' : 'Rotom-Frost',
+	'Rotom-s' : 'Rotom-Fan',
+	'Rotom-c' : 'Rotom-Mow',
 	'Tornadus-T' : 'Tornadus-Therian',
 	'Thundurus-T' : 'Thundurus-Therian',
 	'Landorus-T' : 'Landorus-Therian',
@@ -62,19 +72,55 @@ replacements = {
 	'Kyurem-B' : 'Kyurem-Black',
 	'Kyurem-W' : 'Kyurem-White',
 	'Shaymin-S' : 'Shaymin-Sky',
+	'Ho-oh' : 'Ho-Oh',
+	"Birijion": "Virizion",
+	"Terakion": "Terrakion",
+	"Agirudaa": "Accelgor",
+	"Randorosu": "Landorus",
+	"Urugamosu": "Volcarona",
+	"Erufuun": "Whimsicott",
+	"Doryuuzu": "Excadrill",
+	"Burungeru": "Jellicent",
+	"Nattorei": "Ferrothorn",
+	"Shandera": "Chandelure",
+	"Roobushin": "Conkeldurr",
+	"Ononokusu": "Haxorus",
+	"Sazandora": "Hydreigon",
+	"Chirachiino": "Cinccino",
+	"Kyuremu": "Kyurem",
+	"Jarooda": "Serperior",
+	"Zoroaaku": "Zoroark",
+	"Shinboraa": "Sigilyph",
+	"Barujiina": "Mandibuzz",
+	"Rankurusu": "Reuniclus",
+	"Borutorosu": "Thundurus",
+	"Mime Jr" : "Mime Jr.", #this one's my fault
 	#to be fair, I never observed the following, but better safe than sorry
 	'Giratina-O' : 'Giratina-Origin',
 	'Keldeo-R' : 'Keldeo-Resolution',
 	'Wormadam-G' : 'Wormadam-Sandy',
-	'Wormadam-S' : 'Wormadam-Trash'
+	'Wormadam-S' : 'Wormadam-Trash',
+	"Dnite": "Dragonite",
+	"Ferry": "Ferrothorn",
+	"Forry": "Forretress",
+	"Luke":  "Lucario",
+	"P2": "Porygon2",
+	"Pory2": "Porygon2",
+	"Pz": "Porygon-Z",
+	"Poryz": "Porygon-Z",
+	"Rank": "Reuniclus",
+	"Ttar": "Tyranitar"
 }
 
 for i in replacements:
 	for j in range(len(ts)):
-		if ts[j][1][0] == '(': #for some reason, sometimes species appear as "(Species)"
-			ts[j][1] = ts[j][1][1:len(ts[j][1])-1]
-		if ts[j][1][0] in string.lowercase: #very odd that this is needed
-			ts[j][1] = string.uppercase[string.lowercase.index(ts[j][1][0])]+ts[j][1][1:]
+		#very odd that these is needed--I've seen ".Species", "(Species)", "species", "Species)", "SPECIES"...
+		if ts[j][1][0] not in string.lowercase + string.uppercase:
+			ts[j][1]=ts[j][1][1:]
+		if ts[j][1][len(ts[j][1])-1] in ')". ':
+			ts[j][1]=ts[j][1][:len(ts[j][1])-1]
+		if (ts[j][1][0] in string.lowercase) or (ts[j][1][1] in string.uppercase):
+			ts[j][1] = ts[j][1].title()
 		if ts[j][1] == i:
 			ts[j][1] = replacements[i]
 
@@ -82,12 +128,18 @@ for i in replacements:
 nicks = []
 for i in range(0,6):
 	if len(log['p1team'])>i:
-		nicks.append("p1: "+log['p1team'][i]['name'])
+		if 'name' in log['p1team'][i].keys():
+			nicks.append("p1: "+log['p1team'][i]['name'])
+		else:
+			nicks.append("p1: "+log['p1team'][i]['species'])
 	else:
 		nicks.append("p1: empty")
 	if len(log['p2team'])>i:
-		nicks.append("p2: "+log['p2team'][i]['name'])
-	else:
+		if 'name' in log['p2team'][i].keys():
+			nicks.append("p2: "+log['p2team'][i]['name'])
+		else:
+			nicks.append("p2: "+log['p2team'][i]['species'])
+	else:		
 		nicks.append("p1: empty")
 
 #determine initial pokemon
