@@ -158,9 +158,6 @@ file.close()
 file = open('baseStats.pickle')
 baseStats = pickle.load(file)
 file.close()
-file = open('keylookup.pickle')
-keyLookup = pickle.load(file)
-file.close()
 
 tier = sys.argv[2]
 rated = "Rated"
