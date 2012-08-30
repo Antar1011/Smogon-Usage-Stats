@@ -759,7 +759,7 @@ if 'log' in log.keys():
 #totalTurns = log['turns']
 #totalKOs = sum(KOs)
 
-outname = "Raw/"+tier+" "+rated+".txt"
+outname = "Raw/"+tier+".txt"
 d = os.path.dirname(outname)
 if not os.path.exists(d):
 	os.makedirs(d)
