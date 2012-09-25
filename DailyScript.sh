@@ -19,4 +19,4 @@ done
 if (($(date -d 'today' +%d) == 1))
 then
 	./MonthlyScript.sh
-done
+fi
