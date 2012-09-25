@@ -5,11 +5,26 @@ import string
 import sys
 import math
 import cPickle as pickle
+import os
 
 
 filename = str(sys.argv[1])
 file = open(filename)
 species = file.readlines()
+file.close()
+
+tier = sys.argv[1][string.rfind(sys.argv[1],'/')+1:string.rfind(sys.argv[1],'.')]
+filename="Stats/"+tier+".txt"
+d = os.path.dirname(filename)
+if not os.path.exists(d):
+	os.makedirs(d)
+usagefile=open(filename,'w')
+filename="Stats/metagame/"+tier+".txt"
+d = os.path.dirname(filename)
+if not os.path.exists(d):
+	os.makedirs(d)
+metagamefile=open(filename,'w')
+
 battleCount = 0
 teamCount = 0
 counter = {}
@@ -19,12 +34,23 @@ KOcounter = {}
 TCsquared = {} #for calculating std. dev
 KCsquared = {} #	"
 encounterMatrix = {}
+tagCounter = {}
+stallCounter = []
+metricCounter = []
+
 trainerNextLine=True
 eventNextLine=False
 for entry in species:
 	#print entry
-	if trainerNextLine:
-		trainer = entry
+	if trainerNextLine:		
+		i = string.rfind(entry,' (')
+		trainer = entry[:i]
+		j = string.find(entry,',',i+7)
+		bias = int(entry[i+7:j])
+		i = string.find(entry,',',j+13)
+		stalliness = float(entry[j+13:i])
+		tags = entry[i+7:string.find(entry,')',i+7)].split(',')
+		
 		trainerNextLine = False
 		ctemp = []
 		turnt = []
@@ -103,6 +129,19 @@ for entry in species:
 			KCsquared[ctemp[i]] = KCsquared[ctemp[i]]+KOtemp[i]*KOtemp[i]
 			if turnt[i] > 0:
 				realCounter[ctemp[i]] = realCounter[ctemp[i]]+1.0
+		for tag in tags:
+			if tag not in tagCounter.keys():
+				tagCounter[tag] = 0.0
+			tagCounter[tag] = tagCounter[tag]+1.0
+		stallCounter.append(stalliness)
+		if entry == "***\n":
+			totalKOs = float(sum(KOtemp))
+			biasp = bias
+		else:
+			totalKOs = totalKOs+float(sum(KOtemp))
+			totalTurns = float(sum(turnt))
+			if (totalKOs > 0):
+				metricCounter.append([biasp,bias,stallCounter[len(stallCounter)-2],stalliness,totalTurns/totalKOs])
 			
 		teamCount = teamCount+1
 			
@@ -161,18 +200,20 @@ aliases={
 	'Genesect': ['Genesect-Douse','Genesect-Burn','Genesect-Shock','Genesect-Chill','Genesect-D','Genesect-S','Genesect-B','Genesect-C'],
 	'Darmanitan': ['Darmanitan-D','Darmanitan-Zen'],
 	'Basculin': ['Basculin-Blue-Striped','Basculin-A'],
-	'Kyurem-B': ['Kyurem-Black'],
-	'Kyurem-W': ['Kyurem-White']
+	'Kyurem-Black': ['Kyurem-B'],
+	'Kyurem-White': ['Kyurem-W']
 }	
 if 'Empty' in pokedict.keys(): #delete no-entry slots
-		del pokedict['Empty']	
+		del pokedict['Empty']
+if 'empty' in pokedict.keys(): #delete no-entry slots
+		del pokedict['empty']	
 for species in aliases:
 	#first make sure that the species is in the array
 	if species not in pokedict.keys():
 		pokedict[species]=[0 for k in range(6)]
 	for alias in aliases[species]:
 		if alias in pokedict.keys():
-			for j in range(1,6):
+			for j in range(0,6):
 				pokedict[species][j] = pokedict[species][j]+pokedict[alias][j]
 			del pokedict[alias]
 
@@ -196,22 +237,113 @@ for i in pokedict:
 pokes=sorted(pokes, key=lambda pokes:-pokes[1])
 p=[]
 l=1
-print " Total battles: "+str(battleCount)
-print " Total teams: "+str(teamCount)
-print " Total pokemon: "+str(int(total))
-print " + ---- + ------------------ + ------ + ------- + ------ + ------- + "
-print " | Rank | Pokemon            | Usage  | Percent | RealUse| RealPct | "
-print " + ---- + ------------------ + ------ + ------- + ------ + ------- + "
+usagefile.write(" Total battles: "+str(battleCount)+"\n")
+usagefile.write(" Total teams: "+str(teamCount)+"\n")
+usagefile.write(" Total pokemon: "+str(int(total))+"\n")
+usagefile.write(" + ---- + ------------------ + ------ + ------- + ------ + ------- + \n")
+usagefile.write(" | Rank | Pokemon            | Usage  | Percent | RealUse| RealPct | \n")
+usagefile.write(" + ---- + ------------------ + ------ + ------- + ------ + ------- + \n")
 for i in range(0,len(pokes)):
 	if pokes[i][1] == 0:
 		break
-	print ' | %-4d | %-18s | %-6d | %6.3f%% | %-6d | %6.3f%% | ' % (l,pokes[i][0],pokes[i][1],100.0*pokes[i][1]/total*6.0,pokes[i][2],100.0*pokes[i][2]/realTotal*6.0)
+	usagefile.write(' | %-4d | %-18s | %-6d | %6.3f%% | %-6d | %6.3f%% | \n' % (l,pokes[i][0],pokes[i][1],100.0*pokes[i][1]/total*6.0,pokes[i][2],100.0*pokes[i][2]/realTotal*6.0))
 	p.append(pokes[i])
 	l=l+1
-print " + ---- + ------------------ + ------ + ------- + ------ + ------- +"
-#csv output
-#for i in range(len(lsnum)):
-#	if (counter[i] > 0):
-#		print lsnum[i]+","+lsname[i][0:len(lsname[i])-1]+","+str(counter[i])+","+str(round(100.0*counter[i]/battleCount/2,5))+"%"
+usagefile.write(" + ---- + ------------------ + ------ + ------- + ------ + ------- +\n\n")
+usagefile.close()
 
+#metagame analysis
+tags = []
+for tag in tagCounter:
+	tags.append([tag,tagCounter[tag]])
+tags=sorted(tags, key=lambda tags:-tags[1])
+
+for i in range(0,len(tags)):
+	line = ' '+tags[i][0]
+	for j in range(len(tags[i][0]),30):
+		line = line + '.'
+	line = line + '%6.3f%%' % (100.0*tags[i][1]/teamCount)
+	metagamefile.write(line+'\n')
+metagamefile.write('\n')
+
+#stalliness
+stallCounter=sorted(stallCounter, key=lambda stallCounter:stallCounter)
+
+#figure out a good bin range by looking at .1% and 99.9% points
+low = stallCounter[len(stallCounter)/1000]
+high = stallCounter[len(stallCounter)-len(stallCounter)/1000-1]
+
+nbins = 13 #this is actually only a rough idea--I think it might be the minimum?
+
+if (low > 0):
+	low = 0.0
+elif (high < 0):
+	high = 0.0
+
+binSize = (high-low)/(nbins-1)
+#this is bound to be an ugly number, so let's make it pretty
+for x in [10,5,2.5,2,1.5,1,0.5,0.25,0.2,0.1,0.05]:
+	if binSize > x:
+		break
+#if binSize < 0.05, fuck it--I'm not zooming in any further
+binSize = x
+histogram = [[0.0,0]]
+x=binSize
+while x+binSize/2 < high:
+	histogram.append([x,0])
+	x=x+binSize
+x=-binSize
+while x-binSize/2 > low:
+	histogram.append([x,0])
+	x=x-binSize
+histogram=sorted(histogram, key=lambda histogram:histogram[0])
+nbins = len(histogram)
+
+for start in range(len(stallCounter)):
+	if stallCounter[start] >= histogram[0][0]-binSize/2:
+		break
+
+j=0
+for i in range(start,len(stallCounter)):
+	while stallCounter[i] > histogram[0][0]+binSize*(j+0.5):
+		j=j+1
+	if j>=len(histogram):
+		break
+	histogram[j][1] = histogram[j][1]+1
+
+maximum = 0
+for i in range(len(histogram)):
+	if histogram[i][1] > maximum:
+		maximum = histogram[i][1]
+
+nblocks = 30 #maximum number of blocks to go across
+blockSize = maximum/nblocks
+
+if blockSize > 0:
+
+	#print histogram
+	metagamefile.write(' Stalliness (mean: %6.3f)\n'%(sum(stallCounter)/teamCount))
+	for i in range(len(histogram)):
+		if histogram[i][0]%(2.0*binSize) < binSize/2:
+			line = ' '
+			if histogram[i][0]>0.0:
+				line=line+'+'
+			elif histogram[i][0] == 0.0:
+				line=line+' '
+			line = line+'%3.1f|'%(histogram[i][0])
+		else:
+			line = '     |'
+		for j in range(int((histogram[i][1]+blockSize/2)/blockSize)):#poor man's rounding
+			line = line + '#'
+		metagamefile.write(line+'\n')
+	metagamefile.write(' more negative = more offensive, more positive = more stall\n')
+	metagamefile.write(' one # = %d teams (%5.2f%%)\n'%(blockSize,100.0*blockSize/teamCount))
+
+
+outfile=open('stall.dat','w')
+for line in metricCounter:
+	for item in line:
+		outfile.write(str(item)+'\t')
+	outfile.write('\n')
+outfile.close()
 

@@ -4,41 +4,48 @@ import string
 import sys
 import json
 import copy
-import cPickle as pickle
+#import cPickle as pickle
 import math
 import os
 
-def statFormula(base,lv,nat,iv,ev):
-	if nat == -1: #for HP
-		return (iv+2*base+ev/4+100)*lv/100+10
-	else:
-		return ((iv+2*base+ev/4)*lv/100+5)*nat/10
+filename = str(sys.argv[1])
+file = open(filename)
+raw = file.readline()
+file.close()
+tier = sys.argv[2]
 
-nmod = {'hardy': [10,10,10,10,10],
-	'lonely': [11,9,10,10,10],
-	'brave': [11,10,9,10,10],
-	'adamant': [11,10,10,9,10],
-	'naughty': [11,10,10,10,9],
-	'bold': [9,11,10,10,10],
-	'docile': [10,10,10,10,10],
-	'relaxed': [10,11,9,10,10],
-	'impish': [10,11,10,9,10],
-	'lax': [10,11,10,10,9],
-	'timid': [9,10,11,10,10],
-	'hasty': [10,9,11,10,10],
-	'serious': [10,10,10,10,10],
-	'jolly': [10,10,11,9,10],
-	'naive': [10,10,11,10,9],
-	'modest': [9,10,10,11,10],
-	'mild': [10,9,10,11,10],
-	'quiet': [10,10,9,11,10],
-	'bashful': [10,10,10,10,10],
-	'rash': [10,10,10,11,9],
-	'calm': [9,10,10,10,11],
-	'gentle': [10,9,10,10,11],
-	'sassy': [10,10,9,10,11],
-	'careful': [10,10,10,9,11],
-	'quirky': [10,10,10,10,10]}
+if raw=='"log"': #https://github.com/Zarel/Pokemon-Showdown/commit/92a4f85e0abe9d3a9febb0e6417a7710cabdc303
+	sys.exit(0)
+log = json.loads(raw)
+
+#determine log type
+spacelog = True
+if 'log' in log.keys():
+	if log['log'][0][0:2] != '| ':
+		spacelog = False
+
+#check for log length
+longEnough = False
+if 'log' not in log.keys():
+	if int(log['turns']) > 5: 
+		longEnough = True
+else:
+	for line in log['log']:
+		if (spacelog and line[2:10] == 'turn | 6') or (not spacelog and line[1:7] == 'turn|6'):
+			longEnough = True
+			break
+if not longEnough:
+	sys.exit(0)
+
+
+#now that we've determined that we're cooking with gas, we can load all the good stuff
+#file = open('baseStats.pickle')
+#baseStats = pickle.load(file)
+#file = open('baseStats.json')
+#baseStats = json.loads(file.readline())
+#file.close()
+
+from TA import *
 
 def keyify(s):
 	sout = ''
@@ -133,7 +140,7 @@ replacements = {
 	"Barujiina": "Mandibuzz",
 	"Rankurusu": "Reuniclus",
 	"Borutorosu": "Thundurus",
-	"Mime Jr" : "Mime Jr.", #th== one's my fault
+	"Mime Jr" : "Mime Jr.", #this one's my fault
 	#to be fair, I never observed the following, but better safe than sorry
 	'Giratina-O' : 'Giratina-Origin',
 	'Keldeo-R' : 'Keldeo-Resolution',
@@ -150,39 +157,6 @@ replacements = {
 	"Rank": "Reuniclus",
 	"Ttar": "Tyranitar"
 }
-
-filename = str(sys.argv[1])
-file = open(filename)
-raw = file.readline()
-file.close()
-file = open('baseStats.pickle')
-baseStats = pickle.load(file)
-file.close()
-
-tier = sys.argv[2]
-rated = "Rated"
-
-log = json.loads(raw)
-
-#determine log type
-spacelog = True
-if 'log' in log.keys():
-	if log['log'][0][0:2] != '| ':
-		spacelog = False
-
-#check for log length
-longEnough = False
-if 'log' not in log.keys():
-	if int(log['turns']) > 5: 
-		longEnough = True
-else:
-	for line in log['log']:
-		if (spacelog and line[2:10] == 'turn | 6') or (not spacelog and line[1:7] == 'turn|6'):
-			longEnough = True
-			break
-if not longEnough:
-	print 'poo'
-	sys.exit(0)
 
 #get info on the trainers & pokes involved
 ts = []
@@ -229,18 +203,18 @@ for team in ['p1team','p2team']:
 			item = 'nothing'
 		if 'nature' in log[team][i].keys():
 			nature = keyify(log[team][i]['nature'])
-			if nature == '':
+			if nature not in nmod.keys(): #zarel said this is what PS does
 				nature = 'hardy'
 		else:
 			nature = 'hardy'
+		evs = {'hp': 0, 'atk': 0, 'def': 0, 'spa': 0, 'spd': 0, 'spe': 0}
 		if 'evs' in log[team][i].keys():
-			evs = [int(log[team][i]['evs']['hp']),int(log[team][i]['evs']['atk']),int(log[team][i]['evs']['def']),int(log[team][i]['evs']['spa']),int(log[team][i]['evs']['spd']),int(log[team][i]['evs']['spe'])]
-		else:
-			evs = [0,0,0,0,0,0]
+			for stat in log[team][i]['evs']:
+				evs[stat]=int(log[team][i]['evs'][stat])	
+		ivs = {'hp': 31, 'atk': 31, 'def': 31, 'spa': 31, 'spd': 31, 'spe': 31}
 		if 'ivs' in log[team][i].keys():
-			ivs = [int(log[team][i]['ivs']['hp']),int(log[team][i]['ivs']['atk']),int(log[team][i]['ivs']['def']),int(log[team][i]['ivs']['spa']),int(log[team][i]['ivs']['spd']),int(log[team][i]['ivs']['spe'])]
-		else:
-			ivs = [0,0,0,0,0,0]
+			for stat in log[team][i]['ivs']:
+				ivs[stat]=int(log[team][i]['ivs'][stat])
 		if 'moves' in log[team][i].keys():
 			moves = log[team][i]['moves']
 		else:
@@ -258,102 +232,20 @@ for team in ['p1team','p2team']:
 			level = int(log[team][i]['level'])
 		else:
 			level = 100
-		stats = []
-		if keyify(species) == 'shedinja':
-			stats.append(1)
-		else:
-			stats.append(statFormula(baseStats[keyify(species)]['hp'],level,-1,ivs[0],evs[0]))
-		stats.append(statFormula(baseStats[keyify(species)]['atk'],level,nmod[keyify(nature)][0],ivs[1],evs[1]))
-		stats.append(statFormula(baseStats[keyify(species)]['def'],level,nmod[keyify(nature)][1],ivs[2],evs[2]))
-		stats.append(statFormula(baseStats[keyify(species)]['spa'],level,nmod[keyify(nature)][3],ivs[3],evs[3]))
-		stats.append(statFormula(baseStats[keyify(species)]['spd'],level,nmod[keyify(nature)][4],ivs[4],evs[4]))
-		stats.append(statFormula(baseStats[keyify(species)]['spe'],level,nmod[keyify(nature)][2],ivs[5],evs[5]))
-
-		#calculate base stalliness
-		bias = evs[1]+evs[3]-evs[0]-evs[2]-evs[4]
-		if keyify(species) == 'shedinja':
-			stalliness = 0
-		elif keyify(species) == 'ditto':
-			stalliness = log(3,2) #eventually I'll want to replace this with mean stalliness for the tier
-		else:
-			stalliness=-math.log(((2.0*level+10)/250*max(stats[1],stats[3])/max(stats[2],stats[4])*120+2)*0.925/stats[0],2)
-
-		#moveset modifications
-		if ability in ['purepower','hugepower']:
-			stalliness = stalliness - 1
-		if item in ['choiceband','choicescarf','choicespecs','lifeorb']:
-			stalliness = stalliness - 0.5
-		if item == 'eviolite':
-			stalliness = stalliness + 0.5
-		if 'spikes' in moves:
-			stalliness = stalliness + 0.5
-		if 'toxicspikes' in moves:
-			stalliness = stalliness + 0.5
-		if 'toxic' in moves:
-			stalliness = stalliness + 1
-		if 'willowisp' in moves:
-			stalliness = stalliness + 1
-		if len(set(['recover' ,'slackoff', 'healorder', 'milkdrink', 'roost', 'moonlight', 'morningsun', 'synthesis', 'wish', 'aquaring', 'rest', 'softboiled', 'swallow', 'leechseed']).intersection(moves)) != 0:
-			stalliness = stalliness + 1
-		if ability == 'regenerator':
-			stalliness = stalliness + 0.5
-		if len(set(['healbell','aromatherapy']).intersection(moves)) != 0:
-			stalliness = stalliness + 0.5
-		if ability in ['chlorophyll', 'flareboost', 'guts', 'hustle', 'moxie', 'reckless', 'sandrush', 'solarpower', 'speedboost', 'swiftswim', 'technician', 'tintedlens', 'toxicboost', 'moody']:
-			stalliness = stalliness - 0.5
-		if ability in ['arenatrap','magnetpull','shadowtag']:
-			stalliness = stalliness - 1
-		if ability in ['dryskin', 'filter', 'hydration', 'icebody', 'intimidate', 'ironbarbs', 'marvelscale', 'naturalcure', 'magicguard', 'multiscale', 'poisonheal', 'raindish', 'roughskin', 'solidrock', 'thickfat', 'unaware']:
-			stalliness = stalliness + 0.5
-		if ability in ['slowstart','truant']:
-			stalliness = stalliness + 1
-		if item == 'lightclay':
-			stalliness = stalliness - 1
-		if len(set(['acupressure', 'bellydrum', 'bulkup', 'coil', 'curse', 'dragondance', 'growth', 'honeclaws', 'howl', 'meditate', 'sharpen', 'shellsmash', 'shiftgear', 'swordsdance', 'workup', 'calmmind', 'chargebeam', 'fierydance', 'nastyplot', 'tailglow', 'quiverdance', 'agility', 'autotomize', 'flamecharge', 'rockpolish', 'doubleteam', 'minimize']).intersection(moves)) != 0:
-			stalliness = stalliness - 1
-		if 'substitute' in moves:
-			stalliness = stalliness - 0.5
-		if 'protect' in moves or 'detect' in moves:
-			stalliness = stalliness + 1
-		if 'endeavor' in moves:
-			stalliness = stalliness - 1
-		if 'superfang' in moves:
-			stalliness = stalliness - 0.5
-		if 'trick' in moves:
-			stalliness = stalliness - 0.5
-		if 'psychoshift' in moves:
-			stalliness = stalliness + 0.5
-		if len(set(['haze', 'clearsmog', 'whirlwind', 'roar', 'circlethrow', 'dragontail', 'thunderwave', 'stunspore', 'supersonic', 'confuseray', 'swagger', 'flatter', 'teeterdance']).intersection(moves)) != 0:
-			stalliness = stalliness + 0.5
-		if len(set(['darkvoid', 'grasswhistle', 'hypnosis', 'lovelykiss', 'sing', 'sleeppowder', 'spore', 'yawn']).intersection(moves)) != 0:
-			stalliness = stalliness + 0.5
-		if item == 'redcard':
-			stalliness = stalliness + 0.5
-		if item == 'rockyhelmet':
-			stalliness = stalliness + 0.5
-		if item in ['firegem', 'watergem', 'electricgem', 'grassgem', 'icegem', 'fightinggem', 'posiongem', 'groundgem', 'groundgem', 'flyinggem', 'psychicgem', 'buggem', 'rockgem', 'ghostgem', 'darkgem', 'steelgem', 'normalgem', 'focussash', 'mentalherb', 'powerherb', 'whiteherb', 'absorbbulb', 'berserkgene', 'cellbattery', 'redcard', 'focussash', 'airballoon', 'ejectbutton', 'shedshell', 'aguavberry', 'apicotberry', 'aspearberry', 'babiriberry', 'chartiberry', 'cheriberry', 'chestoberry', 'chilanberry', 'chopleberry', 'cobaberry', 'custapberry', 'enigmaberry', 'figyberry', 'ganlonberry', 'habanberry', 'iapapaberry', 'jabocaberry', 'kasibberry', 'kebiaberry', 'lansatberry', 'leppaberry', 'liechiberry', 'lumberry', 'magoberry', 'micleberry', 'occaberry', 'oranberry', 'passhoberry', 'payapaberry', 'pechaberry', 'persimberry', 'petayaberry', 'rawstberry', 'rindoberry', 'rowapberry', 'salacberry', 'shucaberry', 'sitrusberry', 'starfberry', 'tangaberry', 'wacanberry', 'wikiberry', 'yacheberry']:
-			stalliness = stalliness - 0.5
-		if ability == 'harvest' or 'recycle' in moves:
-			stalliness = stallines + 1
-		if len(set(['jumpkick', 'doubleedge', 'submission', 'petaldance', 'hijumpkick', 'outrage', 'superpower', 'overheat', 'volttackle', 'psychoboost', 'hammerarm', 'closecombat', 'flareblitz', 'bravebird', 'dracometeor', 'leafstorm', 'woodhammer', 'headsmash', 'headcharge', 'vcreate', 'wildcharge', 'takedown']).intersection(moves)) != 0:
-			stalliness = stalliness - 0.5
-		if len(set(['selfdestruct', 'explosion', 'destinybond', 'perishsong', 'memento', 'healingwish', 'lunardance', 'finalgambit']).intersection(moves)) != 0:
-			stalliness = stalliness - 1
-		if len(set(['guillotine', 'fissure', 'sheercold']).intersection(moves)) != 0:
-			stalliness = stalliness - 1
-
-		#final correction
-		stalliness=stalliness-math.log(3,2)
-
 		teams[team].append({
 			'species': keyify(species),
 			'nature': nature,
 			'item': item,
-			'evs': evs,
-			'moves': moves,
+			'evs': {},
+			'moves': [],
 			'ability': ability,
-			'bias': bias,
-			'stalliness': stalliness})
+			'level': level,
+			'ivs': {}})
+		for stat in evs:
+			teams[team][len(teams[team])-1]['evs'][stat] = evs[stat]
+			teams[team][len(teams[team])-1]['ivs'][stat] = ivs[stat]
+		for move in moves:
+			teams[team][len(teams[team])-1]['moves'].append(move)
 
 		#write to moveset file
 		outname = "Raw/moveset/"+tier+"/"+keyify(species)+".txt"
@@ -361,7 +253,6 @@ for team in ['p1team','p2team']:
 		if not os.path.exists(d):
 			os.makedirs(d)
 		outfile=open(outname,'a')
-		outfile.write(str(bias)+'\t'+str(stalliness)+'\t')
 		outfile.write(str(level)+'\t'+ability+'\t'+item+'\t'+nature+'\t')
 		for iv in ivs:
 			outfile.write(str(iv)+'\t')
@@ -375,193 +266,9 @@ for team in ['p1team','p2team']:
 	if len(log[team]) < 6:
 		for i in range(6-len(log[team])):
 			ts.append([trainer,'empty'])
+	analysis = analyzeTeam(teams[team])
+	teams[team].append({'bias': analysis['bias'], 'stalliness' : analysis['stalliness'], 'tags' : analysis['tags']})
 
-	#team-type detection
-	bias = stalliness = 0
-	for poke in teams[team]:
-		bias = bias + poke['bias']
-		stalliness = stalliness + poke['stalliness']
-	stalliness = stalliness / 6.0
-	tags = []	
-
-	#don't put anything before weather
-
-	#rain
-	count = 0
-	detected = False
-	for poke in teams[team]:
-		if poke['ability'] == 'drizzle':
-			detected = True
-			break
-		elif poke['item'] == 'damprock' and 'raindance' in poke['moves']:
-			detected = True
-			break
-		elif 'raindance' in poke['moves']:
-			count = count + 1
-			if count > 1:
-				detected = True
-				break
-	if detected:
-		tags.append('rain')
-	
-	#sun
-	count = 0
-	detected = False
-	for poke in teams[team]:
-		if poke['ability'] == 'drought':
-			detected = True
-			break
-		elif poke['item'] == 'heatrock' and 'sunnyday' in poke['moves']:
-			detected = True
-			break
-		elif 'sunnyday' in poke['moves']:
-			count = count + 1
-			if count > 1:
-				detected = True
-				break
-	if detected:
-		tags.append('sun')
-
-	#sand
-	count = 0
-	detected = False
-	for poke in teams[team]:
-		if poke['ability'] == 'sandstream':
-			detected = True
-			break
-		elif poke['item'] == 'smoothrock' and 'sandstorm' in poke['moves']:
-			detected = True
-			break
-		elif 'sandstorm' in poke['moves']:
-			count = count + 1
-			if count > 1:
-				detected = True
-				break
-	if detected:
-		tags.append('sand')
-
-	#hail
-	count = 0
-	detected = False
-	for poke in teams[team]:
-		if poke['ability'] == 'snowwarning':
-			detected = True
-			break
-		elif poke['item'] == 'icyrock' and 'hail' in poke['moves']:
-			detected = True
-			break
-		elif 'hail' in poke['moves']:
-			count = count + 1
-			if count > 1:
-				detected = True
-				break
-	if detected:
-		tags.append('hail')
-	if len(tags) == 4:
-		tags.append('allweather')
-	elif len(tags) > 1:
-		tags.append('multiweather')
-	elif len(tags) == 0:
-		tags.append('weatherless')
-
-	#baton pass
-	count = 0
-	for poke in teams[team]:
-		if 'batonpass' in poke['moves']:
-			if len(set(['acupressure', 'bellydrum', 'bulkup', 'coil', 'curse', 'dragondance', 'growth', 'honeclaws', 'howl', 'meditate', 'sharpen', 'shellsmash', 'shiftgear', 'swordsdance', 'workup', 'calmmind', 'chargebeam', 'fierydance', 'nastyplot', 'tailglow', 'quiverdance', 'agility', 'autotomize', 'flamecharge', 'rockpolish', 'doubleteam', 'minimize', 'substitute', 'acidarmor', 'barrier', 'cosmicpower', 'cottonguard', 'defendorder', 'defensecurl', 'harden', 'irondefense', 'stockpile', 'withdraw', 'amnesia', 'charge', 'ingrain']).intersection(poke['moves'])) != 0 or poke['ability'] in ['angerpoint', 'contrary', 'moody', 'moxie', 'speedboost']: #check for setup move/ability
-				count = count + 1
-				if count > 1:
-					break
-	if count > 1:
-		tags.append('batonpass')
-
-	#trick room
-	count = [0,0]
-
-	for poke in teams[team]:
-		if 'trickroom' in poke['moves'] and 'imprison' not in poke['moves']:
-			count[0] = count[0] + 1
-		elif (poke['nature'] in ['brave', 'relaxed', 'quiet', 'sassy'] or baseStats[keyify(poke['species'])]['spe'] <= 50) and poke['evs'][5] < 5: #or I could just use actual stats and speed factor
-			count[1] = count[1] + 1
-
-	if (count[0] > 1 and count[1] > 1) or (count[0] > 2):
-		tags.append('trickroom')
-		if 'sun' in tags:
-			tags.append('tricksun')
-		if 'rain' in tags:
-			tags.append('trickrain')
-		if 'sand' in tags:
-			tags.append('tricksand')
-		if 'hail' in tags:
-			tags.append('trickhail')	
-
-	#gravity
-	count = [0,0]
-
-	for poke in teams[team]:
-		if 'gravity' in poke['moves']:
-			count[0] = count[0] + 1
-		if len(set(['guillotine', 'fissure', 'sheercold', 'dynamicpunch', 'inferno', 'zapcannon', 'grasswhistle', 'sing', 'supersonic', 'hypnosis', 'blizzard', 'focusblast', 'gunkshot', 'hurricane', 'smog', 'thunder', 'clamp', 'dragonrush', 'eggbomb', 'irontail', 'lovelykiss', 'magmastorm', 'megakick', 'poisonpowder', 'slam', 'sleeppowder', 'stunspore', 'sweetkiss', 'willowisp', 'crosschop', 'darkvoid', 'furyswipes', 'headsmash', 'hydropump', 'kinesis', 'psywave', 'rocktomb', 'stoneedge', 'submission', 'boneclub', 'bonerush', 'bonemerang', 'bulldoze', 'dig', 'drillrun', 'earthpower', 'earthquake', 'magnitude', 'mudbomb', 'mudshot', 'mudslap', 'sandattack', 'spikes', 'toxicspikes']).intersection(poke['moves'])) != 0:
-			count[1] = count[1] + 1
-
-	if (count[0] > 1 and count[1] > 1) or (count[0] > 2):
-		 tags.append('gravity')
-
-	
-
-	#voltturn
-	count = 0
-
-	for poke in teams[team]:
-		if len(set(['voltswitch','uturn','batonpass']).intersection(poke['moves'])) != 0 or poke['item'] == 'ejectbutton':
-			count = count + 1
-			if count > 2:
-				break
-	if count > 2 and 'batonpass' not in tags:
-		tags.append('voltturn')
-	
-	#dragmag and trapper
-	count = [0,0]
-	
-	for poke in teams[team]:
-		if poke['ability'] in ['magnetpull', 'arenatrap', 'shadowtag'] or len(set(['block','meanlook','spiderweb']).intersection(poke['moves'])) != 0:
-			count[0] = count[0] + 1
-		elif poke['species'] in ['dratini', 'dragonair', 'bagon', 'shelgon', 'axew', 'fraxure', 'haxorus', 'druddigon', 'dragonite', 'altaria', 'salamence', 'latias', 'latios', 'rayquaza', 'gible', 'gabite', 'garchomp', 'reshiram', 'zekrom', 'kyurem', 'kyuremwhite', 'kyuremblack', 'kingdra', 'vibrava', 'flygon', 'dialga', 'palkia', 'giratina', 'giratinaorigin', 'deino', 'zweilous', 'hydreigon']:
-			count[1] = count[1] + 1
-	if count[0] > 0 and count[1] > 1:
-		tags.append('dragmag')
-	if count[0] > 2:
-		tags.append('trapper')
-
-	#F.E.A.R.
-	count = [0,0]
-	
-	for poke in teams[team]:
-		if poke['ability'] == 'magicbounce' or 'rapidspin' in poke['moves']:
-			count[0] = count[0]+1
-		elif (poke['ability'] == 'sturdy' or poke['item'] == 'focussash') and 'endeavor' in poke['moves']:
-			count[1] = count[1]+1
-	if count[0] > 1 and count[1] > 2:
-		tags.append('fear')
-		if 'sand' in tags:
-			tags.append('sandfear')
-		if 'hail' in tags:
-			tags.append('hailfear')
-		if 'trickroom' in tags:
-			tags.append('trickfear')
-
-	#choice
-	count = 0
-
-	for poke in teams[team]:
-		if poke['item'] in ['choiceband', 'choicescarf', 'choicespecs'] and poke['ability'] != 'klutz':
-			count = count + 1
-			if count > 3:
-				break
-	if count > 3:
-		tags.append('choice')
-
-	teams[team].append({'bias': bias, 'stalliness' : stalliness, 'tags' : tags})
 
 #nickanmes
 nicks = []
@@ -581,6 +288,10 @@ for i in range(0,6):
 	else:		
 		nicks.append("p1: empty")
 
+if ts[0][0] == ts[11][0]: #trainer battling him/herself? WTF?
+	sys.exit(0)
+
+
 #metrics get declared here
 turnsOut = [] #turns out on the field (a measure of stall)
 KOs = [] #number of KOs in the battle
@@ -599,12 +310,20 @@ if 'log' in log.keys():
 			species = line[string.rfind(line,'|',12+3*spacelog,end-1)+1+1*spacelog:end]
 			while ',' in species:
 				species = species[0:string.rfind(species,',')]
+			for s in aliases: #combine appearance-only variations and weird PS quirks
+				if species in aliases[s]:
+					species = s
+					break
 			active[0]=ts.index([ts[0][0],species])
 		if (spacelog and line[0:14] == "| switch | p2:") or (not spacelog and line[0:11] == "|switch|p2:"):
 			end = string.rfind(line,'|')-1*spacelog
 			species = line[string.rfind(line,'|',12+3*spacelog,end-1)+1+1*spacelog:end]
 			while ',' in species:
 				species = species[0:string.rfind(species,',')]
+			for s in aliases: #combine appearance-only variations and weird PS quirks
+				if species in aliases[s]:
+					species = s
+					break
 			active[1]=ts.index([ts[11][0],species])
 			break
 	start=log['log'].index(line)+1
@@ -682,14 +401,28 @@ if 'log' in log.keys():
 				for i in range(len(tempnicks)):
 					if len(tempnicks[i])>1:
 						tempnicks[i]=tempnicks[i][:len(tempnicks[i])-1]
-					if line[9:].startswith(tempnicks[i]):
+					if line[6+3*spacelog:].startswith(tempnicks[i]):
 						if found:
 							if len(tempnicks[i]) < len(found):
-								continue	
+								continue
 						found = tempnicks[i]
 						foundidx = i
 				if found:
 					nicks[i]=found
+				else:
+					tryAgain = False
+					for i in range(len(tempnicks)):
+						if len(tempnicks[i])>1:
+							tryAgain = True
+							break
+					if not tryAgain:
+						sys.stderr.write("Nick not found.\n")
+						sys.stderr.write("In file: "+sys.argv[1]+"\n")
+						sys.stderr.write(line[6+3*spacelog:]+"\n")
+						sys.stderr.write(str(nicks)+"\n")
+						sys.exit(1)
+						
+					
 		
 			move = line[7+5*spacelog+len(found):string.find(line,"|",7+5*spacelog+len(found))-1*spacelog]
 			if move in ["Roar","Whirlwind","Circle Throw","Dragon Tail"]:
@@ -748,12 +481,16 @@ if 'log' in log.keys():
 				mtemp.append(matchup)
 		
 			#new matchup!
-			uturn = roar = 0
+			uturn = roar = False
 			#it matters whether the poke is nicknamed or not
 			end = string.rfind(line,'|')-1*spacelog
-			species = line[string.rfind(line,'|',12+3*spacelog,end-1)+1+1*spacelog:end]
+			species = line[string.rfind(line,'|',0,end-1)+1+1*spacelog:end]
 			while ',' in species:
 				species = species[0:string.rfind(species,',')]
+			for s in aliases: #combine appearance-only variations and weird PS quirks
+				if species in aliases[s]:
+					species = s
+					break
 			active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
 
 #totalTurns = log['turns']
@@ -774,6 +511,11 @@ i=0
 while (ts[i][0] == ts[0][0]):
 	outfile.write(ts[i][1]+" ("+str(KOs[i])+","+str(turnsOut[i])+")\n")
 	i = i + 1
+	if i>=len(ts):
+		sys.stderr.write("Something's wrong here.\n")
+		sys.stderr.write("In file: "+sys.argv[1]+"\n")
+		sys.stderr.write(str(ts)+"\n")
+		sys.exit(1)	
 outfile.write("***\n")
 teamtags = teams['p2team'][len(teams['p2team'])-1]
 outfile.write(ts[len(ts)-1][0].encode('ascii','replace'))
