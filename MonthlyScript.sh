@@ -224,4 +224,4 @@ cd ..
 mkdir "$(date -d 'today' +%Y-%m)"
 ln -s TA.py "$(date -d 'today' +%Y-%m)"/TA.py
 ln -s baseStats.json "$(date -d 'today' +%Y-%m)"/baseStats.json
-ln -s keyLookup.pickle "$(date -d 'today' +%Y-%m)"/keyLookup.pickle
+ln -s keylookup.pickle "$(date -d 'today' +%Y-%m)"/keylookup.pickle
