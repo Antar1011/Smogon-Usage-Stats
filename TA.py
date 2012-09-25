@@ -154,7 +154,7 @@ def analyzeTeam(team):
 			stalliness = stalliness - 1.0
 		if poke['ability'] in ['sandstream','snowwarning'] or 'sandstorm' in poke['moves'] or 'hail' in poke['moves']:
 			stalliness = stalliness + 0.5
-		if poke['item'] == 'souldew':
+		if poke['species'] in ['latios', 'latias'] and poke['item'] == 'souldew':
 			stalliness = stalliness - 0.5
 		if poke['species'] == 'pikachu' and poke['item'] == 'lightball':
 			stalliness = stalliness - 1.0
@@ -165,6 +165,12 @@ def analyzeTeam(team):
 		if poke['species'] == 'clamperl' and poke['item'] == 'deepseascale':
 			stalliness = stalliness + 1.0
 		if poke['item'] in ['expertbelt', 'wiseglasses', 'muscleband', 'dracoplate', 'dreadplate', 'earthplate', 'fistplate', 'flameplate', 'icicleplate', 'insectplate', 'ironplate', 'meadowplate', 'mindplate', 'skyplate', 'splashplate', 'spookyplate', 'stoneplate', 'toxicplate', 'zapplate', 'blackglasses', 'charcoal', 'dragonfang', 'hardstone', 'magnet', 'metalcoat', 'miracleseed', 'mysticwater', 'nevermeltice', 'poisonbarb', 'sharpbeak', 'silkscarf', 'silverpowder', 'softsand', 'spelltag', 'twistedspoon']:
+			stalliness = stalliness - 0.25
+		if poke['species'] == 'dialga' and poke['item'] == 'adamantorb':
+			stalliness = stalliness - 0.25
+		if poke['species'] == 'palkia' and poke['item'] == 'lustrousorb':
+			stalliness = stalliness - 0.25
+		if poke['species'] == 'giratinaorigin' and poke['item'] == 'griseousorb': #it's better be holding a Griseous Orb
 			stalliness = stalliness - 0.25
 		#if poke['item'] == 'leftovers':
 		#	stalliness = stalliness + 0.25
