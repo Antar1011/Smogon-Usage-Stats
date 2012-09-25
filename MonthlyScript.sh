@@ -218,3 +218,10 @@ echo Glitchmons >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/glitchmons.txt >> Moveset\ Statistics.txt
 echo OU Suspect Test >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/oususpecttest.txt >> Moveset\ Statistics.txt
+
+#set up stuff for the next month
+cd ..
+mkdir "$(date -d 'today' +%Y-%m)"
+ln -s TA.py "$(date -d 'today' +%Y-%m)"/TA.py
+ln -s baseStats.json "$(date -d 'today' +%Y-%m)"/baseStats.json
+ln -s keyLookup.pickle "$(date -d 'today' +%Y-%m)"/keyLookup.pickle
