@@ -1,0 +1,16 @@
+<html>
+<head>
+<title>My Page</title>
+</head>
+
+<body>
+<form name="myform" action="/cgi-bin/TeamAnalyzerWeb.cgi" method="POST">
+<div align="center">
+Enter your team in this box:<br><br>
+<textarea name="team" id="team" rows="60" cols="100"></textarea>
+<br><br>
+</div>
+<input type="submit" value="Submit" />
+</form>
+</body>
+</html>
