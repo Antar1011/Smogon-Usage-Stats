@@ -1,8 +1,8 @@
 #!/bin/bash
 
-logFolder = "/backup/smogon/showdown/logs" #edit this!
+logFolder="/backup/smogon/showdown/logs" #edit this!
 
-mkdir "$(date -d 'yesterday' +%Y-%m)/Raw"
+mkdir -p "$(date -d 'yesterday' +%Y-%m)/Raw"
 cd "$(date -d 'yesterday' +%Y-%m)"
 
 for tier in "balancedhackmons" "cap" "challengecup" "dwou" "dwubers" "glitchmons" "hackmons" "lc" "nu" "ou" "oususpecttest" "randombattle" "ru" "ubers" "uu"
