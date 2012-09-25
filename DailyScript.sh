@@ -8,11 +8,12 @@ cd "$(date -d 'yesterday' +%Y-%m)"
 for tier in "balancedhackmons" "cap" "challengecup" "dwou" "dwubers" "glitchmons" "hackmons" "lc" "nu" "ou" "oususpecttest" "randombattle" "ru" "ubers" "uu"
 do
 	if [ -d "$logFolder/$(date -d 'yesterday' +%Y-%m)/$tier/$(date -d 'yesterday' +%Y-%m-%d)" ]; then
-	for i in $logFolder/"$(date -d 'yesterday' +%Y-%m)"/$tier/"$(date -d 'yesterday' +%Y-%m-%d)"/*
-	do
+		python ../batchLogReader.py "$logFolder/$(date -d 'yesterday' +%Y-%m)/$tier/$(date -d 'yesterday' +%Y-%m-%d)" "$tier"
+	#for i in $logFolder/"$(date -d 'yesterday' +%Y-%m)"/$tier/"$(date -d 'yesterday' +%Y-%m-%d)"/*
+	#do
 		#echo Processing $i
-		python ../LogReaderOnPS.py "$i" "$tier"
-	done
+	#	python ../LogReaderOnPS.py "$i" "$tier"
+	#done
 	fi
 done
 
