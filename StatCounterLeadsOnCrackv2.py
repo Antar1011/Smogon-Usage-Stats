@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 #This is an extremely pared down version of the StatCounter script that only generates lead usage.
-#Eventually, I'll probably want to roll this into the main StatCounter script.
+#Eventually, I'll probably want to roll this into the main StatCounter script. Note that unlike
+#StatCounterOnCrackv3.py, this script outputs to stdout (the console) and not a file (unless you do
+#(some redirection).
 
 import string
 import sys
