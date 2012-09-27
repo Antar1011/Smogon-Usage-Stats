@@ -1,4 +1,7 @@
 #!/usr/bin/python
+#This is an old PO log reader that I keep around in case we want to go back to using PO logs
+#for usage stats (God forbid).
+
 import string
 import sys
 filename = str(sys.argv[1])

@@ -1,5 +1,9 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
+#Loads an intermediate battle summary file created by LogReader and compiles usage and metagame stats, which
+#are written to the appropriate folders. Also, if the user so wants, the script will generate a "matchup matrix"
+#which looks at what happens when Pokemon X meets up with Pokemon Y. This could conceivably be used to come up
+#with a statistical list of best checks and counters for each Pokemon, but I haven't yet made that script.
 
 import string
 import sys

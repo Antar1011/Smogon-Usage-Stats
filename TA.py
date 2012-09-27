@@ -1,4 +1,9 @@
 #!/usr/bin/python
+#This file contains the analyzeTeam function, which returns bias, stalliness and team tags for an inputted team.
+#The format required for the team is fairly specific. I would not recommend trying to directly create a team yourself.
+#Instead, look at TeamAnalyzer.py for an example of how to take a plaintext PO/PS export ("importable") and convert it
+#to the format requred by this function. Alternately, if you have access to PS server-side json logs, look at LogReader.py
+#to see how to read in teams from those logs.
 
 import string
 import sys

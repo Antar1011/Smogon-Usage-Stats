@@ -1,4 +1,8 @@
 #!/usr/bin/python
+#Reads in a json-format PS battle log and distills from it moveset data (which is appended to moveset files)
+#and battle summaries, which are appended to a single file for each tier. That file is then read in by a StatCounter script
+#to generate usage stats and other fun stuff. If you're doing this for more than one log at a time, you probably want to use
+#batchLogReader.py, which will save you a lot of file I/O.
 
 import string
 import sys

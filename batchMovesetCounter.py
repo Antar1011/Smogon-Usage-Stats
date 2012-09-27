@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
+#File I/O is going to be the main bottleneck. Doing moveset counting in batch (a folder at a time, rather than log by log)
+#should be much more efficient, as keylookup.pickle need only be loaded once per run.
 
 import string
 import sys

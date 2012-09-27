@@ -1,4 +1,7 @@
 #!/usr/bin/python
+#This is an example implementation of the analyzeTeam function found in TA.py. It requires that the team you want to analyze
+#be stored as plaintext in a file. Once that's done, you can run $python TeamAnalyzer.py filename and the relevant information
+#will be printed to the console. The web folder contains a cgi version of this script which is a bit more user-friendly.
 
 import string
 import sys

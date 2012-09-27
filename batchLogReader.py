@@ -1,4 +1,6 @@
 #!/usr/bin/python
+#File I/O is going to be the main bottleneck. Doing log reading in batch (a folder at a time, rather than log by log)
+#should be much more efficient, as TA.py and the files it requires need only be loaded once per run.
 
 import string
 import sys
