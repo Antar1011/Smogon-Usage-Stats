@@ -117,34 +117,30 @@ def movesetCounter(filename):
 		count = count + 1
 		moveset = line[:len(line)-1].split('\t')
 
-		bias.append(float(moveset[0]))
+		#level = moveset[0]
 
-		stalliness.append(float(moveset[1]))
-
-		#level = moveset[2]
-
-		ability = moveset[3]
+		ability = moveset[1]
 		if ability not in abilities:
 			abilities[ability] = 0.0
 		abilities[ability] = abilities[ability] + 1.0
 
-		item = moveset[4]
+		item = moveset[2]
 		if item not in keyLookup:
 			item = 'nothing'
 		if item not in items:
 			items[item] = 0.0
 		items[item] = items[item] + 1.0
 
-		nature = moveset[5]
+		nature = moveset[3]
 		if nature in ['serious','docile','quirky','bashful']:
 			nature = 'hardy'
 		if nature not in natures:
 			natures[nature] = 0.0
 		natures[nature] = natures[nature] + 1.0	
 
-		#ivs = moveset[6:12]
+		#ivs = moveset[4:10]
 
-		evs = moveset[12:18]
+		evs = moveset[10:16]
 		for i in range(0,6): #round the EVs
 			evs[i] = str(int(evs[i])/4*4)
 		#to-do: Little Cup rounding
@@ -153,7 +149,7 @@ def movesetCounter(filename):
 			evspreads[evspread] = 0.0
 		evspreads[evspread] = evspreads[evspread] + 1.0
 
-		move = moveset[18:len(moveset)-1]
+		move = moveset[16:len(moveset)-1]
 		for i in range(len(move)):
 			if move[i] in keyLookup:
 				if move[i] not in moves:
