@@ -247,10 +247,10 @@ def LogReader(filename,tier,outfile):
 				os.makedirs(d)
 			msfile=open(outname,'a')
 			msfile.write(str(level)+'\t'+ability+'\t'+item+'\t'+nature+'\t')
-			for iv in ivs:
-				msfile.write(str(iv)+'\t')
-			for ev in evs:
-				msfile.write(str(ev)+'\t')
+			for stat in ivs:
+				msfile.write(str(ivs[stat])+'\t')
+			for stat in evs:
+				msfile.write(str(evs[stat])+'\t')
 			for move in moves:
 				msfile.write(str(move)+'\t')
 			msfile.write('\n')

@@ -258,10 +258,10 @@ for team in ['p1team','p2team']:
 			os.makedirs(d)
 		outfile=open(outname,'a')
 		outfile.write(str(level)+'\t'+ability+'\t'+item+'\t'+nature+'\t')
-		for iv in ivs:
-			outfile.write(str(iv)+'\t')
-		for ev in evs:
-			outfile.write(str(ev)+'\t')
+		for stat in ivs:
+			outfile.write(str(ivs[stat])+'\t')
+		for stat in evs:
+			outfile.write(str(evs[stat])+'\t')
 		for move in moves:
 			outfile.write(str(move)+'\t')
 		outfile.write('\n')
