@@ -188,36 +188,37 @@ mkdir Stats/moveset
 echo Compiling Moveset Analyses...
 for tier in "balancedhackmons" "cap" "dwou" "dwubers" "glitchmons" "hackmons" "lc" "nu" "ou" "oususpecttest" "ru" "ubers" "uu"
 do
-	python batchMovesetCounter.py $tier > Stats/moveset/$tier.txt
+	python ../batchMovesetCounter.py $tier > Stats/moveset/$tier.txt
 done
 
 echo [B]Moveset Statistics[/B] > Moveset\ Statistics.txt
-echo OU >> Moveset\ Statistics.txt
+echo "OU:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/ou.txt >> Moveset\ Statistics.txt
-echo UU >> Moveset\ Statistics.txt
+echo "[/URL]UU:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/uu.txt >> Moveset\ Statistics.txt
-echo RU >> Moveset\ Statistics.txt
+echo "[/URL]RU:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/ru.txt >> Moveset\ Statistics.txt
-echo NU >> Moveset\ Statistics.txt
+echo "[/URL]NU:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/nu.txt >> Moveset\ Statistics.txt
-echo Ubers >> Moveset\ Statistics.txt
+echo "[/URL]Ubers:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/ubers.txt >> Moveset\ Statistics.txt
-echo LC >> Moveset\ Statistics.txt
+echo "[/URL]LC:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/lc.txt >> Moveset\ Statistics.txt
-echo DW OU >> Moveset\ Statistics.txt
+echo "[/URL]DW OU:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/dwou.txt >> Moveset\ Statistics.txt
-echo DW Ubers >> Moveset\ Statistics.txt
+echo "[/URL]DW Ubers:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/dwubers.txt >> Moveset\ Statistics.txt
-echo CAP >> Moveset\ Statistics.txt
+echo "[/URL]CAP:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/cap.txt >> Moveset\ Statistics.txt
-echo Hackmons >> Moveset\ Statistics.txt
+echo "[/URL]Hackmons:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/hackmons.txt >> Moveset\ Statistics.txt
-echo Balanced Hackmons >> Moveset\ Statistics.txt
+echo "[/URL]Balanced Hackmons:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/balancedhackmons.txt >> Moveset\ Statistics.txt
-echo Glitchmons >> Moveset\ Statistics.txt
+echo "[/URL]Glitchmons:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/glitchmons.txt >> Moveset\ Statistics.txt
-echo OU Suspect Test >> Moveset\ Statistics.txt
+echo "[/URL]OU Suspect Test:[URL]" >> Moveset\ Statistics.txt
 pastebinit Stats/moveset/oususpecttest.txt >> Moveset\ Statistics.txt
+echo "[/URL]" >> Moveset\ Statistics.txt
 
 #set up stuff for the next month
 cd ..
