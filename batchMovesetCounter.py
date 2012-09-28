@@ -184,7 +184,7 @@ def movesetCounter(filename):
 					match = True
 					break
 			if not match:
-			movesets.append(moveset)
+				movesets.append(moveset)
 
 	stuff = {
 		'Abilties': abilities,
