@@ -61,6 +61,7 @@ def makeTable(table):
 	print " | Rank | Pokemon            | Percent | "
 	print " + ---- + ------------------ + ------- + "
 	print ' [B]| %-4d | %-18s | %6.3f%% |' % (1,keyLookup[table[0][0]],table[0][1]*100)
+	banlist.append(keyLookup[table[0][0]])
 	for i in range(1,len(table)):
 		if table[i][1] < 0.0340636711:
 			start = i
