@@ -96,6 +96,8 @@ file.close()
 for i in range(len(raw)):
 	if raw[i][0] == '"':
 		raw[i]=raw[i][1:]
+	if raw[i][len(raw[i])-1] == '\n':
+		raw[i]=raw[i][:len(raw[i])-1]
 	if raw[i][len(raw[i])-1] == '"':
 		raw[i]=raw[i][:len(raw[i])-1]
 
