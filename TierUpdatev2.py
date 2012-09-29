@@ -93,7 +93,7 @@ raw = file.readlines()
 file.close()
 
 #in case the user copy/pasted with the quotes still on
-for i in range(len(raw)):
+for i in range(2):
 	if raw[i][0] == '"':
 		raw[i]=raw[i][1:]
 	if raw[i][len(raw[i])-1] == '\n':
