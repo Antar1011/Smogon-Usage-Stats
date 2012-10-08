@@ -449,6 +449,20 @@ if 'log' in log.keys():
 				uturn=False
 				uturnko=True
 
+		elif linetype == "replace": #it was Zorua/Zoroark all along!
+			p=10+3*spacelog
+
+			end = string.rfind(line,'|')-1*spacelog
+			species = line[string.rfind(line,'|',0,end-1)+1+1*spacelog:end]
+			while ',' in species:
+				species = species[0:string.rfind(species,',')]
+			for s in aliases: #combine appearance-only variations and weird PS quirks
+				if species in aliases[s]:
+					species = s
+					break
+			active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
+			#really, it would be better to go back and revise previous affected matchups, but that be a lot more work
+
 		elif linetype in ["switch","drag"]: #switch out: new matchup!
 			if linetype == "switch":
 				p=9+3*spacelog
