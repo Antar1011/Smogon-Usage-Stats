@@ -38,6 +38,7 @@ KOcounter = {}
 TCsquared = {} #for calculating std. dev
 KCsquared = {} #	"
 encounterMatrix = {}
+teammateMatrix = {}
 tagCounter = {}
 stallCounter = []
 metricCounter = []
@@ -103,10 +104,14 @@ for entry in species:
 			#see if matchup is already in arrays. If not, add it
 			if poke1 not in encounterMatrix.keys():
 				encounterMatrix[poke1]={}
+			if poke2 not in encounterMatrix.keys():
+				encounterMatrix[poke2]={}
 			if poke2 not in encounterMatrix[poke1].keys():
 				encounterMatrix[poke1][poke2]=[0 for k in range(9)]
-				encounterMatrix[poke1][poke2][e] = encounterMatrix[poke1][poke2][e]+1
-				encounterMatrix[poke2][poke1][f] = encounterMatrix[poke2][poke1][f]+1
+			if poke1 not in encounterMatrix[poke2].keys():
+				encounterMatrix[poke2][poke1]=[0 for k in range(9)]
+			encounterMatrix[poke1][poke2][e] = encounterMatrix[poke1][poke2][e]+1
+			encounterMatrix[poke2][poke1][f] = encounterMatrix[poke2][poke1][f]+1
 
 	elif entry == "***\n" or entry == "@@@\n":
 		if entry == "***\n":
@@ -117,7 +122,14 @@ for entry in species:
 		#if you were going to compare the trainer name against a database,
 		#you'd do it here.
 		#if len(ctemp) == 6: #only count teams with all six pokemon
-		for i in range(len(ctemp)):	
+		for i in range(len(ctemp)):
+			if ctemp[i] not in teammateMatrix.keys():
+				teammateMatrix[ctemp[i]]={}
+			for i in range(len(ctemp))
+				if ctemp[j] not in teammateMatrix[ctemp[i]].keys():
+					teammateMatrix[ctemp[i]][ctemp[j]]=0.0
+				teammateMatrix[ctemp[i]][ctemp[j]]=teammateMatrix[ctemp[i]][ctemp[j]]+1.0
+		
 			if ctemp[i] not in counter.keys(): #see if poke is in the arrays yet. If not, add it
 				counter[ctemp[i]]=0.0
 				turnCounter[ctemp[i]]=0.0
@@ -157,9 +169,6 @@ for entry in species:
 			ctemp.append(stemp)
 			turnt.append(turns)
 			KOtemp.append(KOs)
-
-if len(sys.argv)>2:
-	pickle.dump(encounterMatrix,open(sys.argv[2],"w"))
 
 total = sum(counter.values())
 realTotal = sum(realCounter.values())
@@ -210,16 +219,46 @@ aliases={
 if 'Empty' in pokedict.keys(): #delete no-entry slots
 		del pokedict['Empty']
 if 'empty' in pokedict.keys(): #delete no-entry slots
-		del pokedict['empty']	
+		del pokedict['empty']
+
 for species in aliases:
 	#first make sure that the species is in the array
 	if species not in pokedict.keys():
 		pokedict[species]=[0 for k in range(6)]
+	if species not in encounterMatrix.keys():
+		encounterMatrix[species]={}
+	for s in encounterMatrix:
+		if species not in encounterMatrix[s].keys():
+			encounterMatrix[s][species]=[0 for k in range(9)]
+	if species not in teammateMatrix.keys():
+		teammateMatrix[species]={}
+	for s in teammateMatrix:
+		if species not in speciesMatrix[s].keys():
+			speciesMatrix[s][species]=0.0;
+
 	for alias in aliases[species]:
 		if alias in pokedict.keys():
 			for j in range(0,6):
 				pokedict[species][j] = pokedict[species][j]+pokedict[alias][j]
 			del pokedict[alias]
+		if alias in encounterMatrix.keys():
+			for s in encounterMatrix:
+				for j in range(9):
+					encounterMatrix[species][s][j]=encounterMatrix[species][s][j]+encounterMatrix[alias][s][j]
+			del encounterMatrix[alias]
+		for s in encounterMatrix:
+			if alias in encounterMatrix[s].keys():
+				for j in range(9):
+					encounterMatrix[s][species][j]=encounterMatrix[s][species][j]+encounterMatrix[s][alias][j]
+				del encounterMatrix[s][alias]
+		if alias in teammateMatrix.keys():
+			for s in teammateMatrix:
+				teammateMatrix[species][s]=teammateMatrix[species][s]+teammateMatrix[alias][s]
+			del teammateMatrix[alias]
+		for s in teammateMatrix:
+			if alias in teammateMatrix[s].keys():
+				teammateMatrix[s][species]=teammateMatrix[s][species]+teammateMatrix[s][alias]
+				del teammateMatrix[s][alias]
 
 #divide only AFTER you've summed the formes (you moron)
 for i in pokedict:
@@ -237,6 +276,26 @@ for i in pokedict:
 pokes = []
 for i in pokedict:
 	pokes.append([i]+pokedict[i])
+
+teammates={}
+for species in teammateMatrix.keys():
+	teammates[species]=[]
+	for s in teammateMatrix[species].keys():
+		teammates[species].append([s]+[teammateMatrix[species][s]])
+	teammates[species]=sorted(teammates[species], key=lambda teammates[species]:-teammates[species][1])
+
+checkscounters={}
+for species in encounterMatrix.keys():
+	checksCounters[species]=[]
+	for s in encounterMatrix[species].keys():
+		#check if forces switch, counter if KOs? 
+		checksCounters[species].append([s]+(encounterMatrix[species][s]
+			
+#write teammates and checkscounters to file
+
+if len(sys.argv)>2:
+	pickle.dump(encounterMatrix,open(sys.argv[2],"w"))
+
 #sort by usage
 pokes=sorted(pokes, key=lambda pokes:-pokes[1])
 p=[]
