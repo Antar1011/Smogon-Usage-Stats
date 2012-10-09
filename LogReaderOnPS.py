@@ -352,7 +352,6 @@ if 'log' in log.keys():
 	mtemp = []
 
 	for line in log['log'][start:]:
-		print line
 		#print line
 		#identify what kind of message is on this line
 		linetype = line[1+1*spacelog:string.find(line,'|',1+1*spacelog)-1*spacelog]
@@ -481,8 +480,8 @@ if 'log' in log.keys():
 				else: #u-turn KO (note that this includes hit-by-red-card-and-dies and roar-then-die-by-residual-dmg)
 					KOs[active[ko[0]]] = KOs[active[ko[0]]]+1
 					matchup = matchup + ts[active[ko[1]]][1]+" was u-turn KOed"
-				print mtemp
-				print matchup
+				#print mtemp
+				#print matchup
 				if p^ko[0]:
 					mtemp[len(mtemp)-1]=matchup
 			else:
@@ -500,7 +499,7 @@ if 'log' in log.keys():
 						matchup = matchup + " was forced out"
 					else:
 						matchup = matchup + " was switched out"
-				print matchup
+				#print matchup
 				mtemp.append(matchup)
 		
 			#new matchup!

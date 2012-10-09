@@ -469,7 +469,8 @@ def LogReader(filename,tier,outfile):
 					else: #u-turn KO (note that this includes hit-by-red-card-and-dies and roar-then-die-by-residual-dmg)
 						KOs[active[ko[0]]] = KOs[active[ko[0]]]+1
 						matchup = matchup + ts[active[ko[1]]][1]+" was u-turn KOed"
-					mtemp[len(mtemp)-1]=matchup
+					if p^ko[0]:
+						mtemp[len(mtemp)-1]=matchup
 				else:
 					#close out old matchup
 					pokes = [ts[active[0]][1],ts[active[1]][1]]
