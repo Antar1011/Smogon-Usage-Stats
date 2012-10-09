@@ -76,7 +76,7 @@ for entry in species:
 			elif (event == "double switch"):
 				e = f = 5
 			elif (event == "no clue what happened"):
-				e = f = 8
+				e = f = 10
 			else:
 				poke = event[0:string.find(event," was")]
 				event2 = event[len(poke)+5:len(event)]
@@ -87,9 +87,12 @@ for entry in species:
 					print "Houston, we have a problem."
 					print entry
 					sys.exit()
-				if (event2 == "KOed") or (event2 == "u-turn KOed"):
+				if (event2 == "KOed"):
 					e = p
 					f = (p+1)%2
+				elif (event2 == "u-turn KOed"):
+					e=p+8
+					f=(p+1)%2+8
 				elif (event2 == "switched out"):
 					e = p+3
 					f = (p+1)%2+3
@@ -98,7 +101,7 @@ for entry in species:
 					f = (p+1)%2+6
 				else:
 					print "Houston, we have a problem."
-					print entry
+					print event2
 					sys.exit()
 
 			#see if matchup is already in arrays. If not, add it
@@ -107,9 +110,9 @@ for entry in species:
 			if poke2 not in encounterMatrix.keys():
 				encounterMatrix[poke2]={}
 			if poke2 not in encounterMatrix[poke1].keys():
-				encounterMatrix[poke1][poke2]=[0 for k in range(9)]
+				encounterMatrix[poke1][poke2]=[0 for k in range(11)]
 			if poke1 not in encounterMatrix[poke2].keys():
-				encounterMatrix[poke2][poke1]=[0 for k in range(9)]
+				encounterMatrix[poke2][poke1]=[0 for k in range(11)]
 			encounterMatrix[poke1][poke2][e] = encounterMatrix[poke1][poke2][e]+1
 			encounterMatrix[poke2][poke1][f] = encounterMatrix[poke2][poke1][f]+1
 
@@ -233,8 +236,8 @@ for species in aliases:
 	if species not in teammateMatrix.keys():
 		teammateMatrix[species]={}
 	for s in teammateMatrix:
-		if species not in speciesMatrix[s].keys():
-			speciesMatrix[s][species]=0.0;
+		if species not in teammateMatrix[s].keys():
+			teammateMatrix[s][species]=0.0;
 
 	for alias in aliases[species]:
 		if alias in pokedict.keys():
