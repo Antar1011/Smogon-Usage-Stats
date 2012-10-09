@@ -279,17 +279,17 @@ for i in pokedict:
 
 teammates={}
 for species in teammateMatrix.keys():
-	teammates[species]=[]
+	tm=[]
 	for s in teammateMatrix[species].keys():
-		teammates[species].append([s]+[teammateMatrix[species][s]])
-	teammates[species]=sorted(teammates[species], key=lambda teammates[species]:-teammates[species][1])
+		tm.append([s]+[teammateMatrix[species][s]])
+	teammates[species]=sorted(tm, key=lambda tm:-tm[1])
 
-checkscounters={}
-for species in encounterMatrix.keys():
-	checksCounters[species]=[]
-	for s in encounterMatrix[species].keys():
-		#check if forces switch, counter if KOs? 
-		checksCounters[species].append([s]+(encounterMatrix[species][s]
+#checkscounters={}
+#for species in encounterMatrix.keys():
+#	checksCounters[species]=[]
+#	for s in encounterMatrix[species].keys():
+#		#check if forces switch, counter if KOs? 
+#		checksCounters[species].append([s]+(encounterMatrix[species][s]
 			
 #write teammates and checkscounters to file
 
