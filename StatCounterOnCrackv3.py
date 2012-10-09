@@ -125,7 +125,7 @@ for entry in species:
 		for i in range(len(ctemp)):
 			if ctemp[i] not in teammateMatrix.keys():
 				teammateMatrix[ctemp[i]]={}
-			for i in range(len(ctemp)):
+			for j in range(len(ctemp)):
 				if ctemp[j] not in teammateMatrix[ctemp[i]].keys():
 					teammateMatrix[ctemp[i]][ctemp[j]]=0.0
 				teammateMatrix[ctemp[i]][ctemp[j]]=teammateMatrix[ctemp[i]][ctemp[j]]+1.0
