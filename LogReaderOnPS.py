@@ -264,8 +264,6 @@ for team in ['p1team','p2team']:
 			outfile.write(str(evs[stat])+'\t')
 		for move in moves:
 			outfile.write(str(move)+'\t')
-		for move in moves:
-			outfile.write(str(move)+'\t')
 		outfile.write('\n')
 		outfile.close()
 
