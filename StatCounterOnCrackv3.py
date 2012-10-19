@@ -28,6 +28,9 @@ d = os.path.dirname(filename)
 if not os.path.exists(d):
 	os.makedirs(d)
 metagamefile=open(filename,'w')
+filename="Raw/moveset/"+tier+"/teammate.pickle"
+teammatefile=open(filename,'w')
+
 
 battleCount = 0
 teamCount = 0
@@ -132,9 +135,10 @@ for entry in species:
 			if ctemp[i] not in teammateMatrix.keys():
 				teammateMatrix[ctemp[i]]={}
 			for j in range(len(ctemp)):
-				if ctemp[j] not in teammateMatrix[ctemp[i]].keys():
-					teammateMatrix[ctemp[i]][ctemp[j]]=0.0
-				teammateMatrix[ctemp[i]][ctemp[j]]=teammateMatrix[ctemp[i]][ctemp[j]]+1.0
+				if i is not j:
+					if ctemp[j] not in teammateMatrix[ctemp[i]].keys():
+						teammateMatrix[ctemp[i]][ctemp[j]]=0.0
+					teammateMatrix[ctemp[i]][ctemp[j]]=teammateMatrix[ctemp[i]][ctemp[j]]+1.0
 		
 			if ctemp[i] not in counter.keys(): #see if poke is in the arrays yet. If not, add it
 				counter[ctemp[i]]=0.0
@@ -283,6 +287,7 @@ pokes = []
 for i in pokedict:
 	pokes.append([i]+pokedict[i])
 
+pickle.dump(teammateMatrix,teammatefile)
 teammates={}
 for species in teammateMatrix.keys():
 	tm=[]

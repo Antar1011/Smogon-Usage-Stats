@@ -182,12 +182,17 @@ def movesetCounter(filename):
 			if not match:
 				movesets.append(moveset)
 
+	
+	#teammate stats
+	teammates = teammateMatrix[species]
+
 	stuff = {
 		'Abilties': abilities,
 		'Items': items,
 		'Natures': natures,
 		'EV spreads': evspreads,
-		'Moves': moves}
+		'Moves': moves,
+		'Teammates': teammates}
 
 
 	#print tables
@@ -207,7 +212,7 @@ def movesetCounter(filename):
 
 	print separator
 
-	for x in ['Abilties','Items','Natures','EV spreads','Moves']:
+	for x in ['Abilties','Items','Natures','EV spreads','Moves','Teammates']:
 		table = []
 		line = ' | '+x
 		while len(line) < tablewidth+2:
@@ -216,16 +221,18 @@ def movesetCounter(filename):
 		print line
 
 		for i in stuff[x]:
-			if (x is 'EV spreads'):
+			if (x in ['EV spreads', 'Teammates']):
 				table.append([i,stuff[x][i]])
 			else:
 				table.append([keyLookup[i],stuff[x][i]])
 		table=sorted(table, key=lambda table:-table[1])
 		total = 0.0
 		for i in range(len(table)): 
-			if total > .95 or (x is 'EV spreads' and i>5):
+			if total > .95 or (x is 'EV spreads' and i>5) or (x is 'Teammates' and i>11):
 				if x is 'Moves':
 					line = ' | %s %6.3f%%' % ('Other',400.0*(1.0-total))
+				elif x is 'Teammates':
+					line = ' | %s %6.3f%%' % ('Other',500.0*(1.0-total))
 				else:
 					line = ' | %s %6.3f%%' % ('Other',100.0*(1.0-total))
 			else:
@@ -234,13 +241,16 @@ def movesetCounter(filename):
 				line = line + ' '
 			line = line + '| '
 			print line
-			if total > .95 or (x is 'EV spreads' and i>5):
+			if total > .95 or (x is 'EV spreads' and i>5) or (x is 'Teammates' and i>11):
 				break
 			if x is 'Moves':
 				total = total + float(table[i][1])/count/4.0
+			elif x is 'Teammates':
+				total = total + float(table[i][1])/count/5.0
 			else:
 				total = total + float(table[i][1])/count
 		print separator
+	
 	
 	#combine movesets to try to find most common ones
 	if len(movesets) > 1 and mostCommon:
@@ -296,8 +306,9 @@ file.close()
 keyLookup['nothing']='Nothing'
 keyLookup['']='Nothing'
 
-
-
+file = open('Raw/moveset/'+str(sys.argv[1])+'/teammate.pickle')
+teammateMatrix = pickle.load(file)
+file.close()
 
 filename = 'Stats/'+str(sys.argv[1])+'.txt'
 file = open(filename)
