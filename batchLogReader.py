@@ -335,6 +335,8 @@ def LogReader(filename,tier,outfile):
 		#flags
 		roar = False
 		uturn = False
+		fodder = False
+		hazard = False
 		ko = [False,False]
 		switch = [False,False]
 		uturnko = False
@@ -380,6 +382,7 @@ def LogReader(filename,tier,outfile):
 			
 
 			elif linetype == "move": #check for Roar, etc.; U-Turn, etc.
+				hazard = False
 				#identify attacker and skip its name
 				found = False
 				for nick in nicks:
@@ -432,8 +435,11 @@ def LogReader(filename,tier,outfile):
 
 			elif linetype == "faint": #KO
 				#who fainted?
-				ko[int(line[8+3*spacelog])-1]=1
-
+				p=int(line[8+3*spacelog])-1
+				ko[p]=1
+				if switch[p]==1: #fainted on the same turn that it was switched in
+					fodder=True
+			
 				if uturn:
 					uturn=False
 					uturnko=True
@@ -459,7 +465,7 @@ def LogReader(filename,tier,outfile):
 					p=7+3*spacelog	
 				switch[int(line[p])-1]=True
 
-				if switch[0] and switch[1]: #need to revise previous matchup
+				if switch[0] and switch[1] and not fodder: #need to revise previous matchup
 					matchup=mtemp[len(mtemp)-1][:string.find(mtemp[len(mtemp)-1],':')+2]
 					if (not ko[0]) and (not ko[1]): #double switch
 						matchup = matchup + "double switch"
@@ -478,8 +484,11 @@ def LogReader(filename,tier,outfile):
 					matchup=pokes[0]+' vs. '+pokes[1]+': '
 					#if ko[0] and ko[1]: #double down
 					if ko[0] or ko[1]:
-						KOs[active[ko[0]]] = KOs[active[ko[0]]]+1
-						matchup = matchup + ts[active[ko[1]]][1]+" was KOed"
+						if fodder and hazard: #if dies on switch-in due to an attack, it's still "KOed"
+							matchup = matchup + ts[active[ko[1]]][1]+" was foddered"
+						else:
+							KOs[active[ko[0]]] = KOs[active[ko[0]]]+1
+							matchup = matchup + ts[active[ko[1]]][1]+" was KOed"
 					else:
 						matchup = matchup + ts[active[switch[1]]][1]
 						if roar:
@@ -489,7 +498,8 @@ def LogReader(filename,tier,outfile):
 					mtemp.append(matchup)
 		
 				#new matchup!
-				uturn = roar = False
+				uturn = roar = fodder = False
+				hazard = True
 				#it matters whether the poke is nicknamed or not
 				end = string.rfind(line,'|')-1*spacelog
 				species = line[string.rfind(line,'|',0,end-1)+1+1*spacelog:end]

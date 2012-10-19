@@ -71,6 +71,7 @@ for entry in species:
 			event = entry[string.find(entry,":")+2:len(entry)-1]
 			#ID event type
 			e = f = -1
+			fodder = False
 			if (event == "double down"):
 				e = f = 2
 			elif (event == "double switch"):
@@ -99,22 +100,24 @@ for entry in species:
 				elif (event2 == "forced out"):
 					e = p+6
 					f = (p+1)%2+6
+				elif (event2 == "foddered"):
+					fodder = True 
 				else:
 					print "Houston, we have a problem."
 					print event2
 					sys.exit()
-
-			#see if matchup is already in arrays. If not, add it
-			if poke1 not in encounterMatrix.keys():
-				encounterMatrix[poke1]={}
-			if poke2 not in encounterMatrix.keys():
-				encounterMatrix[poke2]={}
-			if poke2 not in encounterMatrix[poke1].keys():
-				encounterMatrix[poke1][poke2]=[0 for k in range(11)]
-			if poke1 not in encounterMatrix[poke2].keys():
-				encounterMatrix[poke2][poke1]=[0 for k in range(11)]
-			encounterMatrix[poke1][poke2][e] = encounterMatrix[poke1][poke2][e]+1
-			encounterMatrix[poke2][poke1][f] = encounterMatrix[poke2][poke1][f]+1
+			if not fodder: #we don't record fodderings
+				#see if matchup is already in arrays. If not, add it
+				if poke1 not in encounterMatrix.keys():
+					encounterMatrix[poke1]={}
+				if poke2 not in encounterMatrix.keys():
+					encounterMatrix[poke2]={}
+				if poke2 not in encounterMatrix[poke1].keys():
+					encounterMatrix[poke1][poke2]=[0 for k in range(11)]
+				if poke1 not in encounterMatrix[poke2].keys():
+					encounterMatrix[poke2][poke1]=[0 for k in range(11)]
+				encounterMatrix[poke1][poke2][e] = encounterMatrix[poke1][poke2][e]+1
+				encounterMatrix[poke2][poke1][f] = encounterMatrix[poke2][poke1][f]+1
 
 	elif entry == "***\n" or entry == "@@@\n":
 		if entry == "***\n":
