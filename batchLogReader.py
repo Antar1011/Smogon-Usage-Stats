@@ -541,6 +541,8 @@ def LogReader(filename,tier,outfile):
 
 
 tier = sys.argv[2]
+if tier[len(tier)-7:]=='current':
+	tier=tier[:len(tier)-7]
 outname = "Raw/"+tier+".txt"
 d = os.path.dirname(outname)
 if not os.path.exists(d):
