@@ -134,6 +134,7 @@ def LogReader(filename,tier,outfile):
 
 	#determine log type
 	spacelog = True
+	doublelog = True
 	if 'log' in log.keys():
 		if log['log'][0][0:2] != '| ':
 			spacelog = False
@@ -298,7 +299,9 @@ def LogReader(filename,tier,outfile):
 		#determine initial pokemon
 		active = [-1,-1]
 		for line in log['log']:
-			if (spacelog and line[0:14] == "| switch | p1:") or (not spacelog and line[0:11] == "|switch|p1:"):
+			if (spacelog and line[0:13] == "| switch | p1") or (not spacelog and line[0:10] == "|switch|p1"):
+				if line[10+3*spacelog] == ':':
+					doublelog = False
 				end = string.rfind(line,'|')-1*spacelog
 				species = line[string.rfind(line,'|',12+3*spacelog,end-1)+1+1*spacelog:end]
 				while ',' in species:
@@ -308,7 +311,7 @@ def LogReader(filename,tier,outfile):
 						species = s
 						break
 				active[0]=ts.index([ts[0][0],species])
-			if (spacelog and line[0:14] == "| switch | p2:") or (not spacelog and line[0:11] == "|switch|p2:"):
+			if (spacelog and line[0:13] == "| switch | p2") or (not spacelog and line[0:10] == "|switch|p2"):
 				end = string.rfind(line,'|')-1*spacelog
 				species = line[string.rfind(line,'|',12+3*spacelog,end-1)+1+1*spacelog:end]
 				while ',' in species:
@@ -385,6 +388,8 @@ def LogReader(filename,tier,outfile):
 				hazard = False
 				#identify attacker and skip its name
 				found = False
+				if doublelog:
+					line=line[:8+3*spacelog]+line[9+3*spacelog:]
 				for nick in nicks:
 					if line[6+3*spacelog:].startswith(nick):
 						if found: #the trainer was a d-bag
@@ -418,8 +423,6 @@ def LogReader(filename,tier,outfile):
 							sys.stderr.write(str(nicks)+"\n")
 							return
 						
-					
-		
 				move = line[7+5*spacelog+len(found):string.find(line,"|",7+5*spacelog+len(found))-1*spacelog]
 				if move in ["Roar","Whirlwind","Circle Throw","Dragon Tail"]:
 					roar = True
