@@ -5,6 +5,19 @@
 #which looks at what happens when Pokemon X meets up with Pokemon Y. This could conceivably be used to come up
 #with a statistical list of best checks and counters for each Pokemon, but I haven't yet made that script.
 
+#encounterMatrix key: for entries encounterMatrix[poke1][poke2][i], i=...
+#0: poke1 was KOed
+#1: poke2 was KOed
+#2: double down
+#3: poke1 was switched out
+#4: poke2 was switched out
+#5: double switch
+#6: poke1 was forced out
+#7: poke2 was forced out
+#8: poke1 was u-turn KOed
+#9: poke2 was u-turn KOed
+#10: no clue what happened
+
 import string
 import sys
 import math
@@ -30,6 +43,8 @@ if not os.path.exists(d):
 metagamefile=open(filename,'w')
 filename="Raw/moveset/"+tier+"/teammate.pickle"
 teammatefile=open(filename,'w')
+filename="Raw/moveset/"+tier+"/encounterMatrix.pickle"
+encounterfile=open(filename,'w')
 
 
 battleCount = 0
@@ -287,25 +302,12 @@ pokes = []
 for i in pokedict:
 	pokes.append([i]+pokedict[i])
 
-pickle.dump(teammateMatrix,teammatefile)
-teammates={}
-for species in teammateMatrix.keys():
-	tm=[]
-	for s in teammateMatrix[species].keys():
-		tm.append([s]+[teammateMatrix[species][s]])
-	teammates[species]=sorted(tm, key=lambda tm:-tm[1])
 
-#checkscounters={}
-#for species in encounterMatrix.keys():
-#	checksCounters[species]=[]
-#	for s in encounterMatrix[species].keys():
-#		#check if forces switch, counter if KOs? 
-#		checksCounters[species].append([s]+(encounterMatrix[species][s]
-			
 #write teammates and checkscounters to file
-
-if len(sys.argv)>2:
-	pickle.dump(encounterMatrix,open(sys.argv[2],"w"))
+pickle.dump(teammateMatrix,teammatefile)
+teammatefile.close()
+pickle.dump(encounterMatrix,encounterfile)
+encounterfile.close()
 
 #sort by usage
 pokes=sorted(pokes, key=lambda pokes:-pokes[1])
@@ -413,11 +415,11 @@ if blockSize > 0:
 	metagamefile.write(' more negative = more offensive, more positive = more stall\n')
 	metagamefile.write(' one # = %d teams (%5.2f%%)\n'%(blockSize,100.0*blockSize/teamCount))
 
-
-outfile=open('stall.dat','w')
-for line in metricCounter:
-	for item in line:
-		outfile.write(str(item)+'\t')
-	outfile.write('\n')
-outfile.close()
+metagamefile.close()
+#outfile=open('stall.dat','w')
+#for line in metricCounter:
+#	for item in line:
+#		outfile.write(str(item)+'\t')
+#	outfile.write('\n')
+#outfile.close()
 

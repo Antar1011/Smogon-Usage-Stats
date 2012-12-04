@@ -186,13 +186,27 @@ def movesetCounter(filename):
 	#teammate stats
 	teammates = teammateMatrix[species]
 
+	#checks and counters
+	cc={}
+	for s in encounterMatrix[species].keys():
+		matchup = encounterMatrix[species][s]
+		#number of times species is KOed by s + number of times species switches out against s over number of times
+		#either (or both) is switched out or KOed (don't count u-turn KOs or force-outs)
+		n=sum(matchup[0:6])
+		if n>20:
+			p=float(matchup[0]+matchup[3])/n
+			d=1.96*math.sqrt(p*(1.0-p)/n)
+			#cc[s]=p-4*d #using a CRE-style calculation
+			cc[s]=[n,p,d]
+
 	stuff = {
-		'Abilties': abilities,
+		'Abilities': abilities,
 		'Items': items,
 		'Natures': natures,
 		'EV spreads': evspreads,
 		'Moves': moves,
-		'Teammates': teammates}
+		'Teammates': teammates,
+		'Checks and Counters': cc}
 
 
 	#print tables
@@ -212,7 +226,7 @@ def movesetCounter(filename):
 
 	print separator
 
-	for x in ['Abilties','Items','Natures','EV spreads','Moves','Teammates']:
+	for x in ['Abilities','Items','Natures','EV spreads','Moves','Teammates','Checks and Counters']:
 		table = []
 		line = ' | '+x
 		while len(line) < tablewidth+2:
@@ -221,33 +235,47 @@ def movesetCounter(filename):
 		print line
 
 		for i in stuff[x]:
-			if (x in ['EV spreads', 'Teammates']):
+			if (x in ['EV spreads', 'Teammates','Checks and Counters']):
 				table.append([i,stuff[x][i]])
 			else:
 				table.append([keyLookup[i],stuff[x][i]])
-		table=sorted(table, key=lambda table:-table[1])
+		if x is 'Checks and Counters':
+			table=sorted(table, key=lambda table:-(table[1][1]-4.0*table[1][2]))
+		else:
+			table=sorted(table, key=lambda table:-table[1])
 		total = 0.0
 		for i in range(len(table)): 
-			if total > .95 or (x is 'EV spreads' and i>5) or (x is 'Teammates' and i>11):
+			if total > .95 or (x is 'EV spreads' and i>5) or (x is 'Teammates' and i>11) or (x is 'Checks and Counters' and i>11):
 				if x is 'Moves':
 					line = ' | %s %6.3f%%' % ('Other',400.0*(1.0-total))
 				elif x is 'Teammates':
 					line = ' | %s %6.3f%%' % ('Other',500.0*(1.0-total))
-				else:
+				elif x is not 'Checks and Counters':
 					line = ' | %s %6.3f%%' % ('Other',100.0*(1.0-total))
 			else:
-				line = ' | %s %6.3f%%' % (table[i][0],100.0*table[i][1]/count)
+				if x is 'Checks and Counters':
+					matchup = encounterMatrix[species][table[i][0]]
+					n=sum(matchup[0:6])
+					score=float(table[i][1][1])-4.0*table[i][1][2]
+					if score < 0.5:
+						break
+					line = ' | %s %6.3f (%3.2f±%3.2f)' % (table[i][0],100.0*score,100.0*table[i][1][1],100*table[i][1][2])
+					while len(line) < tablewidth+2:
+						line = line + ' '
+					line=line+' |\n |\t (%2.1f%% KOed / %2.1f%% switched out)' %(float(100.0*matchup[0])/n,float(100.0*matchup[3])/n)
+				else:
+					line = ' | %s %6.3f%%' % (table[i][0],100.0*table[i][1]/count)
 			while len(line) < tablewidth+2:
 				line = line + ' '
 			line = line + '| '
 			print line
-			if total > .95 or (x is 'EV spreads' and i>5) or (x is 'Teammates' and i>11):
+			if total > .95 or (x is 'EV spreads' and i>5) or (x is 'Teammates' and i>11) or (x is 'Checks and Counters' and i>10):
 				break
 			if x is 'Moves':
 				total = total + float(table[i][1])/count/4.0
 			elif x is 'Teammates':
 				total = total + float(table[i][1])/count/5.0
-			else:
+			elif x is not 'Checks and Counters':
 				total = total + float(table[i][1])/count
 		print separator
 	
@@ -308,6 +336,10 @@ keyLookup['']='Nothing'
 
 file = open('Raw/moveset/'+str(sys.argv[1])+'/teammate.pickle')
 teammateMatrix = pickle.load(file)
+file.close()
+
+file = open('Raw/moveset/'+str(sys.argv[1])+'/encounterMatrix.pickle')
+encounterMatrix = pickle.load(file)
 file.close()
 
 filename = 'Stats/'+str(sys.argv[1])+'.txt'
