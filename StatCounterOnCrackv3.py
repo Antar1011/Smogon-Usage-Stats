@@ -83,7 +83,7 @@ for entry in species:
 			eventNextLine = False
 			trainerNextLine = True
 			battleCount=battleCount+1
-		elif len(sys.argv)>2:
+		else:
 			poke1 = entry[0:string.find(entry," vs.")]
 			poke2 = entry[string.find(entry," vs.")+5:string.find(entry,":")]
 			event = entry[string.find(entry,":")+2:len(entry)-1]
