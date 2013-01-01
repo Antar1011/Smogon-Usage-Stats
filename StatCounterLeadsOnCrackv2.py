@@ -65,7 +65,7 @@ aliases={
 	'Tornadus-Therian': ['Tornadus-T'],
 	'Thundurus-Therian': ['Thundurus-T'],
 	'Landorus-Therian': ['Landorus-T'],
-	'Keldeo': ['Keldeo-R','Keldeo-Resolution'],
+	'Keldeo': ['Keldeo-R','Keldeo-Resolution','Keldeo-Resolute'],
 	'Meloetta': ['Meloetta-S','Meloetta-Pirouette'],
 	'Genesect': ['Genesect-Douse','Genesect-Burn','Genesect-Shock','Genesect-Chill','Genesect-D','Genesect-S','Genesect-B','Genesect-C'],
 	'Darmanitan': ['Darmanitan-D','Darmanitan-Zen'],
