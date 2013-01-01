@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: latin-1 -*-
 #File I/O is going to be the main bottleneck. Doing log reading in batch (a folder at a time, rather than log by log)
 #should be much more efficient, as TA.py and the files it requires need only be loaded once per run.
 
@@ -48,7 +49,7 @@ aliases={
 	'Tornadus-Therian': ['Tornadus-T'],
 	'Thundurus-Therian': ['Thundurus-T'],
 	'Landorus-Therian': ['Landorus-T'],
-	'Keldeo': ['Keldeo-R','Keldeo-Resolution'],
+	'Keldeo': ['Keldeo-R','Keldeo-Resolution','Keldeo-Resolute'],
 	'Meloetta': ['Meloetta-S','Meloetta-Pirouette'],
 	'Genesect': ['Genesect-Douse','Genesect-Burn','Genesect-Shock','Genesect-Chill','Genesect-D','Genesect-S','Genesect-B','Genesect-C'],
 	'Darmanitan': ['Darmanitan-D','Darmanitan-Zen'],
@@ -155,6 +156,11 @@ def LogReader(filename,tier,outfile):
 	#get info on the trainers & pokes involved
 	ts = []
 	teams = {}
+	rating = {'p1team': 0,'p2team': 0}
+	if 'p1rating' in log.keys():
+		rating['p1team']=float(log['p1rating'])
+	if 'p2rating' in log.keys():
+		rating['p2team']=float(log['p2rating'])
 
 	#get pokemon info
 	for team in ['p1team','p2team']:
@@ -247,6 +253,7 @@ def LogReader(filename,tier,outfile):
 			if not os.path.exists(d):
 				os.makedirs(d)
 			msfile=open(outname,'a')
+			msfile.write(trainer.encode('ascii', 'ignore')+'\t'+str(rating[team])+'\t')
 			msfile.write(str(level)+'\t'+ability+'\t'+item+'\t'+nature+'\t')
 			for stat in ['hp','atk','def','spa','spd','spe']:
 				msfile.write(str(ivs[stat])+'\t')
@@ -261,7 +268,7 @@ def LogReader(filename,tier,outfile):
 			for i in range(6-len(log[team])):
 				ts.append([trainer,'empty'])
 		analysis = analyzeTeam(teams[team])
-		teams[team].append({'bias': analysis['bias'], 'stalliness' : analysis['stalliness'], 'tags' : analysis['tags']})
+		teams[team].append({'bias': analysis['bias'], 'stalliness': analysis['stalliness'], 'tags': analysis['tags'], 'rating': rating[team]})
 
 
 	#nickanmes
@@ -519,7 +526,7 @@ def LogReader(filename,tier,outfile):
 	teamtags = teams['p1team'][len(teams['p1team'])-1]
 
 	outfile.write(ts[0][0].encode('ascii','replace'))
-	outfile.write(' (bias:'+str(teamtags['bias'])+', stalliness:'+str(teamtags['stalliness'])+', tags:'+','.join(teamtags['tags'])+')')
+	outfile.write(' (rating:'+str(teamtags['rating'])+', bias:'+str(teamtags['bias'])+', stalliness:'+str(teamtags['stalliness'])+', tags:'+','.join(teamtags['tags'])+')')
 	outfile.write("\n")
 	i=0
 	while (ts[i][0] == ts[0][0]):
@@ -533,7 +540,7 @@ def LogReader(filename,tier,outfile):
 	outfile.write("***\n")
 	teamtags = teams['p2team'][len(teams['p2team'])-1]
 	outfile.write(ts[len(ts)-1][0].encode('ascii','replace'))
-	outfile.write(' (bias:'+str(teamtags['bias'])+', stalliness:'+str(teamtags['stalliness'])+', tags:'+','.join(teamtags['tags'])+')')
+	outfile.write(' (rating:'+str(teamtags['rating'])+', bias:'+str(teamtags['bias'])+', stalliness:'+str(teamtags['stalliness'])+', tags:'+','.join(teamtags['tags'])+')')
 	outfile.write("\n")
 	for j in range(i,len(ts)):
 		outfile.write(ts[j][1]+" ("+str(KOs[j])+","+str(turnsOut[j])+")\n")
