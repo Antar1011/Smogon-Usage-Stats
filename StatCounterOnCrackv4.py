@@ -243,7 +243,8 @@ aliases={
 	'Darmanitan': ['Darmanitan-D','Darmanitan-Zen'],
 	'Basculin': ['Basculin-Blue-Striped','Basculin-A'],
 	'Kyurem-Black': ['Kyurem-B'],
-	'Kyurem-White': ['Kyurem-W']
+	'Kyurem-White': ['Kyurem-W'],
+	'Pichu': ['Pichu-Spiky-eared']
 }	
 if 'Empty' in pokedict.keys(): #delete no-entry slots
 		del pokedict['Empty']
