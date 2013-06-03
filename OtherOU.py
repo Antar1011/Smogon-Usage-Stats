@@ -10,47 +10,7 @@ import string
 import sys
 import json
 import cPickle as pickle
-
-def keyify(s):
-	sout = ''
-	for c in s:
-		if c in string.uppercase:
-			sout = sout + c.lower()
-		elif c in string.lowercase + '1234567890':
-			sout = sout + c
-	return sout
-
-def readTable(filename,col,weight,usage):
-	file = open(filename)
-	table=file.readlines()
-	file.close()
-
-	#'real' usage screwed me over--I can't take total count from header
-	#using percentages is a bad idea because of roundoff
-
-	tempUsage = {} #really dumb that I have to do this
-
-	for i in range(6,len(table)):
-		name = table[i][10:29]
-	
-		if (name[0] == '-'):
-			break
-
-		while name[len(name)-1] == ' ': 
-			#remove extraneous spaces
-			name = name[0:len(name)-1]
-	
-		count = table[i][31:38]
-		while count[len(count)-1] == ' ':
-			#remove extraneous spaces
-			count = count[0:len(count)-1]
-			tempUsage[keyify(name)]=float(count)
-
-	for i in tempUsage:
-		if i not in usage:
-			usage[i]=[0,0,0,0]
-		if i != 'empty':
-			usage[i][col] = usage[i][col]+weight*6.0*tempUsage[i]/sum(tempUsage.values())/24
+from common import keyify,getUsage
 
 def makeTable(table):
 	banlist = []
@@ -82,13 +42,13 @@ file.close()
 usage = {} #track usage across all relevant tiers [OU,UU,RU,NU]
 
 #...first month's...
-readTable(str(sys.argv[1]),0,1.0,usage)
+getUsage(str(sys.argv[1]),0,1.0,usage)
 
 #...second month
-readTable(str(sys.argv[2]),0,3.0,usage)
+getUsage(str(sys.argv[2]),0,3.0,usage)
 
 #...third month
-readTable(str(sys.argv[3]),0,20.0,usage)
+getUsage(str(sys.argv[3]),0,20.0,usage)
 
 #generate three-month table
 OU = []

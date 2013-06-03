@@ -6,133 +6,27 @@
 import string
 import sys
 import json
+import lzma
 import copy
 #import cPickle as pickle
 import math
 import os
 
+from common import *
 from TA import *
 
-def keyify(s):
-	sout = ''
-	for c in s:
-		if c in string.uppercase:
-			sout = sout + c.lower()
-		elif c in string.lowercase + '1234567890':
-			sout = sout + c
-	return sout
-
-aliases={
-	'NidoranF': ['Nidoran-F'],
-	'NidoranM': ['Nidoran-M'],
-	'Pichu': ['Spiky Pichu'],
-	'Rotom-Mow': ['Rotom-C'],
-	'Rotom-Heat': ['Rotom-H'],
-	'Rotom-Frost': ['Rotom-F'],
-	'Rotom-Wash': ['Rotom-W'],
-	'Rotom-Fan': ['Rotom-S'],
-	'Deoxys-Attack': ['Deoxys-A'],
-	'Deoxys-Defense': ['Deoxys-D'],
-	'Deoxys-Speed': ['Deoxys-S'],
-	'Wormadam-Sandy': ['Wormadam-G'],
-	'Wormadam-Trash': ['Wormadam-S'],
-	'Shaymin-Sky': ['Shaymin-S'],
-	'Giratina-Origin': ['Giratina-O'],
-	'Unown': ['Unown-B','Unown-C','Unown-D','Unown-E','Unown-F','Unown-G','Unown-H','Unown-I','Unown-J','Unown-K','Unown-L','Unown-M','Unown-N','Unown-O','Unown-P','Unown-Q','Unown-R','Unown-S','Unown-T','Unown-U','Unown-V','Unown-W','Unown-X','Unown-Y','Unown-Z','Unown-!','Unown-?'],
-	'Burmy': ['Burmy-G','Burmy-S'],
-	'Castform': ['Castform-Snowy','Castform-Rainy','Castform-Sunny'],
-	'Cherrim': ['Cherrim-Sunshine'],
-	'Shellos': ['Shellos-East'],
-	'Gastrodon': ['Gastrodon-East'],
-	'Deerling': ['Deerling-Summer','Deerling-Autumn','Deerling-Winter'],
-	'Sawsbuck': ['Sawsbuck-Summer','Sawsbuck-Autumn','Sawsbuck-Winter'],
-	'Tornadus-Therian': ['Tornadus-T'],
-	'Thundurus-Therian': ['Thundurus-T'],
-	'Landorus-Therian': ['Landorus-T'],
-	'Keldeo': ['Keldeo-R','Keldeo-Resolution','Keldeo-Resolute'],
-	'Meloetta': ['Meloetta-S','Meloetta-Pirouette'],
-	'Genesect': ['Genesect-Douse','Genesect-Burn','Genesect-Shock','Genesect-Chill','Genesect-D','Genesect-S','Genesect-B','Genesect-C'],
-	'Darmanitan': ['Darmanitan-D','Darmanitan-Zen'],
-	'Basculin': ['Basculin-Blue-Striped','Basculin-A'],
-	'Kyurem-Black': ['Kyurem-B'],
-	'Kyurem-White': ['Kyurem-W'],
-	'Pichu': ['Pichu-Spiky-eared']
-}
-
-#fix species
-replacements = {
-	'Rotom-H' : 'Rotom-Heat',
-	'Rotom-W' : 'Rotom-Wash',
-	'Rotom-F' : 'Rotom-Frost',
-	'Rotom-S' : 'Rotom-Fan',
-	'Rotom-C' : 'Rotom-Mow',
-	'Rotom- H' : 'Rotom-Heat',
-	'Rotom- W' : 'Rotom-Wash',
-	'Rotom- F' : 'Rotom-Frost',
-	'Rotom- S' : 'Rotom-Fan',
-	'Rotom- C' : 'Rotom-Mow',
-	'Rotom-h' : 'Rotom-Heat',
-	'Rotom-w' : 'Rotom-Wash',
-	'Rotom-f' : 'Rotom-Frost',
-	'Rotom-s' : 'Rotom-Fan',
-	'Rotom-c' : 'Rotom-Mow',
-	'Tornadus-T' : 'Tornadus-Therian',
-	'Thundurus-T' : 'Thundurus-Therian',
-	'Landorus-T' : 'Landorus-Therian',
-	'Deoxys-D' : 'Deoxys-Defense',
-	'Deoxys-A' : 'Deoxys-Attack',
-	'Deoxys-S' : 'Deoxys-Speed',
-	'Kyurem-B' : 'Kyurem-Black',
-	'Kyurem-W' : 'Kyurem-White',
-	'Shaymin-S' : 'Shaymin-Sky',
-	'Ho-oh' : 'Ho-Oh',
-	"Birijion": "Virizion",
-	"Terakion": "Terrakion",
-	"Agirudaa": "Accelgor",
-	"Randorosu": "Landorus",
-	"Urugamosu": "Volcarona",
-	"Erufuun": "Whimsicott",
-	"Doryuuzu": "Excadrill",
-	"Burungeru": "Jellicent",
-	"Nattorei": "Ferrothorn",
-	"Shandera": "Chandelure",
-	"Roobushin": "Conkeldurr",
-	"Ononokusu": "Haxorus",
-	"Sazandora": "Hydreigon",
-	"Chirachiino": "Cinccino",
-	"Kyuremu": "Kyurem",
-	"Jarooda": "Serperior",
-	"Zoroaaku": "Zoroark",
-	"Shinboraa": "Sigilyph",
-	"Barujiina": "Mandibuzz",
-	"Rankurusu": "Reuniclus",
-	"Borutorosu": "Thundurus",
-	"Mime Jr" : "Mime Jr.", #this one's my fault
-	#to be fair, I never observed the following, but better safe than sorry
-	'Giratina-O' : 'Giratina-Origin',
-	'Keldeo-R' : 'Keldeo-Resolution',
-	'Wormadam-G' : 'Wormadam-Sandy',
-	'Wormadam-S' : 'Wormadam-Trash',
-	"Dnite": "Dragonite",
-	"Ferry": "Ferrothorn",
-	"Forry": "Forretress",
-	"Luke":  "Lucario",
-	"P2": "Porygon2",
-	"Pory2": "Porygon2",
-	"Pz": "Porygon-Z",
-	"Poryz": "Porygon-Z",
-	"Rank": "Reuniclus",
-	"Ttar": "Tyranitar"
-}
-
-def LogReader(filename,tier,outfile):
+def LogReader(filename,tier,movesets):
 	file = open(filename)
 	raw = file.readline()
 	file.close()
 	
 	if raw=='"log"': #https://github.com/Zarel/Pokemon-Showdown/commit/92a4f85e0abe9d3a9febb0e6417a7710cabdc303
-		return
-	log = json.loads(raw)
+		return False
+	try:
+		log = json.loads(raw)
+	except ValueError:
+		sys.stderr.write(filename+' is not a valid log.\n')
+		return False
 
 	#determine log type
 	spacelog = True
@@ -142,26 +36,48 @@ def LogReader(filename,tier,outfile):
 			spacelog = False
 
 	#check for log length
-	longEnough = False
-	if 'log' not in log.keys():
-		if int(log['turns']) > 5: 
-			longEnough = True
-	else:
-		for line in log['log']:
-			if (spacelog and line[2:10] == 'turn | 6') or (not spacelog and line[1:7] == 'turn|6'):
+	if tier not in ['challengecup1v1','doublesvgc2013dev','smogondoubles']:
+		longEnough = False
+		if 'log' not in log.keys():
+			if int(log['turns']) > 5: 
 				longEnough = True
-				break
-	if not longEnough:
-		return
+		else:
+			for line in log['log']:
+				if (spacelog and line[2:10] == 'turn | 6') or (not spacelog and line[1:7] == 'turn|6'):
+					longEnough = True
+					break
+		if not longEnough:
+			return False
 
 	#get info on the trainers & pokes involved
 	ts = []
 	teams = {}
-	rating = {'p1team': 0,'p2team': 0}
-	if 'p1rating' in log.keys():
-		rating['p1team']=float(log['p1rating'])
-	if 'p2rating' in log.keys():
-		rating['p2team']=float(log['p2rating'])
+	rating = {}
+
+	whowon = 0 #0 for tie/unknown, 1 for p1, 2 for p2
+	if 'log' in log.keys():
+		#if '|tie' in log['log']:
+		#	whowon = 0
+		if '|win|'+log['p1'] in log['log']:
+			whowon = 1
+		if '|win|'+log['p2'] in log['log']:
+			if whowon == 1:
+				sys.stderr.write(filename+'\n')
+				sys.stderr.write('This battle had two winners.\n')
+				return False
+			else:
+				whowon = 2
+
+	for i in [['p1rating','p1team'],['p2rating','p2team']]:
+		if i[0] in log.keys():
+			rating[i[1]]={}
+			if type(log[i[0]]) is dict:
+				for j in ['r','rd','rpr','rprd']:
+					if j in log[i[0]].keys():
+						rating[i[1]][j]=float(log[i[0]][j])
+			#gxe = round(10000 / (1 + pow(10.0,(((1500 - rpr)) * math.pi / math.sqrt(3 * pow(math.log(10.0),2.0) * pow(rprd,2.0) + 2500 * (64 * pow(math.pi,2.0) + 147 * pow(math.log(10.0),2))))))) / 100
+			#acre= rpr-1.4079126393*rprd
+			#not used: 'w','l','t','sigma','rptime','rpsigma','lacre','oldacre','oldrdacre'			
 
 	#get pokemon info
 	for team in ['p1team','p2team']:
@@ -186,8 +102,6 @@ def LogReader(filename,tier,outfile):
 				species=species[:len(species)-1]
 			if species[0] in string.lowercase or species[1] in string.uppercase:
 				species = species.title()
-			if species in replacements.keys():
-				species = replacements[species]
 
 			for s in aliases: #combine appearance-only variations and weird PS quirks
 				if species in aliases[s]:
@@ -249,27 +163,45 @@ def LogReader(filename,tier,outfile):
 				teams[team][len(teams[team])-1]['moves'].append(move)
 
 			#write to moveset file
-			outname = "Raw/moveset/"+tier+"/"+keyify(species)+".txt"
-			d = os.path.dirname(outname)
-			if not os.path.exists(d):
-				os.makedirs(d)
-			msfile=open(outname,'a')
-			msfile.write(trainer.encode('ascii', 'ignore')+'\t'+str(rating[team])+'\t')
-			msfile.write(str(level)+'\t'+ability+'\t'+item+'\t'+nature+'\t')
-			for stat in ['hp','atk','def','spa','spd','spe']:
-				msfile.write(str(ivs[stat])+'\t')
-			for stat in ['hp','atk','def','spa','spd','spe']:
-				msfile.write(str(evs[stat])+'\t')
-			for move in moves:
-				msfile.write(str(move)+'\t')
-			msfile.write('\n')
-			msfile.close()
+			#outname = "Raw/moveset/"+tier+"/"+keyify(species)#+".txt"
+			#d = os.path.dirname(outname)
+			#if not os.path.exists(d):
+			#	os.makedirs(d)
+			#msfile=open(outname,'ab')
+			writeme={'trainer':trainer.encode('ascii', 'ignore'),
+				'level':level,
+				'ability':ability,
+				'item':item,
+				'nature':nature,
+				'ivs':ivs,
+				'evs':evs,
+				'moves':moves}
+			if team in rating.keys():
+				writeme['rating']=rating[team]
+			#if whowon == 0:
+			#	writeme['outcome']='tie'
+			if (team == 'p1team' and whowon == 1) or (team == 'p2team' and whowon == 2):
+				writeme['outcome']='win'
+			elif whowon != 0:
+				writeme['outcome']='loss'
+			#msfile.write(lzma.compress(json.dumps(writeme))+'\n')
+			#msfile.close()
+			if keyify(species) not in movesets.keys():
+				movesets[keyify(species)]=[]
+			movesets[keyify(species)].append(writeme)
 
 		if len(log[team]) < 6:
 			for i in range(6-len(log[team])):
 				ts.append([trainer,'empty'])
 		analysis = analyzeTeam(teams[team])
-		teams[team].append({'bias': analysis['bias'], 'stalliness': analysis['stalliness'], 'tags': analysis['tags'], 'rating': rating[team]})
+		teams[team].append({'bias': analysis['bias'], 'stalliness': analysis['stalliness'], 'tags': analysis['tags']})
+		if (team == 'p1team' and whowon == 1) or (team == 'p2team' and whowon == 2):
+			teams[team][len(teams[team])-1]['outcome']='win'
+		elif whowon != 0:
+			teams[team][len(teams[team])-1]['outcome']='loss'
+		if team in rating.keys():
+			teams[team][len(teams[team])-1]['rating']=rating[team]
+			
 
 
 	#nickanmes
@@ -291,7 +223,8 @@ def LogReader(filename,tier,outfile):
 			nicks.append("p1: empty")
 
 	if ts[0][0] == ts[11][0]: #trainer battling him/herself? WTF?
-		return
+		sys.stderr.write(filename+' had a trainer battling him/herself.\n')
+		return False
 
 
 	#metrics get declared here
@@ -303,7 +236,7 @@ def LogReader(filename,tier,outfile):
 		turnsOut.append(0)
 		KOs.append(0)
 
-	if 'log' in log.keys():
+	if 'log' in log.keys() and tier not in ['doublesvgc2013dev','smogondoubles']: #doubles not currently supported
 		#determine initial pokemon
 		active = [-1,-1]
 		for line in log['log']:
@@ -331,11 +264,6 @@ def LogReader(filename,tier,outfile):
 				active[1]=ts.index([ts[11][0],species])
 				break
 		start=log['log'].index(line)+1
-		
-		#metrics get declared here
-		turnsOut = [] #turns out on the field (a measure of stall)
-		KOs = [] #number of KOs in the battle
-		matchups = [] #poke1, poke2, what happened
 
 		for i in range(0,12):
 			turnsOut.append(0)
@@ -371,23 +299,23 @@ def LogReader(filename,tier,outfile):
 				turnsOut[active[0]]=turnsOut[active[0]]+1
 				turnsOut[active[1]]=turnsOut[active[1]]+1
 
-			elif linetype == "win": 
+			elif linetype in ["win","tie"]: 
 				#close out last matchup
 				if ko[0] or ko[1]: #if neither poke was KOed, match ended in forfeit, and we don't care
-					pokes = [ts[active[0]][1],ts[active[1]][1]]
-					pokes=sorted(pokes, key=lambda pokes:pokes)
-					matchup=pokes[0]+' vs. '+pokes[1]+': '
+					matchup = [ts[active[0]][1],ts[active[1]][1],12]
 					if ko[0] and ko[1]:
 						KOs[active[0]] = KOs[active[0]]+1
 						KOs[active[1]] = KOs[active[1]]+1
-						matchup = matchup + "double down"
+						matchup[2]=2#double down
 					else:
 						KOs[active[ko[0]]] = KOs[active[ko[0]]]+1
-						matchup = matchup + ts[active[ko[1]]][1] + " was "
+						matchup[2] = ko[1]	#0: poke1 was KOed
+									#1: poke2 was KOed
 						if uturnko: #would rather not use this flag...
 							mtemp=mtemp[:len(mtemp)-1]
-							matchup = matchup + "u-turn "
-						matchup = matchup + "KOed"
+							matchup[2] = matchup[2] + 8	#8: poke1 was u-turn KOed
+											#9: poke2 was u-turn KOed
+						
 					mtemp.append(matchup)
 				matchups=matchups+mtemp
 			
@@ -429,7 +357,7 @@ def LogReader(filename,tier,outfile):
 							sys.stderr.write("In file: "+sys.argv[1]+"\n")
 							sys.stderr.write(line[6+3*spacelog:]+"\n")
 							sys.stderr.write(str(nicks)+"\n")
-							return
+							return False
 						
 				move = line[7+5*spacelog+len(found):string.find(line,"|",7+5*spacelog+len(found))-1*spacelog]
 				if move in ["Roar","Whirlwind","Circle Throw","Dragon Tail"]:
@@ -477,34 +405,34 @@ def LogReader(filename,tier,outfile):
 				switch[int(line[p])-1]=True
 
 				if switch[0] and switch[1] and not fodder: #need to revise previous matchup
-					matchup=mtemp[len(mtemp)-1][:string.find(mtemp[len(mtemp)-1],':')+2]
+					matchup=mtemp[len(mtemp)-1]
+					matchup[2]=12
 					if (not ko[0]) and (not ko[1]): #double switch
-						matchup = matchup + "double switch"
+						matchup[2]=5 
 					elif ko[0] and ko[1]: #double down
 						KOs[active[ko[0]]] = KOs[active[ko[0]]]+1
-						matchup = matchup + "double down"
+						matchup[2]=2
 					else: #u-turn KO (note that this includes hit-by-red-card-and-dies and roar-then-die-by-residual-dmg)
 						KOs[active[ko[0]]] = KOs[active[ko[0]]]+1
-						matchup = matchup + ts[active[ko[1]]][1]+" was u-turn KOed"
+						matchup[2]=ko[1]+8
 					mtemp[len(mtemp)-1]=matchup
 				else:
 					#close out old matchup
-					pokes = [ts[active[0]][1],ts[active[1]][1]]
-					pokes=sorted(pokes, key=lambda pokes:pokes)
-					matchup=pokes[0]+' vs. '+pokes[1]+': '
+					#it is utterly imperative that the p1 poke goes first and the p2 poke second
+					matchup = [ts[active[0]][1],ts[active[1]][1],12]
 					#if ko[0] and ko[1]: #double down
 					if ko[0] or ko[1]:
 						if fodder and hazard: #if dies on switch-in due to an attack, it's still "KOed"
-							matchup = matchup + ts[active[ko[1]]][1]+" was foddered"
+							matchup[2] = ko[1]+10 #foddered
 						else:
 							KOs[active[ko[0]]] = KOs[active[ko[0]]]+1
-							matchup = matchup + ts[active[ko[1]]][1]+" was KOed"
+							matchup[2] = ko[1]
 					else:
-						matchup = matchup + ts[active[switch[1]]][1]
+						matchup[2]=3+switch[1]  #3: poke1 switched out
+									#4: poke2 switched out
 						if roar:
-							matchup = matchup + " was forced out"
-						else:
-							matchup = matchup + " was switched out"
+							matchup[2]=matchup[2]+3	#6: poke1 was forced out
+										#7: poke2 was forced out
 					mtemp.append(matchup)
 		
 				#new matchup!
@@ -521,46 +449,68 @@ def LogReader(filename,tier,outfile):
 						break
 				active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
 
+	for i in range(len(matchups)):
+		if matchups[i][2] == False:
+			matchups[i][2] = 0 #serves me right for playing it fast & loose with T/F vs. 1/0
+
 	#totalTurns = log['turns']
 	#totalKOs = sum(KOs)
 
+	writeme = {}
+	
+	writeme['p1'] = {'trainer':ts[0][0].encode('ascii','replace')}
+	
 	teamtags = teams['p1team'][len(teams['p1team'])-1]
-
-	outfile.write(ts[0][0].encode('ascii','replace'))
-	outfile.write(' (rating:'+str(teamtags['rating'])+', bias:'+str(teamtags['bias'])+', stalliness:'+str(teamtags['stalliness'])+', tags:'+','.join(teamtags['tags'])+')')
-	outfile.write("\n")
+	for x in teamtags.keys():
+		writeme['p1'][x] = teamtags[x]
+	writeme['p1']['team']=[]
 	i=0
 	while (ts[i][0] == ts[0][0]):
-		outfile.write(ts[i][1]+" ("+str(KOs[i])+","+str(turnsOut[i])+")\n")
-		i = i + 1
+		writeme['p1']['team'].append({'species':ts[i][1],'KOs':KOs[i],'turnsOut':turnsOut[i]})
+		i = i+1
 		if i>=len(ts):
 			sys.stderr.write("Something's wrong here.\n")
 			sys.stderr.write("In file: "+sys.argv[1]+"\n")
 			sys.stderr.write(str(ts)+"\n")
-			return	
-	outfile.write("***\n")
-	teamtags = teams['p2team'][len(teams['p2team'])-1]
-	outfile.write(ts[len(ts)-1][0].encode('ascii','replace'))
-	outfile.write(' (rating:'+str(teamtags['rating'])+', bias:'+str(teamtags['bias'])+', stalliness:'+str(teamtags['stalliness'])+', tags:'+','.join(teamtags['tags'])+')')
-	outfile.write("\n")
-	for j in range(i,len(ts)):
-		outfile.write(ts[j][1]+" ("+str(KOs[j])+","+str(turnsOut[j])+")\n")
-	outfile.write("@@@\n")
-	for line in matchups:
-		outfile.write(line+"\n")
-	outfile.write("---\n")
+			return False
 
+	writeme['p2'] = {'trainer':ts[len(ts)-1][0].encode('ascii','replace')}
+	teamtags = teams['p2team'][len(teams['p2team'])-1]
+	for x in teamtags.keys():
+		writeme['p2'][x] = teamtags[x]
+	writeme['p2']['team']=[]
+	for j in range(i,len(ts)):
+		writeme['p2']['team'].append({'species':ts[j][1],'KOs':KOs[j],'turnsOut':turnsOut[j]})
+	writeme['matchups']=matchups
+	
+	#outfile.write(lzma.compress(json.dumps(writeme))+'\n')
+	return writeme
 
 tier = sys.argv[2]
 if tier[len(tier)-7:]=='current':
 	tier=tier[:len(tier)-7]
-outname = "Raw/"+tier+".txt"
+outname = "Raw/"+tier#+".txt"
 d = os.path.dirname(outname)
 if not os.path.exists(d):
 	os.makedirs(d)
-outfile=open(outname,'a')
+writeme=[]
+movesets={}
 for filename in os.listdir(sys.argv[1]):
 	#print filename
-	LogReader(sys.argv[1]+'/'+filename,tier,outfile)
+	x = LogReader(sys.argv[1]+'/'+filename,tier,movesets)
+	if x:
+		writeme.append(x)
+outfile=open(outname,'ab')
+outfile.write(lzma.compress(json.dumps(writeme)))
 outfile.close()	
+
+#write to moveset file
+for species in movesets.keys():
+	outname = "Raw/moveset/"+tier+"/"+species#+".txt"
+	d = os.path.dirname(outname)
+	if not os.path.exists(d):
+		os.makedirs(d)
+	msfile=open(outname,'ab')		
+	msfile.write(lzma.compress(json.dumps(movesets[species])))
+	msfile.close()
 
