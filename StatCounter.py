@@ -102,7 +102,7 @@ for line in raw:
 				if 'rpr' in battle[player]['rating'].keys() and 'rprd' in battle[player]['rating'].keys():
 					if battle[player]['rating']['rprd'] != 0.0:
 						weight[player] = weighting(battle[player]['rating']['rpr'],battle[player]['rating']['rprd'],cutoff)
-					ratingCounter.append(battle[player]['rating'])
+						ratingCounter.append(battle[player]['rating'])
 				
 					if 'outcome' in battle[player].keys():
 						WLratings[battle[player]['outcome']].append([battle[player]['rating']['rpr'],battle[player]['rating']['rprd'],weight[player]])
