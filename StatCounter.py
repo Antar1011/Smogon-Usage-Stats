@@ -100,7 +100,8 @@ for line in raw:
 			team = []
 			if 'rating' in battle[player].keys():
 				if 'rpr' in battle[player]['rating'].keys() and 'rprd' in battle[player]['rating'].keys():
-					weight[player] = weighting(battle[player]['rating']['rpr'],battle[player]['rating']['rprd'],cutoff)
+					if battle[player]['rating']['rprd'] != 0.0:
+						weight[player] = weighting(battle[player]['rating']['rpr'],battle[player]['rating']['rprd'],cutoff)
 					ratingCounter.append(battle[player]['rating'])
 				
 					if 'outcome' in battle[player].keys():

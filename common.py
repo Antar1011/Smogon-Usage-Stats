@@ -14,8 +14,6 @@ def keyify(s):
 
 #our weighting function
 def weighting(rating,deviation,cutoff):
-	if deviation == 0.0:
-		return 0.5
 	return (math.erf(float(rating-cutoff)/float(deviation)/math.sqrt(2.0))+1.0)/2.0
 	#this is for logistic weighting
 	#s=math.sqrt(3.0)*float(deviation)/math.pi
