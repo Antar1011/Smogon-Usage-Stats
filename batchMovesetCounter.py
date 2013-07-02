@@ -42,8 +42,9 @@ def movesetCounter(filename, cutoff,usage):
 			weight=weighting(1500.0,350.0,cutoff)
 			if 'rating' in moveset.keys():
 				if 'rpr' in moveset['rating'].keys() and 'rprd' in moveset['rating'].keys():
-					weight=weighting(moveset['rating']['rpr'],moveset['rating']['rprd'],cutoff)
-					weights.append(weight)
+					if battle[player]['rating']['rprd'] != 0.0:
+						weight=weighting(moveset['rating']['rpr'],moveset['rating']['rprd'],cutoff)
+						weights.append(weight)
 			elif 'outcome' in moveset.keys():
 				if moveset['outcome'] == 'win':
 					weight=weighting(1662.3108925672,290.31896252483,cutoff)
