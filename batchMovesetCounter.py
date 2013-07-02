@@ -8,6 +8,7 @@ import math
 import cPickle as pickle
 import json
 import lzma
+import os
 
 from common import keyify,weighting,readTable
 from TA import nmod,statFormula,baseStats
@@ -127,13 +128,13 @@ def movesetCounter(filename, cutoff,usage):
 				cc[s]=[n,p,d]
 
 	stuff = {
+		'Raw count': rawCount,
 		'Abilities': abilities,
 		'Items': items,
 		'Spreads': spreads,
 		'Moves': moves,
 		'Teammates': teammates,
 		'Checks and Counters': cc}
-
 
 	#print tables
 	tablewidth = 40
@@ -228,6 +229,7 @@ def movesetCounter(filename, cutoff,usage):
 			elif x is not 'Checks and Counters':
 				total = total + float(table[i][1])/count
 		print separator
+	return stuff
 
 file = open('keylookup.pickle')
 keyLookup = pickle.load(file)
@@ -267,13 +269,18 @@ for poke in usage.keys():
 	pokes.append([poke,usage[poke]])
 pokes=sorted(pokes, key=lambda pokes:-pokes[1])
 
+chaos = {'info': {'metagame': str(sys.argv[1]), 'cutoff': cutoff, 'cutoff deviation': cutoffdeviation},'data':{}}
 for poke in pokes:
 	if poke[1] < 0.0001: #1/100th of a percent
 		break
-	movesetCounter('Raw/moveset/'+str(sys.argv[1])+'/'+keyify(poke[0]),cutoff,usage)
+	stuff = movesetCounter('Raw/moveset/'+str(sys.argv[1])+'/'+keyify(poke[0]),cutoff,usage)
+	chaos['data'][poke[0]]=stuff
 
-	
 
-	
-	
-	
+filename="Stats/chaos/"+str(sys.argv[1])+specs+".json"
+d = os.path.dirname(filename)
+if not os.path.exists(d):
+	os.makedirs(d)
+file=open(filename,'w')
+file.write(json.dumps(chaos))
+file.close()	

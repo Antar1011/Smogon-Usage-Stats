@@ -36,7 +36,7 @@ def LogReader(filename,tier,movesets):
 			spacelog = False
 
 	#check for log length
-	if tier not in ['challengecup1v1','doublesvgc2013dev','smogondoubles']:
+	if tier not in ['challengecup1v1','doublesvgc2013dev','smogondoubles','1v1']:
 		longEnough = False
 		if 'log' not in log.keys():
 			if int(log['turns']) > 5: 
@@ -74,7 +74,18 @@ def LogReader(filename,tier,movesets):
 			if type(log[i[0]]) is dict:
 				for j in ['r','rd','rpr','rprd']:
 					if j in log[i[0]].keys():
-						rating[i[1]][j]=float(log[i[0]][j])
+						try:
+							rating[i[1]][j]=float(log[i[0]][j])
+						#looks like it's possible that rating will be recorded as "None". In that case, just
+						#treat it as if it's not even there (read: no need to freak out and do the below)
+
+						except TypeError:
+							pass
+						#	sys.stderr.write('Problem in '+filename+':\n')
+						#	sys.stderr.write(i[0]+'['+j+']='+str(log[i[0]][j])+'\n')
+						#	return False
+							
+						
 			#gxe = round(10000 / (1 + pow(10.0,(((1500 - rpr)) * math.pi / math.sqrt(3 * pow(math.log(10.0),2.0) * pow(rprd,2.0) + 2500 * (64 * pow(math.pi,2.0) + 147 * pow(math.log(10.0),2))))))) / 100
 			#acre= rpr-1.4079126393*rprd
 			#not used: 'w','l','t','sigma','rptime','rpsigma','lacre','oldacre','oldrdacre'			
@@ -489,6 +500,8 @@ def LogReader(filename,tier,movesets):
 tier = sys.argv[2]
 if tier[len(tier)-7:]=='current':
 	tier=tier[:len(tier)-7]
+#elif tier[:8]=='seasonal':
+#	tier='seasonal'
 outname = "Raw/"+tier#+".txt"
 d = os.path.dirname(outname)
 if not os.path.exists(d):
