@@ -268,7 +268,10 @@ usage = readTable('Stats/'+str(sys.argv[1])+specs+'.txt')
 pokes = []
 for poke in usage.keys():
 	pokes.append([poke,usage[poke]])
-pokes=sorted(pokes, key=lambda pokes:-pokes[1])
+if sys.argv[1] in ['randombattle','challengecup','challengecup1v1','seasonal']:
+	pokes=sorted(pokes)
+else:
+	pokes=sorted(pokes, key=lambda pokes:-pokes[1])
 
 chaos = {'info': {'metagame': str(sys.argv[1]), 'cutoff': cutoff, 'cutoff deviation': cutoffdeviation},'data':{}}
 for poke in pokes:

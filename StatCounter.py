@@ -64,7 +64,8 @@ filename="Stats/metagame/"+tier+specs+".txt"
 d = os.path.dirname(filename)
 if not os.path.exists(d):
 	os.makedirs(d)
-metagamefile=open(filename,'w')
+if tier != "1v1":
+	metagamefile=open(filename,'w')
 filename="Raw/moveset/"+tier+"/teammate"+specs+".pickle"
 teammatefile=open(filename,'w')
 filename="Raw/moveset/"+tier+"/encounterMatrix"+specs+".pickle"
@@ -104,8 +105,8 @@ for line in raw:
 						weight[player] = weighting(battle[player]['rating']['rpr'],battle[player]['rating']['rprd'],cutoff)
 						ratingCounter.append(battle[player]['rating'])
 				
-					if 'outcome' in battle[player].keys():
-						WLratings[battle[player]['outcome']].append([battle[player]['rating']['rpr'],battle[player]['rating']['rprd'],weight[player]])
+						if 'outcome' in battle[player].keys():
+							WLratings[battle[player]['outcome']].append([battle[player]['rating']['rpr'],battle[player]['rating']['rprd'],weight[player]])
 				
 			if player not in weight.keys(): #if there's a ladder error, we have no idea what the player's rating is, so treat like a new player
 				weight[player] = weighting(1500,350.0,cutoff)
@@ -234,7 +235,10 @@ pickle.dump(encounterMatrix,encounterfile)
 encounterfile.close()
 
 #sort by weighted usage
-pokes=sorted(pokes, key=lambda pokes:-pokes[3])
+if tier in ['challengecup1v1','1v1']:
+	pokes=sorted(pokes, key=lambda pokes:-pokes[2])
+else:
+	pokes=sorted(pokes, key=lambda pokes:-pokes[3])
 p=[]
 usagefile.write(" Total battles: "+str(battleCount)+"\n")
 usagefile.write(" Avg. weight/team: "+str(round(total['weighted']/battleCount/12,3))+"\n")
@@ -249,7 +253,7 @@ for i in range(0,len(pokes)):
 usagefile.write(" + ---- + ------------------ + --------- + ------ + ------- + ------ + ------- + \n")
 usagefile.close()
 
-if tier not in ['doublesvgc2013dev','doublesvgc2013','smogondoubles']: #lead stats for doubles is not currently supported
+if tier not in ['doublesvgc2013dev','doublesvgc2013','smogondoubles','1v1']: #lead stats for doubles is not currently supported
 	#lead analysis
 
 	filename="Stats/leads/"+tier+specs+".txt"
@@ -279,98 +283,99 @@ if tier not in ['doublesvgc2013dev','doublesvgc2013','smogondoubles']: #lead sta
 	leadsfile.close()
 
 #metagame analysis
-tags = []
-for tag in tagCounter:
-	tags.append([tag,tagCounter[tag]])
-tags=sorted(tags, key=lambda tags:-tags[1])
+if tier != "1v1":
+	tags = []
+	for tag in tagCounter:
+		tags.append([tag,tagCounter[tag]])
+	tags=sorted(tags, key=lambda tags:-tags[1])
 
-for i in range(0,len(tags)):
-	line = ' '+tags[i][0]
-	for j in range(len(tags[i][0]),30):
-		line = line + '.'
-	line = line + '%8.5f%%' % (100.0*tags[i][1]/total['weighted'])
-	metagamefile.write(line+'\n')
-metagamefile.write('\n')
-
-#stalliness
-stallCounter=sorted(stallCounter, key=lambda stallCounter:stallCounter[0])
-
-#figure out a good bin range by looking at .1% and 99.9% points
-low = stallCounter[len(stallCounter)/1000][0]
-high = stallCounter[len(stallCounter)-len(stallCounter)/1000-1][0]
-
-nbins = 13 #this is actually only a rough idea--I think it might be the minimum?
-
-if (low > 0):
-	low = 0.0
-elif (high < 0):
-	high = 0.0
-
-binSize = (high-low)/(nbins-1)
-#this is bound to be an ugly number, so let's make it pretty
-for x in [10,5,2.5,2,1.5,1,0.5,0.25,0.2,0.1,0.05]:
-	if binSize > x:
-		break
-#if binSize < 0.05, fuck it--I'm not zooming in any further
-binSize = x
-histogram = [[0.0,0]]
-x=binSize
-while x+binSize/2 < high:
-	histogram.append([x,0])
-	x=x+binSize
-x=-binSize
-while x-binSize/2 > low:
-	histogram.append([x,0])
-	x=x-binSize
-histogram=sorted(histogram, key=lambda histogram:histogram[0])
-nbins = len(histogram)
-
-for start in range(len(stallCounter)):
-	if stallCounter[start] >= histogram[0][0]-binSize/2:
-		break
-
-j=0
-for i in range(start,len(stallCounter)):
-	while stallCounter[i][0] > histogram[0][0]+binSize*(j+0.5):
-		j=j+1
-	if j>=len(histogram):
-		break
-	histogram[j][1] = histogram[j][1]+stallCounter[i][1]
-
-maximum = 0
-for i in range(len(histogram)):
-	if histogram[i][1] > maximum:
-		maximum = histogram[i][1]
-
-nblocks = 30 #maximum number of blocks to go across
-blockSize = maximum/nblocks
-
-if blockSize > 0:
-	x=0.0
-	y=0.0
-	for score in stallCounter:
-		x=x+score[0]*score[1]
-		y=y+score[1]	
-
-	#print histogram
-	metagamefile.write(' Stalliness (mean: %6.3f)\n'%(x/y))
-	for i in range(len(histogram)):
-		if histogram[i][0]%(2.0*binSize) < binSize/2:
-			line = ' '
-			if histogram[i][0]>0.0:
-				line=line+'+'
-			elif histogram[i][0] == 0.0:
-				line=line+' '
-			line = line+'%3.1f|'%(histogram[i][0])
-		else:
-			line = '     |'
-		for j in range(int((histogram[i][1]+blockSize/2)/blockSize)):#poor man's rounding
-			line = line + '#'
+	for i in range(0,len(tags)):
+		line = ' '+tags[i][0]
+		for j in range(len(tags[i][0]),30):
+			line = line + '.'
+		line = line + '%8.5f%%' % (100.0*tags[i][1]/total['weighted'])
 		metagamefile.write(line+'\n')
-	metagamefile.write(' more negative = more offensive, more positive = more stall\n')
-	metagamefile.write(' one # = %5.2f%%\n'%(100.0*blockSize/y))
+	metagamefile.write('\n')
 
-metagamefile.close()
+	#stalliness
+	stallCounter=sorted(stallCounter, key=lambda stallCounter:stallCounter[0])
+
+	#figure out a good bin range by looking at .1% and 99.9% points
+	low = stallCounter[len(stallCounter)/1000][0]
+	high = stallCounter[len(stallCounter)-len(stallCounter)/1000-1][0]
+
+	nbins = 13 #this is actually only a rough idea--I think it might be the minimum?
+
+	if (low > 0):
+		low = 0.0
+	elif (high < 0):
+		high = 0.0
+
+	binSize = (high-low)/(nbins-1)
+	#this is bound to be an ugly number, so let's make it pretty
+	for x in [10,5,2.5,2,1.5,1,0.5,0.25,0.2,0.1,0.05]:
+		if binSize > x:
+			break
+	#if binSize < 0.05, fuck it--I'm not zooming in any further
+	binSize = x
+	histogram = [[0.0,0]]
+	x=binSize
+	while x+binSize/2 < high:
+		histogram.append([x,0])
+		x=x+binSize
+	x=-binSize
+	while x-binSize/2 > low:
+		histogram.append([x,0])
+		x=x-binSize
+	histogram=sorted(histogram, key=lambda histogram:histogram[0])
+	nbins = len(histogram)
+
+	for start in range(len(stallCounter)):
+		if stallCounter[start] >= histogram[0][0]-binSize/2:
+			break
+
+	j=0
+	for i in range(start,len(stallCounter)):
+		while stallCounter[i][0] > histogram[0][0]+binSize*(j+0.5):
+			j=j+1
+		if j>=len(histogram):
+			break
+		histogram[j][1] = histogram[j][1]+stallCounter[i][1]
+
+	maximum = 0
+	for i in range(len(histogram)):
+		if histogram[i][1] > maximum:
+			maximum = histogram[i][1]
+
+	nblocks = 30 #maximum number of blocks to go across
+	blockSize = maximum/nblocks
+
+	if blockSize > 0:
+		x=0.0
+		y=0.0
+		for score in stallCounter:
+			x=x+score[0]*score[1]
+			y=y+score[1]	
+
+		#print histogram
+		metagamefile.write(' Stalliness (mean: %6.3f)\n'%(x/y))
+		for i in range(len(histogram)):
+			if histogram[i][0]%(2.0*binSize) < binSize/2:
+				line = ' '
+				if histogram[i][0]>0.0:
+					line=line+'+'
+				elif histogram[i][0] == 0.0:
+					line=line+' '
+				line = line+'%3.1f|'%(histogram[i][0])
+			else:
+				line = '     |'
+			for j in range(int((histogram[i][1]+blockSize/2)/blockSize)):#poor man's rounding
+				line = line + '#'
+			metagamefile.write(line+'\n')
+		metagamefile.write(' more negative = more offensive, more positive = more stall\n')
+		metagamefile.write(' one # = %5.2f%%\n'%(100.0*blockSize/y))
+
+	metagamefile.close()
 #outfile=open('stall.dat','w')
 #for line in metricCounter:
 #	for item in line:
