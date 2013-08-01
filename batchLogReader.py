@@ -36,7 +36,7 @@ def LogReader(filename,tier,movesets):
 			spacelog = False
 
 	#check for log length
-	if tier not in ['challengecup1v1','doublesvgc2013dev','smogondoubles','1v1']:
+	if tier not in ['challengecup1v1','doublesvgc2013dev','smogondoubles','1v1','gbusingles','globalshowdown']:
 		longEnough = False
 		if 'log' not in log.keys():
 			if int(log['turns']) > 5: 
