@@ -6,7 +6,7 @@
 import string
 import sys
 import json
-import lzma
+import gzip
 import copy
 #import cPickle as pickle
 import math
@@ -513,8 +513,8 @@ for filename in os.listdir(sys.argv[1]):
 	x = LogReader(sys.argv[1]+'/'+filename,tier,movesets)
 	if x:
 		writeme.append(x)
-outfile=open(outname,'ab')
-outfile.write(lzma.compress(json.dumps(writeme)))
+outfile=gzip.open(outname,'ab')
+outfile.write(json.dumps(writeme))
 outfile.close()	
 
 #write to moveset file
@@ -523,7 +523,7 @@ for species in movesets.keys():
 	d = os.path.dirname(outname)
 	if not os.path.exists(d):
 		os.makedirs(d)
-	msfile=open(outname,'ab')		
-	msfile.write(lzma.compress(json.dumps(movesets[species])))
+	msfile=gzip.open(outname,'ab')		
+	msfile.write(json.dumps(movesets[species]))
 	msfile.close()
 

@@ -26,7 +26,7 @@ import math
 import cPickle as pickle
 import os
 import json
-import lzma
+import gzip
 
 from common import *
 
@@ -46,14 +46,16 @@ if cutoff != 1500:
 	specs = '-'+str(cutoff)
 
 filename="Raw/"+tier#+".txt"
-file = open(filename,'rb')
+file = gzip.open(filename,'rb')
 raw = file.read()
 file.close()
 
-raw=raw.split('\xfd7zXZ')
+raw=raw.split('][')
 for i in range(len(raw)):
-	raw[i]='\xfd7zXZ'+raw[i]
-raw = raw[1:]
+	if (i>0):
+		raw[i]='['+raw[i]
+	if (i<len(raw)-1):
+		raw[i]=raw[i]+']'
 
 filename="Stats/"+tier+specs+".txt"
 d = os.path.dirname(filename)
@@ -91,7 +93,7 @@ WLratings = {'win':[],'loss':[]}
 
 for line in raw:
 	#print line
-	battles = json.loads(lzma.decompress(line))
+	battles = json.loads(line)
 
 	for battle in battles:
 
