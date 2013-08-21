@@ -30,7 +30,7 @@ for i in range(len(raw)):
 		raw[i]=raw[i]+']'
 
 bins=[]
-binCenter=binSize/2
+binCenter=0.5+binSize/2
 while binCenter < 1.0:
 	bins.append([binCenter,0,0])
 	binCenter = binCenter+binSize
@@ -43,11 +43,16 @@ for line in raw:
 		if 'rating' not in battle['p1'].keys() or 'rating' not in battle['p1'].keys() or 'outcome' not in battle['p1'].keys():
 			continue
 		if battle['p1']['rating']['rd'] <= maxRD and battle['p2']['rating']['rd'] <= maxRD:
-			probWin = victoryChance(battle['p1']['rating']['r'],battle['p1']['rating']['rd'],battle['p2']['rating']['r'],battle['p2']['rating']['rd'])
+			if battle['p1']['rating']['r'] > battle['p2']['rating']['r']:
+				probWin = victoryChance(battle['p1']['rating']['r'],battle['p1']['rating']['rd'],battle['p2']['rating']['r'],battle['p2']['rating']['rd'])
+				betterPlayer='p1'
+			else:
+				probWin = victoryChance(battle['p2']['rating']['r'],battle['p2']['rating']['rd'],battle['p1']['rating']['r'],battle['p1']['rating']['rd'])
+				betterPlayer='p2'				
 			for i in xrange(len(bins)):
 				if probWin < bins[i][0]+binSize/2:
 					bins[i][1]=bins[i][1]+probWin
-					if battle['p1']['outcome'] == 'win':
+					if battle[betterPlayer]['outcome'] == 'win':
 						bins[i][2]=bins[i][2]+1
 					break
 
