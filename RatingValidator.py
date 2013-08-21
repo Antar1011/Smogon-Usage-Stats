@@ -9,14 +9,14 @@ from common import *
 
 tier = str(sys.argv[1])
 
-binSize = 0.01
-if (len(sys.argv) > 2):
-	binSize = float(sys.argv[3])
-
 maxRD = 100
-if (len(sys.argv) > 3):
-	maxRD = float(sys.argv[3])
+if (len(sys.argv) > 2):
+	maxRD = float(sys.argv[2])
 
+binSize = 0.01
+if (len(sys.argv) > 3):
+	binSize = float(sys.argv[3])
+	
 filename="Raw/"+tier#+".txt"
 file = gzip.open(filename,'rb')
 raw = file.read()
