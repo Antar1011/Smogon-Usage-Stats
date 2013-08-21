@@ -3,6 +3,7 @@
 
 import gzip
 import sys
+import json
 
 from common import *
 
@@ -40,14 +41,15 @@ for line in raw:
 	for battle in battles:
 
 		if 'rating' not in battle['p1'].keys() or 'rating' not in battle['p1'].keys() or 'outcome' not in battle['p1'].keys():
-			if battle['p1']['rating']['rd'] <= maxRD and battle['p2']['rating']['rd'] <= maxRD:
-				probWin = victoryChance(battle['p1']['rating']['r'],battle['p1']['rating']['rd'],battle['p2']['rating']['r'],battle['p2']['rating']['rd'])
-				for i in xrange(len(bins)):
-					if probWin < bins[i][0]+binSize/2:
-						bins[i][1]=bins[i][1]+probWin
-						if (battle['p1']['outcome'] == 'win':
-							bins[i][2]=bins[i][2]+1
-						break
+			continue
+		if battle['p1']['rating']['rd'] <= maxRD and battle['p2']['rating']['rd'] <= maxRD:
+			probWin = victoryChance(battle['p1']['rating']['r'],battle['p1']['rating']['rd'],battle['p2']['rating']['r'],battle['p2']['rating']['rd'])
+			for i in xrange(len(bins)):
+				if probWin < bins[i][0]+binSize/2:
+					bins[i][1]=bins[i][1]+probWin
+					if battle['p1']['outcome'] == 'win':
+						bins[i][2]=bins[i][2]+1
+					break
 
 for bin in bins:
 	print bin[0],bin[1],bin[2]
