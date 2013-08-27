@@ -165,7 +165,7 @@ for line in raw:
 					teammateMatrix[team[i]][team[j]]=teammateMatrix[team[i]][team[j]]+weight[player] #teammate stats are weighted
 					teammateMatrix[team[j]][team[i]]=teammateMatrix[team[i]][team[j]] #nice symmetric matrix
 
-		if tier not in ['doublesvgc2013dev','doublesvgc2013','smogondoubles','1v1']: #lead stats for doubles is not currently supported
+		if tier not in ['doublesvgc2013dev','doublesvgc2013','smogondoubles']: #lead stats for doubles is not currently supported
 			#lead stats
 			leads=['empty','empty']
 			if len(battle['matchups'])==0:
@@ -181,6 +181,8 @@ for line in raw:
 					leads[i] = battle['matchups'][0][i]
 
 			if 'empty' in leads:
+				if len(battle['matchups']) == 0: #1v1 (or similiar) battle forfeited before started
+					continue
 				print "Something went wrong."
 				print battle
 

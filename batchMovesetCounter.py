@@ -7,21 +7,23 @@ import sys
 import math
 import cPickle as pickle
 import json
-import lzma
+import gzip
 import os
 
 from common import keyify,weighting,readTable
 from TA import nmod,statFormula,baseStats
 
 def movesetCounter(filename, cutoff,usage):
-	file = open(filename,'rb')
+	file = gzip.open(filename,'rb')
 	raw = file.read()
 	file.close()
 
-	raw=raw.split('\xfd7zXZ')
+	raw=raw.split('][')
 	for i in range(len(raw)):
-		raw[i]='\xfd7zXZ'+raw[i]
-	raw = raw[1:]
+		if (i>0):
+			raw[i]='['+raw[i]
+		if (i<len(raw)-1):
+			raw[i]=raw[i]+']'
 
 	species = keyLookup[filename[string.rfind(filename,'/')+1:]]
 
@@ -36,7 +38,7 @@ def movesetCounter(filename, cutoff,usage):
 	rawCount = 0
 	
 	for line in raw:
-		movesets = json.loads(lzma.decompress(line))
+		movesets = json.loads(line)
 		for moveset in movesets:
 			rawCount = rawCount+1
 			weight=weighting(1500.0,350.0,cutoff)
