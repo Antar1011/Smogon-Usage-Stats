@@ -66,8 +66,10 @@ filename="Stats/metagame/"+tier+specs+".txt"
 d = os.path.dirname(filename)
 if not os.path.exists(d):
 	os.makedirs(d)
-if tier != "1v1":
+if tier not in ["1v1", "challengecup1vs1","doublesvgc2013","gbusingles","gen1oubeta","gen2oubeta","gen4oubeta","gen4uubeta","globalshowdown","smogondoubles","tiershift"]:
 	metagamefile=open(filename,'w')
+else:
+	metagamefile=False
 filename="Raw/moveset/"+tier+"/teammate"+specs+".pickle"
 teammatefile=open(filename,'w')
 filename="Raw/moveset/"+tier+"/encounterMatrix"+specs+".pickle"
@@ -144,12 +146,13 @@ for line in raw:
 					counter['real'][species]=counter['real'][species]+1.0
 				counter['weighted'][species]=counter['weighted'][species]+weight[player]
 
-				#count metagame stuff
-				for tag in battle[player]['tags']:
-					if tag not in tagCounter.keys():
-						tagCounter[tag] = 0.0
-					tagCounter[tag] = tagCounter[tag]+weight[player] #metagame stuff is weighted
-				stallCounter.append([battle[player]['stalliness'],weight[player]])
+				if metagamefile:
+					#count metagame stuff
+					for tag in battle[player]['tags']:
+						if tag not in tagCounter.keys():
+							tagCounter[tag] = 0.0
+						tagCounter[tag] = tagCounter[tag]+weight[player] #metagame stuff is weighted
+					stallCounter.append([battle[player]['stalliness'],weight[player]])
 
 			teamCount = teamCount + 1
 
@@ -287,7 +290,7 @@ if tier not in ['doublesvgc2013dev','doublesvgc2013','smogondoubles','1v1']: #le
 	leadsfile.close()
 
 #metagame analysis
-if tier != "1v1":
+if metagamefile:
 	tags = []
 	for tag in tagCounter:
 		tags.append([tag,tagCounter[tag]])
