@@ -265,7 +265,7 @@ file = open(filename)
 table=file.readlines()
 file.close()
 
-usage = readTable('Stats/'+str(sys.argv[1])+specs+'.txt')
+usage,nBattles = readTable('Stats/'+str(sys.argv[1])+specs+'.txt')
 
 pokes = []
 for poke in usage.keys():

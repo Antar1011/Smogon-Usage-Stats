@@ -3,8 +3,8 @@
 import sys
 from common import readTable
 
-old = readTable(sys.argv[1])
-new = readTable(sys.argv[2])
+old,nold = readTable(sys.argv[1])
+new,nnew = readTable(sys.argv[2])
 
 diff = {}
 for poke in new.keys():
@@ -17,6 +17,12 @@ for i in diff.keys():
 	pokes.append([i,diff[i]])
 
 pokes=sorted(pokes, key=lambda pokes:-pokes[1])
+if (nold != nnew):
+	if (nold < nnew):
+		printme = " Up %5.2f%%" % (100*float(nnew-nold)/nold)
+	else:
+		printme = " Down %5.2f%%" % (100*float(nold-nnew)/nold)
+	print printme
 print " + ------------------ + --------- + "
 print " | Pokemon            | Diff (%)  | "
 print " + ------------------ + --------- + "

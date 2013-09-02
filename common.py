@@ -34,6 +34,8 @@ def readTable(filename):
 
 	usage = {}
 
+	nBattles = int(table[0][16:])
+
 	for i in range(5,len(table)):
 		name = table[i][10:29]
 	
@@ -47,7 +49,7 @@ def readTable(filename):
 		pct = table[i][31:39]
 		usage[name]=float(pct)/100.0
 
-	return usage
+	return usage,nBattles
 
 def getUsage(filename,col,weight,usage):
 	tempUsage = readTable(filename)
