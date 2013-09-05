@@ -82,7 +82,6 @@ while idx<len(sys.argv):
 if trajectoriesSaveFile:			
 	pickle.dump(trajectories,open(trajectoriesSaveFile,'w'))
 
-sys.exit(0)
 print 'Username,r,rd,rpr,rprd,acre,gxe,ladderScore'
 for player in ladder.keys():
 	r=ladder[player]['r']

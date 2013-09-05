@@ -1,3 +1,8 @@
+#!/usr/bin/python
+# -*- coding: latin-1 -*-
+
+#Zarel and Antar's Modified Elo
+
 from common import victoryChance
 
 K=50
