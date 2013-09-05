@@ -1,14 +1,14 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-#Zarel and Antar's Modified Elo
+#Antar's X-Act-Elo
 
 from common import victoryChance
 
-K=50.0
+K=50
 
 def newPlayer():
-	return 1000.0
+	return 1000
 
 def update(ratings,outcome):
 	S={}
@@ -21,8 +21,8 @@ def update(ratings,outcome):
 	S['p2']=1.0-S['p1']
 
 	E={}
-	E['p1']=victoryChance(ratings['p1']['r'],ratings['p1']['rd'],ratings['p2']['r'],ratings['p2']['rd'])
-	E['p2']=1.0-E['p1']
+	E['p1']=victoryChance(1500.0,350.0,ratings['p2']['r'],ratings['p2']['rd'])
+	E['p2']=victoryChance(1500.0,350.0,ratings['p1']['r'],ratings['p2']['rd'])
 	
 	for p in ['p1','p2']:
 		ratings[p]['ladderRating']=ratings[p]['ladderRating']+K*(S[p]-E[p])

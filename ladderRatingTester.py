@@ -6,12 +6,13 @@ import gzip
 import json
 import math
 import cPickle as pickle
-import ZAME as ladderRatingSystem
+import AXE as ladderRatingSystem
 
 ladder={}
 metrics=set(['r','rd','rpr','rprd'])
 trajectories={}
 trajectoriesSaveFile=False
+wltCounts={}
 
 idx=1
 while idx<len(sys.argv):
@@ -58,12 +59,20 @@ while idx<len(sys.argv):
 					ladder[battle[player]['trainer']]['r']=ladder[battle[player]['trainer']]['rpr']=1500.0
 					ladder[battle[player]['trainer']]['rd']=ladder[battle[player]['trainer']]['rprd']=350.0
 					trajectories[battle[player]['trainer']]=[]
+					wltCounts[battle[player]['trainer']]=[0,0,0]
 
 			if 'outcome' in battle['p1'].keys():
 				if battle['p1']['outcome'] == 'win':
 					winner=1
+					wltCounts[battle['p1']['trainer']][0]=wltCounts[battle['p1']['trainer']][0]+1
+					wltCounts[battle['p2']['trainer']][1]=wltCounts[battle['p2']['trainer']][1]+1
 				elif battle['p1']['outcome'] == 'loss':
-					winner=2		
+					winner=2
+					wltCounts[battle['p2']['trainer']][0]=wltCounts[battle['p2']['trainer']][0]+1
+					wltCounts[battle['p1']['trainer']][1]=wltCounts[battle['p1']['trainer']][1]+1
+				else:
+					wltCounts[battle['p1']['trainer']][2]=wltCounts[battle['p1']['trainer']][2]+1
+					wltCounts[battle['p2']['trainer']][2]=wltCounts[battle['p2']['trainer']][2]+1		
 			ladderRatingSystem.update(ratings,winner)
 
 			for player in ['p1','p2']:
@@ -72,7 +81,7 @@ while idx<len(sys.argv):
 					ladder[battle[player]['trainer']]=ratings[player]
 				else:	
 					ladder[battle[player]['trainer']]['ladderRating']=ratings[player]['ladderRating']
-				trajectories[battle[player]['trainer']].append({'score':ratings[player]['ladderRating'],'opponent':ratings[opp[player]]})
+				trajectories[battle[player]['trainer']].append({'rating':ratings[player],'opponent':ratings[opp[player]]})
 				if 'outcome' in battle[player].keys():
 					trajectories[battle[player]['trainer']][-1]['outcome']=battle[player]['outcome']
 				else:
@@ -82,7 +91,7 @@ while idx<len(sys.argv):
 if trajectoriesSaveFile:			
 	pickle.dump(trajectories,open(trajectoriesSaveFile,'w'))
 
-print 'Username,r,rd,rpr,rprd,acre,gxe,ladderScore'
+print 'Username,R,RD,rpR,rpRD,ACRE,GXE,ladderScore,nBattles,nWins'
 for player in ladder.keys():
 	r=ladder[player]['r']
 	rd=ladder[player]['rd']
@@ -92,4 +101,4 @@ for player in ladder.keys():
 	acre= rpr-1.4079126393*rprd
 	ladderScore=ladderRatingSystem.getSortable(ladder[player]['ladderRating'])
 
-	print player+','+str(r)+','+str(rd)+','+str(rpr)+','+str(rprd)+','+str(acre)+','+str(gxe)+','+str(ladderScore)	
+	print player+','+str(r)+','+str(rd)+','+str(rpr)+','+str(rprd)+','+str(acre)+','+str(gxe)+','+str(ladderScore)+','+str(len(trajectories[player]))+','+str(wltCounts[player][0])
