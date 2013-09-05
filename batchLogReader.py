@@ -36,18 +36,23 @@ def LogReader(filename,tier,movesets):
 			spacelog = False
 
 	#check for log length
-	if tier not in ['challengecup1vs1','doublesvgc2013dev','smogondoubles','1v1','gbusingles','globalshowdown']:
-		longEnough = False
-		if 'log' not in log.keys():
-			if int(log['turns']) > 5: 
-				longEnough = True
-		else:
-			for line in log['log']:
-				if (spacelog and line[2:10] == 'turn | 6') or (not spacelog and line[1:7] == 'turn|6'):
-					longEnough = True
-					break
-		if not longEnough:
-			return False
+	#if tier not in ['challengecup1vs1','doublesvgc2013dev','smogondoubles','1v1','gbusingles','globalshowdown']:
+	#	longEnough = False
+	#	if 'log' not in log.keys():
+	#		if int(log['turns']) > 5: 
+	#			longEnough = True
+	#	else:
+	#		for line in log['log']:
+	#			if (spacelog and line[2:10] == 'turn | 6') or (not spacelog and line[1:7] == 'turn|6'):
+	#				longEnough = True
+	#				break
+	#	if not longEnough:
+	#		return False
+
+	if 'turns' not in log.keys():
+		print filename+' has no turn count'
+		return False
+		
 
 	#get info on the trainers & pokes involved
 	ts = []
@@ -493,6 +498,9 @@ def LogReader(filename,tier,movesets):
 	for j in range(i,len(ts)):
 		writeme['p2']['team'].append({'species':ts[j][1],'KOs':KOs[j],'turnsOut':turnsOut[j]})
 	writeme['matchups']=matchups
+	writeme['turns']=int(log['turns'])
+	if 'endType' in log.keys():
+		writeme['endType']=log['endType']
 	
 	#outfile.write(lzma.compress(json.dumps(writeme))+'\n')
 	return writeme
