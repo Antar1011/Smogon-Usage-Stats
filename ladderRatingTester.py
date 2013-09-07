@@ -6,7 +6,13 @@ import gzip
 import json
 import math
 import cPickle as pickle
-import AXE as ladderRatingSystem
+try:
+	ladderRatingSystem = __import__(sys.argv[1])
+except:
+	sys.stderr.write('Incorrect syntax.\n')
+	sys.stderr.write('Correct usage:\n')
+	sys.stderr.write('\tpython ladderRatingTester.py SYSTEM FILES... [-t TRAJECTORYFILE]\n')
+	sys.exit(1)
 
 ladder={}
 metrics=set(['r','rd','rpr','rprd'])
@@ -14,7 +20,7 @@ trajectories={}
 trajectoriesSaveFile=False
 wltCounts={}
 
-idx=1
+idx=2
 while idx<len(sys.argv):
 	filename=sys.argv[idx]
 	if filename == '-t':
