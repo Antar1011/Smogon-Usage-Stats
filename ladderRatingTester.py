@@ -6,12 +6,18 @@ import gzip
 import json
 import math
 import cPickle as pickle
+
+systems = sys.argv[1].split(',')
 try:
-	ladderRatingSystem = __import__(sys.argv[1])
+	ladderRatingSystem={}
+	for system in systems:
+		ladderRatingSystem[system] = __import__(system)
 except:
 	sys.stderr.write('Incorrect syntax.\n')
 	sys.stderr.write('Correct usage:\n')
-	sys.stderr.write('\tpython ladderRatingTester.py SYSTEM FILES... [-t TRAJECTORYFILE]\n')
+	sys.stderr.write('\tpython ladderRatingTester.py SYSTEMS FILES... [-t TRAJECTORYFILE]\n')
+	sys.stderr.write('Example:\n')
+	sys.stderr.write('\tpython ladderRatingTester.py AX1,AX2 2013-07/Raw/ou 2013-08/Raw/ou -t trajectories.pickle\n')
 	sys.exit(1)
 
 ladder={}
@@ -37,12 +43,13 @@ while idx<len(sys.argv):
 		if (i>0):
 			raw[i]='['+raw[i]
 		if (i<len(raw)-1):
-			raw[i]=raw[i]+']'
+			raw[i]+=']'
 
 	for line in raw:
 		battles = json.loads(line)
 		for battle in battles:
 			ratings={}
+			scores={}
 			winner=0
 			ladderError = False
 			for player in ['p1','p2']:
@@ -58,53 +65,58 @@ while idx<len(sys.argv):
 					ratings[player]['r']=ratings[player]['rpr']=1500.0
 					ratings[player]['rd']=ratings[player]['rprd']=350.0
 				if battle[player]['trainer'] in ladder.keys():
-					ratings[player]['ladderRating']=ladder[battle[player]['trainer']]['ladderRating']
+					scores[player]=ladder[battle[player]['trainer']]['scores']
 				else:
-					ratings[player]['ladderRating']=ladderRatingSystem.newPlayer()
-					ladder[battle[player]['trainer']]={}
-					ladder[battle[player]['trainer']]['r']=ladder[battle[player]['trainer']]['rpr']=1500.0
-					ladder[battle[player]['trainer']]['rd']=ladder[battle[player]['trainer']]['rprd']=350.0
+					ladder[battle[player]['trainer']]={'rating':ratings[player]}
+					scores[player]={}
+					for system in systems:
+						scores[player][system]=ladderRatingSystem[system].newPlayer()
 					trajectories[battle[player]['trainer']]=[]
 					wltCounts[battle[player]['trainer']]=[0,0,0]
 
 			if 'outcome' in battle['p1'].keys():
 				if battle['p1']['outcome'] == 'win':
 					winner=1
-					wltCounts[battle['p1']['trainer']][0]=wltCounts[battle['p1']['trainer']][0]+1
-					wltCounts[battle['p2']['trainer']][1]=wltCounts[battle['p2']['trainer']][1]+1
+					wltCounts[battle['p1']['trainer']][0]+=1
+					wltCounts[battle['p2']['trainer']][1]+=1
 				elif battle['p1']['outcome'] == 'loss':
 					winner=2
-					wltCounts[battle['p2']['trainer']][0]=wltCounts[battle['p2']['trainer']][0]+1
-					wltCounts[battle['p1']['trainer']][1]=wltCounts[battle['p1']['trainer']][1]+1
+					wltCounts[battle['p2']['trainer']][0]+=1
+					wltCounts[battle['p1']['trainer']][1]+=1
 				else:
-					wltCounts[battle['p1']['trainer']][2]=wltCounts[battle['p1']['trainer']][2]+1
-					wltCounts[battle['p2']['trainer']][2]=wltCounts[battle['p2']['trainer']][2]+1		
-			ladderRatingSystem.update(ratings,winner)
+					wltCounts[battle['p1']['trainer']][2]+=1
+					wltCounts[battle['p2']['trainer']][2]+=1
+			for system in systems:
+				scores['p1'][system],scores['p2'][system]=ladderRatingSystem[system].update({'p1':scores['p1'][system],'p2':scores['p2'][system]},ratings,winner)
 
 			for player in ['p1','p2']:
 				opp={'p1':'p2','p2':'p1'}
 				if not ladderError:
-					ladder[battle[player]['trainer']]=ratings[player]
-				else:	
-					ladder[battle[player]['trainer']]['ladderRating']=ratings[player]['ladderRating']
-				trajectories[battle[player]['trainer']].append({'rating':ratings[player],'opponent':ratings[opp[player]]})
+					ladder[battle[player]['trainer']]['rating']=ratings[player]
+				ladder[battle[player]['trainer']]['scores']=scores[player]
+				trajectories[battle[player]['trainer']].append({'player':{'rating':ratings[player],'scores':scores[player]},'opponent':{'rating':ratings[opp[player]],'scorees':scores[opp[player]]}})
 				if 'outcome' in battle[player].keys():
 					trajectories[battle[player]['trainer']][-1]['outcome']=battle[player]['outcome']
 				else:
 					trajectories[battle[player]['trainer']][-1]['outcome']='tie'
-	idx=idx+1
+	idx+=1
+	
 
 if trajectoriesSaveFile:			
 	pickle.dump(trajectories,open(trajectoriesSaveFile,'w'))
 
-print 'Username,R,RD,rpR,rpRD,ACRE,GXE,ladderScore,nBattles,nWins'
+printme='Username,nBattles,nWins,R,RD,rpR,rpRD,ACRE,GXE'
+for system in systems:
+	printme+=','+system
+print printme
 for player in ladder.keys():
-	r=ladder[player]['r']
-	rd=ladder[player]['rd']
-	rpr=ladder[player]['rpr']
-	rprd=ladder[player]['rprd']
+	r=ladder[player]['rating']['r']
+	rd=ladder[player]['rating']['rd']
+	rpr=ladder[player]['rating']['rpr']
+	rprd=ladder[player]['rating']['rprd']
 	gxe = round(10000 / (1 + pow(10.0,(((1500 - rpr)) * math.pi / math.sqrt(3 * pow(math.log(10.0),2.0) * pow(rprd,2.0) + 2500 * (64 * pow(math.pi,2.0) + 147 * pow(math.log(10.0),2))))))) / 100
 	acre= rpr-1.4079126393*rprd
-	ladderScore=ladderRatingSystem.getSortable(ladder[player]['ladderRating'])
-
-	print player+','+str(r)+','+str(rd)+','+str(rpr)+','+str(rprd)+','+str(acre)+','+str(gxe)+','+str(ladderScore)+','+str(len(trajectories[player]))+','+str(wltCounts[player][0])
+	printme=player+','+str(len(trajectories[player]))+','+str(wltCounts[player][0])+','+str(r)+','+str(rd)+','+str(rpr)+','+str(rprd)+','+str(acre)+','+str(gxe)
+	for system in systems:
+		printme+=','+str(ladderRatingSystem[system].getSortable(ladder[player]['scores'][system]))
+	print printme
