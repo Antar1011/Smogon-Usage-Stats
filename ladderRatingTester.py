@@ -106,8 +106,10 @@ if trajectoriesSaveFile:
 	pickle.dump(trajectories,open(trajectoriesSaveFile,'w'))
 
 printme='Username,nBattles,nWins,R,RD,rpR,rpRD,ACRE,GXE'
+x=[]
 for system in systems:
 	printme+=','+system
+	x.append(system)
 print printme
 for player in ladder.keys():
 	r=ladder[player]['rating']['r']
@@ -117,6 +119,6 @@ for player in ladder.keys():
 	gxe = round(10000 / (1 + pow(10.0,(((1500 - rpr)) * math.pi / math.sqrt(3 * pow(math.log(10.0),2.0) * pow(rprd,2.0) + 2500 * (64 * pow(math.pi,2.0) + 147 * pow(math.log(10.0),2))))))) / 100
 	acre= rpr-1.4079126393*rprd
 	printme=player+','+str(len(trajectories[player]))+','+str(wltCounts[player][0])+','+str(r)+','+str(rd)+','+str(rpr)+','+str(rprd)+','+str(acre)+','+str(gxe)
-	for system in systems:
+	for system in x: #probably could just do system in systems, but this is safer
 		printme+=','+str(ladderRatingSystem[system].getSortable(ladder[player]['scores'][system]))
 	print printme

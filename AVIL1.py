@@ -20,7 +20,7 @@ def update(scores,ratings,outcome):
 		scores['p1']+=K*GXE['p2']
 		scores['p2']-=K*GXE['p2']
 	elif outcome == 2:
-		scores['p1']-=-K*GXE['p1']
+		scores['p1']-=K*GXE['p1']
 		scores['p2']+=+K*GXE['p1']
 	else:
 		scores['p1']+=K*(GXE['p2']-GXE['p1'])/2
