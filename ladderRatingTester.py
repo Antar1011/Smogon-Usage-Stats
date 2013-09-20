@@ -94,7 +94,7 @@ while idx<len(sys.argv):
 				if not ladderError:
 					ladder[battle[player]['trainer']]['rating']=ratings[player]
 				ladder[battle[player]['trainer']]['scores']=scores[player]
-				trajectories[battle[player]['trainer']].append({'player':{'rating':ratings[player],'scores':scores[player]},'opponent':{'rating':ratings[opp[player]],'scorees':scores[opp[player]]}})
+				trajectories[battle[player]['trainer']].append({'player':{'rating':ratings[player],'scores':scores[player]},'opponent':{'rating':ratings[opp[player]],'scores':scores[opp[player]]}})
 				if 'outcome' in battle[player].keys():
 					trajectories[battle[player]['trainer']][-1]['outcome']=battle[player]['outcome']
 				else:
