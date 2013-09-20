@@ -64,11 +64,12 @@ while idx<len(sys.argv):
 					ratings[player]={}
 					ratings[player]['r']=ratings[player]['rpr']=1500.0
 					ratings[player]['rd']=ratings[player]['rprd']=350.0
+				scores[player]={}
 				if battle[player]['trainer'] in ladder.keys():
-					scores[player]=ladder[battle[player]['trainer']]['scores']
+					for system in systems:
+						scores[player][system]=ladder[battle[player]['trainer']]['scores'][system]
 				else:
 					ladder[battle[player]['trainer']]={'rating':ratings[player]}
-					scores[player]={}
 					for system in systems:
 						scores[player][system]=ladderRatingSystem[system].newPlayer()
 					trajectories[battle[player]['trainer']]=[]

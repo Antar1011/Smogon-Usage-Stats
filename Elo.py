@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-#Zarel and Antar's Glicko-Modified Elo
+#vanilla Elo
 
 from common import victoryChance
 
@@ -21,7 +21,7 @@ def update(score,ratings,outcome):
 	S['p2']=1.0-S['p1']
 
 	E={}
-	E['p1']=victoryChance(ratings['p1']['r'],ratings['p1']['rd'],ratings['p2']['r'],ratings['p2']['rd'])
+	E['p1']=victoryChance(score['p1'],0.0,score['p2'],0.0)
 	E['p2']=1.0-E['p1']
 	
 	for p in ['p1','p2']:

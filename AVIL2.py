@@ -10,7 +10,7 @@ K=50.0
 def newPlayer():
 	return 1000.0
 
-def update(scores,ratings,outcome):
+def update(score,ratings,outcome):
 
 	GXE={}
 	for p in ['p1','p2']:
@@ -19,14 +19,14 @@ def update(scores,ratings,outcome):
 	pointChange=K*GXE['p1']+GXE['p2']/2
 
 	if outcome == 1:
-		scores['p1']+=pointChange
-		scores['p2']-=pointChange
+		score['p1']+=pointChange
+		score['p2']-=pointChange
 	elif outcome == 2:
-		scores['p1']-=pointChange
-		scores['p2']+=pointChange
+		score['p1']-=pointChange
+		score['p2']+=pointChange
 	#else: no change
 	
-	return scores['p1'],scores['p2']
+	return score['p1'],score['p2']
 	
 
 def getSortable(ladderRating):

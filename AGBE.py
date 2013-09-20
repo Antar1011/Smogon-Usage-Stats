@@ -10,7 +10,7 @@ K=50.0
 def newPlayer():
 	return 1000.0
 
-def update(scores,ratings,outcome):
+def update(score,ratings,outcome):
 	S={}
 	if outcome == 1:
 		S['p1']=1
@@ -25,9 +25,9 @@ def update(scores,ratings,outcome):
 	E['p2']=victoryChance(1500.0,350.0,ratings['p1']['r'],ratings['p2']['rd'])
 	
 	for p in ['p1','p2']:
-		scores[p]+=K*(S[p]-E[p])
+		score[p]+=K*(S[p]-E[p])
 
-	return scores['p1'],scores['p2']
+	return score['p1'],score['p2']
 
 def getSortable(ladderRating):
 	return ladderRating
