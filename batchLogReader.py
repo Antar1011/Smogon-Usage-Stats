@@ -508,6 +508,8 @@ def LogReader(filename,tier,movesets):
 tier = sys.argv[2]
 if tier[len(tier)-7:]=='current':
 	tier=tier[:len(tier)-7]
+if tier.startswith('gen5'):
+	tier = tier[4:]
 #elif tier[:8]=='seasonal':
 #	tier='seasonal'
 outname = "Raw/"+tier#+".txt"
