@@ -209,7 +209,10 @@ def LogReader(filename,tier,movesets):
 		if len(log[team]) < 6:
 			for i in range(6-len(log[team])):
 				ts.append([trainer,'empty'])
-		analysis = analyzeTeam(teams[team])
+		if tier.startswith('gen6') or tier.endswith('beta'):
+			analysis={'bias': 0, 'stalliness': 0, 'tags': []}
+		else:
+			analysis = analyzeTeam(teams[team])
 		teams[team].append({'bias': analysis['bias'], 'stalliness': analysis['stalliness'], 'tags': analysis['tags']})
 		if (team == 'p1team' and whowon == 1) or (team == 'p2team' and whowon == 2):
 			teams[team][len(teams[team])-1]['outcome']='win'
