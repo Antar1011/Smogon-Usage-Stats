@@ -107,7 +107,7 @@ def movesetCounter(filename, cutoff,usage):
 					moves[move] = moves[move]+weight
 
 	count = sum(abilities.values())
-	
+
 	#teammate stats
 	teammates = teammateMatrix[species]
 	for s in teammates:

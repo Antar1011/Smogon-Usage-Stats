@@ -131,5 +131,7 @@ aliases={
 	'Lucario': ['Luke'],
 	'Porygon2': ['P2','Pory2'],
 	'Porygon-Z': ['Pz','Poryz','PorygonZ'],
-	'Tyranitar': ['Ttar']
+	'Tyranitar': ['Ttar'],
+	'Pumkaboo': ['Pumpkaboo-Average'],
+	'Gourgeist': ['Gourgeist-Average']
 }
