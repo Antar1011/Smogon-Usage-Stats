@@ -83,112 +83,113 @@ def analyzeTeam(team):
 
 		#moveset modifications
 		if poke['ability'] in ['purepower','hugepower']:
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if poke['item'] in ['choiceband','choicescarf','choicespecs','lifeorb']:
-			stalliness = stalliness - 0.5
+			stalliness -= 0.5
 		if poke['item'] == 'eviolite':
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
 		if 'spikes' in poke['moves']:
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
 		if 'toxicspikes' in poke['moves']:
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
 		if 'toxic' in poke['moves']:
-			stalliness = stalliness + 1.0
+			stalliness += 1.0
 		if 'willowisp' in poke['moves']:
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
 		if len(set(['recover' ,'slackoff', 'healorder', 'milkdrink', 'roost', 'moonlight', 'morningsun', 'synthesis', 'wish', 'aquaring', 'rest', 'softboiled', 'swallow', 'leechseed']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness + 1.0
+			stalliness += 1.0
 		if poke['ability'] == 'regenerator':
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
 		if len(set(['healbell','aromatherapy']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness + 0.5
-		if poke['ability'] in ['chlorophyll', 'download', 'hustle', 'moxie', 'reckless', 'sandrush', 'solarpower', 'swiftswim', 'technician', 'tintedlens']:
-			stalliness = stalliness - 0.5
+			stalliness += 0.5
+		if poke['ability'] in ['chlorophyll', 'download', 'hustle', 'moxie', 'reckless', 'sandrush', 'solarpower', 'swiftswim', 'technician', 'tintedlens', 'darkaura', 'fairyaura', 'infiltrator', 'parentalbond', 'protean', 'strongjaws', 'sweetveil', 'toughclaws']:
+			stalliness -= 0.5
 		if poke['ability'] in ['flareboost', 'guts', 'quickfeet'] and poke['item'] == 'flameorb':
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if poke['ability'] in ['toxicboost', 'guts', 'quickfeet'] and poke['item'] == 'toxicorb':
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if poke['ability'] in ['speedboost', 'moody']:
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if poke['ability'] in ['arenatrap','magnetpull','shadowtag']:
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		elif len(set(['block','meanlook','spiderweb','pursuit']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness - 0.5
-		if poke['ability'] in ['dryskin', 'filter', 'hydration', 'icebody', 'intimidate', 'ironbarbs', 'marvelscale', 'naturalcure', 'magicguard', 'multiscale', 'raindish', 'roughskin', 'solidrock', 'thickfat', 'unaware']:
-			stalliness = stalliness + 0.5
+			stalliness -= 0.5
+		if poke['ability'] in ['dryskin', 'filter', 'hydration', 'icebody', 'intimidate', 'ironbarbs', 'marvelscale', 'naturalcure', 'magicguard', 'multiscale', 'raindish', 'roughskin', 'solidrock', 'thickfat', 'unaware', 'aromaveil', 'bulletproof', 'cheekpouch', 'gooey']:
+			stalliness += 0.5
 		if poke['ability'] == 'poisonheal' and poke['item'] == 'toxicorb':
-			stalliness = stalliness + 0.5
-		if poke['ability'] in ['slowstart','truant']:
-			stalliness = stalliness + 1.0
+			stalliness += 0.5
+		if poke['ability'] in ['slowstart','truant','furcoat']:
+			stalliness += 1.0
 		if poke['item'] == 'lightclay':
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if 'bellydrum' in poke['moves']:
-			stalliness = stalliness - 2.0
+			stalliness -= 2.0
 		elif 'shellsmash' in poke['moves']:
-			stalliness = stalliness - 1.5
-		elif len(set(['curse', 'dragondance', 'growth', 'shiftgear', 'swordsdance', 'fierydance', 'nastyplot', 'tailglow', 'quiverdance']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness - 1.0
-		elif len(set(['acupressure', 'bulkup', 'coil', 'howl', 'workup', 'meditate', 'sharpen', 'calmmind', 'chargebeam', 'agility', 'autotomize', 'flamecharge', 'rockpolish', 'doubleteam', 'minimize', 'tailwind']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness - 0.5
+			stalliness -= 1.5
+		elif len(set(['curse', 'dragondance', 'growth', 'shiftgear', 'swordsdance', 'fierydance', 'nastyplot', 'tailglow', 'quiverdance', 'geomancy']).intersection(poke['moves'])) != 0:
+			stalliness -= 1.0
+		elif len(set(['acupressure', 'bulkup', 'coil', 'howl', 'workup', 'meditate', 'sharpen', 'calmmind', 'chargebeam', 'agility', 'autotomize', 'flamecharge', 'rockpolish', 'doubleteam', 'minimize', 'tailwind', 'poweruppunch', 'rototiller']).intersection(poke['moves'])) != 0:
+			stalliness -= 0.5
 		if 'substitute' in poke['moves']:
-			stalliness = stalliness - 0.5
-		if 'protect' in poke['moves'] or 'detect' in poke['moves']:
-			stalliness = stalliness + 1.0
+			stalliness -= 0.5
+		if len(set(['protect','detect','kingsshield','matblock','spikyshield']).intersection(poke['moves'])) != 0:
+			stalliness += 1.0
 		if 'endeavor' in poke['moves']:
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if 'superfang' in poke['moves']:
-			stalliness = stalliness - 0.5
+			stalliness -= 0.5
 		if 'trick' in poke['moves']:
-			stalliness = stalliness - 0.5
+			stalliness -= 0.5
 		if 'psychoshift' in poke['moves']:
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
 		if len(set(['whirlwind', 'roar', 'circlethrow', 'dragontail']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
 		if len(set(['haze', 'clearsmog']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness + 0.5
-		if len(set(['thunderwave', 'stunspore', 'glare']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
+		if len(set(['thunderwave', 'stunspore', 'glare', 'nuzzle']).intersection(poke['moves'])) != 0:
+			stalliness += 0.5
 		if len(set(['supersonic', 'confuseray', 'swagger', 'flatter', 'teeterdance', 'yawn']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
 		if len(set(['darkvoid', 'grasswhistle', 'hypnosis', 'lovelykiss', 'sing', 'sleeppowder', 'spore']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness - 0.5
+			stalliness -= 0.5
 		if poke['item'] == 'redcard':
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
 		if poke['item'] == 'rockyhelmet':
-			stalliness = stalliness + 0.5
-		if poke['item'] in ['firegem', 'watergem', 'electricgem', 'grassgem', 'icegem', 'fightinggem', 'posiongem', 'groundgem', 'groundgem', 'flyinggem', 'psychicgem', 'buggem', 'rockgem', 'ghostgem', 'darkgem', 'steelgem', 'normalgem', 'focussash', 'mentalherb', 'powerherb', 'whiteherb', 'absorbbulb', 'berserkgene', 'cellbattery', 'redcard', 'focussash', 'airballoon', 'ejectbutton', 'shedshell', 'aguavberry', 'apicotberry', 'aspearberry', 'babiriberry', 'chartiberry', 'cheriberry', 'chestoberry', 'chilanberry', 'chopleberry', 'cobaberry', 'custapberry', 'enigmaberry', 'figyberry', 'ganlonberry', 'habanberry', 'iapapaberry', 'jabocaberry', 'kasibberry', 'kebiaberry', 'lansatberry', 'leppaberry', 'liechiberry', 'lumberry', 'magoberry', 'micleberry', 'occaberry', 'oranberry', 'passhoberry', 'payapaberry', 'pechaberry', 'persimberry', 'petayaberry', 'rawstberry', 'rindoberry', 'rowapberry', 'salacberry', 'shucaberry', 'sitrusberry', 'starfberry', 'tangaberry', 'wacanberry', 'wikiberry', 'yacheberry']:
-			stalliness = stalliness - 0.5
+			stalliness += 0.5
+		if poke['item'] in ['firegem', 'watergem', 'electricgem', 'grassgem', 'icegem', 'fightinggem', 'posiongem', 'groundgem', 'groundgem', 'flyinggem', 'psychicgem', 'buggem', 'rockgem', 'ghostgem', 'darkgem', 'steelgem', 'normalgem', 'focussash', 'mentalherb', 'powerherb', 'whiteherb', 'absorbbulb', 'berserkgene', 'cellbattery', 'redcard', 'focussash', 'airballoon', 'ejectbutton', 'shedshell', 'aguavberry', 'apicotberry', 'aspearberry', 'babiriberry', 'chartiberry', 'cheriberry', 'chestoberry', 'chilanberry', 'chopleberry', 'cobaberry', 'custapberry', 'enigmaberry', 'figyberry', 'ganlonberry', 'habanberry', 'iapapaberry', 'jabocaberry', 'kasibberry', 'kebiaberry', 'lansatberry', 'leppaberry', 'liechiberry', 'lumberry', 'magoberry', 'micleberry', 'occaberry', 'oranberry', 'passhoberry', 'payapaberry', 'pechaberry', 'persimberry', 'petayaberry', 'rawstberry', 'rindoberry', 'rowapberry', 'salacberry', 'shucaberry', 'sitrusberry', 'starfberry', 'tangaberry', 'wacanberry', 'wikiberry', 'yacheberry','keeberry','marangaberry','roseliberry','snowball']:
+			stalliness -= 0.5
 		if poke['ability'] == 'harvest' or 'recycle' in poke['moves']:
-			stalliness = stalliness + 1
-		#if len(set(['jumpkick', 'doubleedge', 'submission', 'petaldance', 'hijumpkick', 'outrage', 'superpower', 'overheat', 'volttackle', 'psychoboost', 'hammerarm', 'closecombat', 'flareblitz', 'bravebird', 'dracometeor', 'leafstorm', 'woodhammer', 'headsmash', 'headcharge', 'vcreate', 'wildcharge', 'takedown']).intersection(poke['moves'])) != 0:
+			stalliness += 1.0
 		if len(set(['jumpkick', 'doubleedge', 'submission', 'petaldance', 'hijumpkick', 'outrage', 'volttackle', 'closecombat', 'flareblitz', 'bravebird', 'woodhammer', 'headsmash', 'headcharge', 'wildcharge', 'takedown']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness - 0.5
+			stalliness -= 0.5
 		if len(set(['selfdestruct', 'explosion', 'destinybond', 'perishsong', 'memento', 'healingwish', 'lunardance', 'finalgambit']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if len(set(['guillotine', 'fissure', 'sheercold']).intersection(poke['moves'])) != 0:
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if poke['ability'] in ['sandstream','snowwarning'] or 'sandstorm' in poke['moves'] or 'hail' in poke['moves']:
-			stalliness = stalliness + 0.5
+			stalliness += 0.5
 		if poke['species'] in ['latios', 'latias'] and poke['item'] == 'souldew':
-			stalliness = stalliness - 0.5
+			stalliness -= 0.5
 		if poke['species'] == 'pikachu' and poke['item'] == 'lightball':
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if poke['species'] in ['cubone', 'marowak'] and poke['item'] == 'thickclub':
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if poke['species'] == 'clamperl' and poke['item'] == 'deepseatooth':
-			stalliness = stalliness - 1.0
+			stalliness -= 1.0
 		if poke['species'] == 'clamperl' and poke['item'] == 'deepseascale':
-			stalliness = stalliness + 1.0
-		if poke['item'] in ['expertbelt', 'wiseglasses', 'muscleband', 'dracoplate', 'dreadplate', 'earthplate', 'fistplate', 'flameplate', 'icicleplate', 'insectplate', 'ironplate', 'meadowplate', 'mindplate', 'skyplate', 'splashplate', 'spookyplate', 'stoneplate', 'toxicplate', 'zapplate', 'blackglasses', 'charcoal', 'dragonfang', 'hardstone', 'magnet', 'metalcoat', 'miracleseed', 'mysticwater', 'nevermeltice', 'poisonbarb', 'sharpbeak', 'silkscarf', 'silverpowder', 'softsand', 'spelltag', 'twistedspoon']:
-			stalliness = stalliness - 0.25
+			stalliness += 1.0
+		if poke['item'] in ['expertbelt', 'wiseglasses', 'muscleband', 'dracoplate', 'dreadplate', 'earthplate', 'fistplate', 'flameplate', 'icicleplate', 'insectplate', 'ironplate', 'meadowplate', 'mindplate', 'skyplate', 'splashplate', 'spookyplate', 'stoneplate', 'toxicplate', 'zapplate', 'blackglasses', 'charcoal', 'dragonfang', 'hardstone', 'magnet', 'metalcoat', 'miracleseed', 'mysticwater', 'nevermeltice', 'poisonbarb', 'sharpbeak', 'silkscarf', 'silverpowder', 'softsand', 'spelltag', 'twistedspoon', 'pixieplate']:
+			stalliness -= 0.25
 		if poke['species'] == 'dialga' and poke['item'] == 'adamantorb':
-			stalliness = stalliness - 0.25
+			stalliness -= 0.25
 		if poke['species'] == 'palkia' and poke['item'] == 'lustrousorb':
 			stalliness = stalliness - 0.25
 		if poke['species'] == 'giratinaorigin' and poke['item'] == 'griseousorb': #it's better be holding a Griseous Orb
-			stalliness = stalliness - 0.25
-		#if poke['item'] == 'leftovers':
-		#	stalliness = stalliness + 0.25
+			stalliness -= 0.25
+		if poke['item'] == 'weaknesspolicy':
+			stalliness -= 1.0
+		
+		#to-do: mega evolutions
 
 		#final correction
 		stalliness=stalliness-math.log(3,2)
