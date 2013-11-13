@@ -216,25 +216,25 @@ def analyzePoke(poke):
 	if poke['item'] == 'weaknesspolicy':
 		stalliness -= 1.0
 	
-	return stalliness
+	return stalliness,bias
 
 def analyzeTeam(team):
 	tbias = 0
 	tstalliness = []
 	for poke in team:
-		stalliness = analyzePoke(poke)
+		(stalliness,bias) = analyzePoke(poke)
 		
 		for mega in megas:
 			if [poke['species'],poke['item']] == mega[:2]:
 				megaspecies = poke['species']+'mega'
 				if poke['item'].endswith('x'):
 					megaspecies +='x'
-				elif poke['item'].endswith('y')
+				elif poke['item'].endswith('y'):
 					megaspecies += 'y'
 				megapoke = copy.deepcopy(poke)
 				megapoke['species']=megaspecies
 				megapoke['ability']=mega[2]
-				stalliness += analyzePoke(megapoke)
+				stalliness += analyzePoke(megapoke)[0]
 				stalliness /= 2.0
 				break
 
@@ -284,7 +284,7 @@ def analyzeTeam(team):
 		if poke['ability'] == 'drought':
 			detected = True
 			break
-		elif [poke['species'],poke['item']] == ['charizard','charizarditey']
+		elif [poke['species'],poke['item']] == ['charizard','charizarditey']:
 			detected = True
 			break
 		elif poke['item'] == 'heatrock' and 'sunnyday' in poke['moves']:
