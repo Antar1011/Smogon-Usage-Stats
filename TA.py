@@ -86,6 +86,7 @@ def analyzePoke(poke):
 		poke['species']='meloettapirouette'
 	elif poke['species'] == 'darmanitan' and poke['ability'] == 'zenmode':
 		poke['species']='darmanitanzen'
+		
 
 	#technically I don't need to do this as a separate loop, but I'm doing it this way for modularity's sake
 	stats = []
@@ -98,6 +99,12 @@ def analyzePoke(poke):
 	stats.append(statFormula(baseStats[poke['species']]['spa'],poke['level'],nmod[poke['nature']][3],poke['ivs']['spa'],poke['evs']['spa']))
 	stats.append(statFormula(baseStats[poke['species']]['spd'],poke['level'],nmod[poke['nature']][4],poke['ivs']['spd'],poke['evs']['spd']))
 	stats.append(statFormula(baseStats[poke['species']]['spe'],poke['level'],nmod[poke['nature']][2],poke['ivs']['spe'],poke['evs']['spe']))
+
+	if poke['species'] == 'aegislash' and poke['ability'] == 'stancechange': #check for attacking move as well?
+		stats[2] += stats.append(statFormula(baseStats['aegislashblade']['def'],poke['level'],nmod[poke['nature']][1],poke['ivs']['def'],poke['evs']['def']))
+		stats[4] += stats.append(statFormula(baseStats['aegislashblade']['spd'],poke['level'],nmod[poke['nature']][1],poke['ivs']['def'],poke['evs']['def']))
+		stats[2] /= 2
+		stats[4] /= 2
 
 	#calculate base stalliness
 	bias = poke['evs']['atk']+poke['evs']['spa']-poke['evs']['hp']-poke['evs']['def']-poke['evs']['spd']
