@@ -102,7 +102,7 @@ def analyzePoke(poke):
 
 	if poke['species'] == 'aegislash' and poke['ability'] == 'stancechange': #check for attacking move as well?
 		stats[2] += stats.append(statFormula(baseStats['aegislashblade']['def'],poke['level'],nmod[poke['nature']][1],poke['ivs']['def'],poke['evs']['def']))
-		stats[4] += stats.append(statFormula(baseStats['aegislashblade']['spd'],poke['level'],nmod[poke['nature']][1],poke['ivs']['def'],poke['evs']['def']))
+		stats[4] += stats.append(statFormula(baseStats['aegislashblade']['spd'],poke['level'],nmod[poke['nature']][1],poke['ivs']['spd'],poke['evs']['spd']))
 		stats[2] /= 2
 		stats[4] /= 2
 
