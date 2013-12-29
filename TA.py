@@ -74,7 +74,7 @@ megas=[	['abomasnow','abomasite','snowwarning'],
 	['pinsir','pinsirite','aerilate'],
 	['scizor','scizorite','technician'],
 	['tyranitar','tyranitarite','sandstream'],
-	['venusaur','venusaurite'] ]
+	['venusaur','venusaurite','thickfat'] ]
 	
 def analyzePoke(poke):
 	if poke['species'] not in baseStats.keys():
