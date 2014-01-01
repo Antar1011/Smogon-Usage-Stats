@@ -275,7 +275,7 @@ if sys.argv[1] in ['randombattle','challengecup','challengecup1v1','seasonal']:
 else:
 	pokes=sorted(pokes, key=lambda pokes:-pokes[1])
 
-chaos = {'info': {'metagame': str(sys.argv[1]), 'cutoff': cutoff, 'cutoff deviation': cutoffdeviation},'data':{}}
+chaos = {'info': {'metagame': str(sys.argv[1]), 'cutoff': cutoff, 'cutoff deviation': cutoffdeviation, 'number of battles': nBattles},'data':{}}
 for poke in pokes:
 	if poke[1] < 0.0001: #1/100th of a percent
 		break

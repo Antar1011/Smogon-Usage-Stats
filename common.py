@@ -133,5 +133,6 @@ aliases={
 	'Porygon-Z': ['Pz','Poryz','PorygonZ'],
 	'Tyranitar': ['Ttar'],
 	'Pumkaboo': ['Pumpkaboo-Average'],
-	'Gourgeist': ['Gourgeist-Average']
+	'Gourgeist': ['Gourgeist-Average'],
+	'Aegislash': ['Aegislash-Blade']
 }
