@@ -14,10 +14,15 @@ for species in stats['data'].keys():
 	for mega in megas:
 		if keyify(species) == mega[0]:
 			try:
-				megastats.append([species,stats['data'][species]['Items'][mega[1]]])
-				break
+				name = species
+				if mega[1][-1] in ['x','y']:
+					name+=' '+mega[1][-1].upper()
+				megastats.append([name,stats['data'][species]['Items'][mega[1]]])
+				if mega[1][-1] != 'x':
+					break
 			except KeyError:
-				break
+				if mega[1][-1] != 'x':
+					break
 
 megastats=sorted(megastats, key=lambda megastats:-megastats[1])
 for mega in megastats:
