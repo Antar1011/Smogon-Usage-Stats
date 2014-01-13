@@ -11,7 +11,9 @@ RDmin=50
 c=20
 
 def g(RD):
-	return 1.0/math.sqrt(1.0+3.0*q*q*RD*RD/math.pi/math.pi)
+	return pow(1.0+3.0*q*q*RD*RD/math.pi/math.pi,-0.5)
+def expectedScore(R1,R2,RD2):
+	return 1.0/(1.0+pow(10,-g(RD2)*(R1-R2)/400))
 
 def newPlayer():
 	return {'R':1500.0,'RD':350.0,'A':0.0,'d2':0.0}
@@ -28,15 +30,16 @@ def update(p1rating,p2rating,outcome):
 	S['p2']=1.0-S['p1']
 
 	E={}
-	E['p1']=victoryChance(p1rating['R'],p1rating['RD'],p2rating['R'],p2rating['RD'])
-	E['p2']=1.0-E['p1']
+	E['p1']=expectedScore(p1rating['R'],p2rating['R'],p2rating['RD'])
+	E['p2']=expectedScore(p2rating['R'],p1rating['R'],p1rating['RD'])
 
 	p1rating['A']+=g(p2rating['RD'])*(S['p1']-E['p1'])
-	p1rating['d2']+=pow(g(p2rating['RD']),2)*E['p1']*E['p2']
+	p1rating['d2']+=pow(g(p2rating['RD']),2)*E['p1']*(1.0-E['p1'])
 
 	p2rating['A']+=g(p1rating['RD'])*(S['p2']-E['p2'])
-	p2rating['d2']+=pow(g(p1rating['RD']),2)*E['p2']*E['p1']	
+	p2rating['d2']+=pow(g(p1rating['RD']),2)*E['p2']*(1.0-E['p2'])	
 
+	#return p1rating,p2rating,victoryChance(p1rating['R'],p1rating['RD'],p2rating['R'],p2rating['RD'])
 	return p1rating,p2rating,E['p1']
 
 def newRatingPeriod(rating):

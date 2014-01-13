@@ -3,9 +3,9 @@
 
 #vanilla Elo
 
-from common import victoryChance
-
-K=25.0
+def expectedScore(R1,R2):
+	return 1.0/(1.0+pow(10,(R2-R1)/400))
+K=50.0
 
 def newPlayer():
 	return 1000.0
@@ -22,7 +22,7 @@ def update(p1rating,p2rating,outcome):
 	S['p2']=1.0-S['p1']
 
 	E={}
-	E['p1']=victoryChance(p1rating,0.0,p2rating,0.0)
+	E['p1']=expectedScore(p1rating,p2rating)
 	E['p2']=1.0-E['p1']
 
 	p1rating+=K*(S['p1']-E['p1'])

@@ -1,19 +1,20 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-#Glicko
+#Glicko-2
 
 import math
 from common import victoryChance
 
 def g(phi):
-		return 1.0/math.sqrt(1.0+3.0*phi*phi/math.pi/math.pi)
+		return pow(1.0+3.0*phi*phi/math.pi/math.pi,-0.5)
+def expectedScore(R1,R2,RD2):
+		return 1.0/(1.0+math.exp(-g(phi(RD2))*(mu(R1)-mu(R2))))
 def mu(R):
-		return (R-1500.0)/174.7178
+		return (R-1500.0)/173.7178
 def phi(RD):
 		return RD/173.7178
 
-q=math.log(10.0)/400
 tau=0.2
 sigma0=0.11
 
@@ -33,8 +34,8 @@ def update(p1rating,p2rating,outcome):
 	S['p2']=1.0-S['p1']
 
 	E={}
-	E['p1']=victoryChance(p1rating['R'],p1rating['RD'],p2rating['R'],p2rating['RD'])
-	E['p2']=1.0-E['p1']
+	E['p1']=expectedScore(p1rating['R'],p2rating['R'],p2rating['RD'])
+	E['p2']=expectedScore(p2rating['R'],p1rating['R'],p1rating['RD'])
 
 	p1rating['v'] += pow(g(phi(p2rating['RD'])),2)*E['p1']*E['p2']
 	p1rating['Delta'] += g(phi(p2rating['RD']))*(S['p1']-E['p1'])
@@ -42,6 +43,7 @@ def update(p1rating,p2rating,outcome):
 	p2rating['v'] += pow(g(phi(p1rating['RD'])),2)*E['p2']*E['p1']
 	p2rating['Delta'] += g(phi(p1rating['RD']))*(S['p2']-E['p2'])
 
+	#return p1rating,p2rating,victoryChance(p1rating['R'],p1rating['RD'],p2rating['R'],p2rating['RD'])
 	return p1rating,p2rating,E['p1']
 
 def newRatingPeriod(rating):
