@@ -17,10 +17,11 @@ def phi(RD):
 
 tau=0.2
 sigma0=0.11
+RDmax=100
 
 
 def newPlayer():
-	return {'R':1500.0,'RD':350.0,'sigma':sigma0,'v':0.0,'Delta':0.0}
+	return {'R':1500.0,'RD':RDmax,'sigma':sigma0,'v':0.0,'Delta':0.0}
 
 def update(p1rating,p2rating,outcome):
 	S={}
@@ -97,8 +98,8 @@ def newRatingPeriod(rating):
 		rating['R']=173.7178*m+1500
 		rating['RD']=173.7178*p
 	
-	if rating['RD']>350.0:
-		rating['RD']=350.0
+	if rating['RD']>RDmax:
+		rating['RD']=RDmax
 	
 	rating['v']=0
 	rating['Delta']=0

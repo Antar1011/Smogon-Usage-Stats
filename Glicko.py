@@ -7,7 +7,8 @@ import math
 from common import victoryChance
 
 q=math.log(10.0)/400
-RDmin=50
+RDmin=25
+RDmax=100
 c=20
 
 def g(RD):
@@ -16,7 +17,7 @@ def expectedScore(R1,R2,RD2):
 	return 1.0/(1.0+pow(10,-g(RD2)*(R1-R2)/400))
 
 def newPlayer():
-	return {'R':1500.0,'RD':350.0,'A':0.0,'d2':0.0}
+	return {'R':1500.0,'RD':RDmax,'A':0.0,'d2':0.0}
 
 def update(p1rating,p2rating,outcome):
 	S={}
@@ -54,8 +55,8 @@ def newRatingPeriod(rating):
 		rating['R']+=q/(pow(rating['RD'],-2)+1.0/d2)*rating['A']
 		rating['RD']=pow(pow(rating['RD'],-2)+1.0/d2,-0.5)
 	
-	if rating['RD']>350.0:
-		rating['RD']=350.0
+	if rating['RD']>RDmax:
+		rating['RD']=RDmax
 	if rating['RD']<RDmin:
 		rating['RD']=RDmin
 
