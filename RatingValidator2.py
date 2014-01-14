@@ -19,8 +19,14 @@ raw=open(filename).readlines();
 
 for line in raw:
 	vals=line.split(',')
+	if len(vals)<2:
+		break
 	probWin = float(vals[0])
 	outcome = float(vals[1])
+	if probWin < 0.5:
+		continue
+		#probWin = 1.0-probWin
+		#outcome = 1.0-outcome
 	for i in xrange(len(bins)):
 		if probWin < bins[i][0]+binSize/2:
 			bins[i][1]+=1
@@ -29,4 +35,7 @@ for line in raw:
 			break
 
 for bin in bins:
-	print bin[0],bin[1],bin[2],bin[3]
+	if bin[1] > 0:
+		print bin[0],bin[1],bin[2],bin[3],bin[2]/bin[1],pow(bin[2],0.5)/bin[1],bin[3]/bin[1]
+	else:
+		print bin[0],bin[1],bin[2],bin[3],'--','--','--'

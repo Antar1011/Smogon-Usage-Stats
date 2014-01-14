@@ -17,6 +17,8 @@ def LogReader(filename):
 	whowon = 0 #0 for tie/unknown, 1 for p1, 2 for p2
 	if 'log' not in log.keys():
 		return False
+	#if log['endType'] != 'normal':
+	#	return False
 
 	#if '|tie' in log['log']:
 	#	whowon = 0
@@ -29,13 +31,14 @@ def LogReader(filename):
 			return False
 		else:
 			whowon = 2
-
-	return log['p1'],log['p2'],whowon
+	if log['endType'] not in ['normal','forfeit']:
+		sys.err.write(log['endType']+'\n')
+	return log['p1'],log['p2'],hash(str(log['p1team'])),hash(str(log['p2team'])),whowon,log['endType'],log['turns']
 
 for folder in sorted(os.listdir(sys.argv[1])):
 	for filename in sorted(os.listdir(sys.argv[1]+folder)):
 		try:
-			p1,p2,whowon=LogReader(sys.argv[1]+folder+'/'+filename)
+			p1,p2,team1,team2,whowon,endType,turns=LogReader(sys.argv[1]+folder+'/'+filename)
 		except:
 			continue
-		print folder+','+p1.encode('utf-8')+','+p2.encode('utf-8')+','+str(whowon)
+		print folder+','+p1.encode('utf-8')+','+str(team1)+','+p2.encode('utf-8')+','+str(team2)+','+str(whowon)+','+endType.encode('utf-8')+','+str(turns)
