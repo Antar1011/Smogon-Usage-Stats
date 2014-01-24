@@ -52,8 +52,7 @@ def readTable(filename):
 	return usage,nBattles
 
 def getUsage(filename,col,weight,usage):
-	tempUsage = readTable(filename)
-
+	tempUsage, nBattles = readTable(filename)
 	for i in tempUsage:
 		if keyify(i) not in usage:
 			usage[keyify(i)]=[0,0,0,0]
