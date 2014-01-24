@@ -159,7 +159,9 @@ def LogReader(filename,tier,movesets):
 				ability = keyify(log[team][i]['ability'])
 			else:
 				ability = 'unknown'
-			if 'level' in log[team][i].keys():
+			if 'forcedLevel' in log[team][i].keys():
+				level = int(log[team][i]['forcedLevel'])
+			elif 'level' in log[team][i].keys():
 				level = int(log[team][i]['level'])
 			else:
 				level = 100
