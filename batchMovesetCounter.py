@@ -41,7 +41,7 @@ def movesetCounter(filename, cutoff,usage):
 		movesets = json.loads(line)
 		for moveset in movesets:
 			rawCount = rawCount+1
-			weight=weighting(1500.0,350.0,cutoff)
+			weight=weighting(1500.0,130.0,cutoff)
 			if 'rating' in moveset.keys():
 				if 'rpr' in moveset['rating'].keys() and 'rprd' in moveset['rating'].keys():
 					if moveset['rating']['rprd'] != 0.0:
@@ -49,9 +49,9 @@ def movesetCounter(filename, cutoff,usage):
 						weights.append(weight)
 			elif 'outcome' in moveset.keys():
 				if moveset['outcome'] == 'win':
-					weight=weighting(1662.3108925672,290.31896252483,cutoff)
+					weight=weighting(1540.16061434,122.858308077,cutoff)
 				elif moveset['outcome'] == 'loss':
-					weight=weighting(1337.6891074328,290.31896252483,cutoff)
+					weight=weighting(1459.83938566,122.858308077,cutoff)
 				#else it's a tie, and we use 1500
 			if moveset['ability'] not in keyLookup:
 				moveset['ability'] = 'illuminate'

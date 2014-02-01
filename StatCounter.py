@@ -115,14 +115,14 @@ for line in raw:
 							WLratings[battle[player]['outcome']].append([battle[player]['rating']['rpr'],battle[player]['rating']['rprd'],weight[player]])
 				
 			if player not in weight.keys(): #if there's a ladder error, we have no idea what the player's rating is, so treat like a new player
-				weight[player] = weighting(1500,350.0,cutoff)
+				weight[player] = weighting(1500,130.0,cutoff)
 
 				#try using outcome
 				if 'outcome' in battle[player].keys():
 					if battle[player]['outcome'] == 'win':
-						weight[player] = weighting(1662.3108925672,290.31896252483,cutoff)
+						weight[player] = weighting(1540.16061434,122.858308077,cutoff)
 					elif battle[player]['outcome'] == 'loss':
-						weight[player] = weighting(1337.6891074328,290.31896252483,cutoff)
+						weight[player] = weighting(1459.83938566,122.858308077,cutoff)
 
 			weightCounter.append(weight[player])
 
