@@ -215,7 +215,7 @@ def movesetCounter(filename, cutoff,usage):
 						line = line+' '
 				elif x is 'Teammates':
 					line = ' | %s %+6.3f%%' % (table[i][0],100.0*table[i][1]/count)
-					if table[i][1] < 0.005:
+					if table[i][1] < 0.005*count:
 						break
 				else:
 					line = ' | %s %6.3f%%' % (table[i][0],100.0*table[i][1]/count)
