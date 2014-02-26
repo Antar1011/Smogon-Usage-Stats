@@ -446,6 +446,18 @@ def analyzeTeam(team):
 	if count > 3:
 		tags.append('choice')
 
+	count = 0
+	
+	for poke in team:
+		if len(set(['foulplay','swagger']).intersection(poke['moves'])) > 1:
+			count += 1
+			if count > 1:
+				break
+	if count > 1:
+		tags.append('swagplay')
+		
+
+
 	#stalliness stuff
 	if tstalliness <= -1.0:
 		tags.append('hyperoffense')
