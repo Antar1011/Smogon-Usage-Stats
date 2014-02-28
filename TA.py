@@ -74,13 +74,15 @@ megas=[	['abomasnow','abomasite','snowwarning'],
 	['pinsir','pinsirite','aerilate'],
 	['scizor','scizorite','technician'],
 	['tyranitar','tyranitarite','sandstream'],
-	['venusaur','venusaurite','thickfat'] ]
+	['venusaur','venusaurite','thickfat'],
+	['latios','latiosite','levitate'],
+	['latias','latiasite','levitate']]
 	
 def analyzePoke(poke):
 	if poke['species'] not in baseStats.keys():
 		sys.stderr.write(poke['species']+" is not listed in baseStats.json\n")
 		sys.stderr.write("You may want to fix that.\n")
-		sys.exit(1)
+		return None
 	
 	if poke['species'] == 'meloetta' and 'relicsong' in poke['moves']:
 		poke['species']='meloettapirouette'
@@ -115,7 +117,12 @@ def analyzePoke(poke):
 	elif poke['species'] == 'ditto':
 		stalliness = math.log(3,2) #eventually I'll want to replace this with mean stalliness for the tier
 	else:
-		stalliness=-math.log(((2.0*poke['level']+10)/250*max(stats[1],stats[3])/max(stats[2],stats[4])*120+2)*0.925/stats[0],2)
+		try:
+			stalliness=-math.log(((2.0*poke['level']+10)/250*max(stats[1],stats[3])/max(stats[2],stats[4])*120+2)*0.925/stats[0],2)
+		except:
+			sys.stderr.write('Got a problem with a '+poke['species']+'\n')
+			sys.stderr.write(poke)
+			return None
 
 	#moveset modifications
 	if poke['ability'] in ['purepower','hugepower']:
