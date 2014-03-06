@@ -11,11 +11,12 @@ import copy
 #import cPickle as pickle
 import math
 import os
+import Glicko
 
 from common import *
 from TA import *
 
-def LogReader(filename,tier,movesets):
+def LogReader(filename,tier,movesets,ratings):
 	file = open(filename)
 	raw = file.readline()
 	file.close()
@@ -72,28 +73,39 @@ def LogReader(filename,tier,movesets):
 				return False
 			else:
 				whowon = 2
+	if ratings == None:
+		for i in [['p1rating','p1team'],['p2rating','p2team']]:
+			if i[0] in log.keys():
+				rating[i[1]]={}
+				if type(log[i[0]]) is dict:
+					for j in ['r','rd','rpr','rprd']:
+						if j in log[i[0]].keys():
+							try:
+								rating[i[1]][j]=float(log[i[0]][j])
+							#looks like it's possible that rating will be recorded as "None". In that case, just
+							#treat it as if it's not even there (read: no need to freak out and do the below)
 
-	for i in [['p1rating','p1team'],['p2rating','p2team']]:
-		if i[0] in log.keys():
-			rating[i[1]]={}
-			if type(log[i[0]]) is dict:
-				for j in ['r','rd','rpr','rprd']:
-					if j in log[i[0]].keys():
-						try:
-							rating[i[1]][j]=float(log[i[0]][j])
-						#looks like it's possible that rating will be recorded as "None". In that case, just
-						#treat it as if it's not even there (read: no need to freak out and do the below)
-
-						except TypeError:
-							pass
-						#	sys.stderr.write('Problem in '+filename+':\n')
-						#	sys.stderr.write(i[0]+'['+j+']='+str(log[i[0]][j])+'\n')
-						#	return False
+							except TypeError:
+								pass
+							#	sys.stderr.write('Problem in '+filename+':\n')
+							#	sys.stderr.write(i[0]+'['+j+']='+str(log[i[0]][j])+'\n')
+							#	return False
+								
 							
-						
-			#gxe = round(10000 / (1 + pow(10.0,(((1500 - rpr)) * math.pi / math.sqrt(3 * pow(math.log(10.0),2.0) * pow(rprd,2.0) + 2500 * (64 * pow(math.pi,2.0) + 147 * pow(math.log(10.0),2))))))) / 100
-			#acre= rpr-1.4079126393*rprd
-			#not used: 'w','l','t','sigma','rptime','rpsigma','lacre','oldacre','oldrdacre'			
+				#gxe = round(10000 / (1 + pow(10.0,(((1500 - rpr)) * math.pi / math.sqrt(3 * pow(math.log(10.0),2.0) * pow(rprd,2.0) + 2500 * (64 * pow(math.pi,2.0) + 147 * pow(math.log(10.0),2))))))) / 100
+				#acre= rpr-1.4079126393*rprd
+				#not used: 'w','l','t','sigma','rptime','rpsigma','lacre','oldacre','oldrdacre'	
+	else:
+		for player in [log['p1'],log['p2']]:
+			if player not in ratings.keys():
+				ratings[player]=Glicko.newPlayer()
+		Glicko.update(ratings[log['p1']],ratings[log['p2']],whowon)
+		for player in [[log['p1'],'p1team'],[log['p2'],'p2team']]:
+			r=ratings[player[0]]['R']
+			rd=ratings[player[0]]['RD']
+			rpr=Glicko.provisional(ratings[player[0]])['R']
+			rprd=Glicko.provisional(ratings[player[0]])['RD']
+			rating[player[1]]={'r':r,'rd':rd,'rpr':rpr,'rprd':rprd}
 
 	#get pokemon info
 	for team in ['p1team','p2team']:
@@ -522,6 +534,17 @@ if tier.startswith('xybattlespot') and tier.endswith('beta'):
 	tier = tier[:-4]
 #elif tier[:8]=='seasonal':
 #	tier='seasonal'
+
+ratings = None
+if len(sys.argv) > 4:
+	if sys.argv[3] == '-redoRatings':
+		try:
+			ratings = json.loads(open(sys.argv[4]).readline())
+		except:
+			ratings = {}
+		print ratings
+
+
 outname = "Raw/"+tier#+".txt"
 d = os.path.dirname(outname)
 if not os.path.exists(d):
@@ -530,12 +553,19 @@ writeme=[]
 movesets={}
 for filename in os.listdir(sys.argv[1]):
 	#print filename
-	x = LogReader(sys.argv[1]+'/'+filename,tier,movesets)
+	x = LogReader(sys.argv[1]+'/'+filename,tier,movesets,ratings)
 	if x:
 		writeme.append(x)
 outfile=gzip.open(outname,'ab')
 outfile.write(json.dumps(writeme))
-outfile.close()	
+outfile.close()
+
+if ratings != None:
+	for player in ratings.keys():
+		Glicko.newRatingPeriod(ratings[player])
+	ratingfile=open(sys.argv[4],'w+')
+	ratingfile.write(json.dumps(ratings))
+	ratingfile.close()
 
 #write to moveset file
 for species in movesets.keys():

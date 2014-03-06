@@ -5,6 +5,7 @@
 
 import math
 from common import victoryChance
+import copy
 
 q=math.log(10.0)/400
 RDmin=25
@@ -65,6 +66,9 @@ def newRatingPeriod(rating):
 
 	#print rating['RD']
 	return rating
+
+def provisional(rating):
+	return newRatingPeriod(copy.deepcopy(rating))
 
 def headers():
 	return 'Glicko R,Glicko RD'
