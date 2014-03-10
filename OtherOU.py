@@ -31,6 +31,8 @@ def makeTable(table):
 	print " + ---- + ------------------ + ------- + " 
 	print ' | %-4d | %-18s | %6.3f%% |' % (i+1,keyLookup[table[i][0]],100.0*table[i][1])
 	for i in range(start+1,len(table)):
+		if table[i][1] < 0.01:
+			break
 		print ' | %-4d | %-18s | %6.3f%% |' % (i+1,keyLookup[table[i][0]],100.0*table[i][1])
 	print " + ---- + --------------- + ------- +[/CODE]"
 	return banlist
