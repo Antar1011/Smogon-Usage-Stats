@@ -12,6 +12,7 @@ import copy
 import math
 import os
 import Glicko
+import cPickle as pickle
 
 from common import *
 from TA import *
@@ -135,6 +136,7 @@ def LogReader(filename,tier,movesets,ratings):
 				if species in aliases[s]:
 					species = s
 					break
+			species=keyLookup[keyify(species)]
 		
 			ts.append([trainer,species])
 
@@ -520,6 +522,11 @@ def LogReader(filename,tier,movesets,ratings):
 	
 	#outfile.write(lzma.compress(json.dumps(writeme))+'\n')
 	return writeme
+
+
+file = open('keylookup.pickle')
+keyLookup = pickle.load(file)
+file.close()
 
 tier = sys.argv[2]
 if tier.endswith('current'):
