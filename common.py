@@ -124,6 +124,4 @@ aliases={
 	'Pumkaboo': ['Pumpkaboo-Average'],
 	'Gourgeist': ['Gourgeist-Average'],
 	'Aegislash': ['Aegislash-Blade'],
-	'Latios': ['Latios-Mega','Latiosmega'],
-	'Latias': ['Latias-Mega','Latiasmega']
 }
