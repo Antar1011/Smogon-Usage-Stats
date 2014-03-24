@@ -228,7 +228,7 @@ def LogReader(filename,tier,movesets,ratings):
 		try:
 			analysis = analyzeTeam(teams[team])
 		except:
-			sys.err.write('Problem with '+filename+'\n')
+			sys.stderr.write('Problem with '+filename+'\n')
 			continue
 		teams[team].append({'bias': analysis['bias'], 'stalliness': analysis['stalliness'], 'tags': analysis['tags']})
 		if (team == 'p1team' and whowon == 1) or (team == 'p2team' and whowon == 2):
