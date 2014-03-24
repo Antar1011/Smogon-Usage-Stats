@@ -123,5 +123,7 @@ aliases={
 	'Tyranitar': ['Ttar'],
 	'Pumkaboo': ['Pumpkaboo-Average'],
 	'Gourgeist': ['Gourgeist-Average'],
-	'Aegislash': ['Aegislash-Blade']
+	'Aegislash': ['Aegislash-Blade'],
+	'Latios': ['Latios-Mega'],
+	'Latias': ['Latias-Mega']
 }
