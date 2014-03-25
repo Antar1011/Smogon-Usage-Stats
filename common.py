@@ -78,12 +78,12 @@ aliases={
 	'Landorus-Therian': ['Landorus-T'],
 	'Keldeo': ['Keldeo-R','Keldeo-Resolution','Keldeo-Resolute'],
 	'Meloetta': ['Meloetta-S','Meloetta-Pirouette'],
-	'Genesect': ['Genesect-Douse','Genesect-Burn','Genesect-Shock','Genesect-Chill','Genesect-D','Genesect-S','Genesect-B','Genesect-C'],
+	'Genesect': ['Genesect-Douse','Genesect-Burn','Genesect-Shock','Genesect-Chill','Genesect-D','Genesect-S','Genesect-B','Genesect-C','Genesectdouse','Genesectburn','Genesectshock','Genesectchill'],
 	'Darmanitan': ['Darmanitan-D','Darmanitan-Zen'],
-	'Basculin': ['Basculin-Blue-Striped','Basculin-A'],
+	'Basculin': ['Basculin-Blue-Striped','Basculin-A','Basculinbluestriped'],
 	'Kyurem-Black': ['Kyurem-B'],
 	'Kyurem-White': ['Kyurem-W'],
-	'Pichu': ['Pichu-Spiky-eared','Spiky Pichu'],
+	'Pichu': ['Pichu-Spiky-eared','Spiky Pichu','Pichuspikyeared','Spikypichu'],
 	'Rotom-Heat': ['Rotom-H','Rotom- H','Rotom-h'],
 	'Rotom-Wash': ['Rotom-W','Rotom -W','Rotom-w'],
 	'Rotom-Frost': ['Rotom-F','Rotom -F', 'Rotom-f'],
@@ -124,4 +124,5 @@ aliases={
 	'Pumkaboo': ['Pumpkaboo-Average'],
 	'Gourgeist': ['Gourgeist-Average'],
 	'Aegislash': ['Aegislash-Blade'],
+	'Floette': ['Floetteeternalflower']
 }
