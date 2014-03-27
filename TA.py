@@ -238,7 +238,10 @@ def analyzeTeam(team):
 	tbias = 0
 	tstalliness = []
 	for poke in team:
-		(stalliness,bias) = analyzePoke(poke)
+		analysis = analyzePoke(poke)
+		if analysis is None:
+			return None
+		(stalliness,bias) = analysis 
 		
 		for mega in megas:
 			if [poke['species'],poke['item']] == mega[:2]:
