@@ -564,9 +564,6 @@ movesets={}
 for filename in os.listdir(sys.argv[1]):
 	#print filename
 	x = LogReader(sys.argv[1]+'/'+filename,tier,movesets,ratings)
-	if '' in movesets:
-		print filename
-		exit(0)
 	if x:
 		writeme.append(x)
 outfile=gzip.open(outname,'ab')
