@@ -229,11 +229,10 @@ def LogReader(filename,tier,movesets,ratings):
 		if len(log[team]) < 6:
 			for i in range(6-len(log[team])):
 				ts.append([trainer,'empty'])
-		try:
-			analysis = analyzeTeam(teams[team])
-		except:
+		analysis = analyzeTeam(teams[team])
+		if analysis is None:
 			sys.stderr.write('Problem with '+filename+'\n')
-			continue
+			return False
 		teams[team].append({'bias': analysis['bias'], 'stalliness': analysis['stalliness'], 'tags': analysis['tags']})
 		if (team == 'p1team' and whowon == 1) or (team == 'p2team' and whowon == 2):
 			teams[team][len(teams[team])-1]['outcome']='win'
