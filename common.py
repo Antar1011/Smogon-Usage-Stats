@@ -76,8 +76,8 @@ aliases={
 	'Tornadus-Therian': ['Tornadus-T'],
 	'Thundurus-Therian': ['Thundurus-T'],
 	'Landorus-Therian': ['Landorus-T'],
-	'Keldeo': ['Keldeo-R','Keldeo-Resolution','Keldeo-Resolute'],
-	'Meloetta': ['Meloetta-S','Meloetta-Pirouette'],
+	'Keldeo': ['Keldeo-R','Keldeo-Resolution','Keldeo-Resolute','Keldeoresolute'],
+	'Meloetta': ['Meloetta-S','Meloetta-Pirouette','Meloettapirouette'],
 	'Genesect': ['Genesect-Douse','Genesect-Burn','Genesect-Shock','Genesect-Chill','Genesect-D','Genesect-S','Genesect-B','Genesect-C','Genesectdouse','Genesectburn','Genesectshock','Genesectchill'],
 	'Darmanitan': ['Darmanitan-D','Darmanitan-Zen','Darmanitanzen'],
 	'Basculin': ['Basculin-Blue-Striped','Basculin-A','Basculinbluestriped'],
@@ -121,8 +121,8 @@ aliases={
 	'Porygon2': ['P2','Pory2'],
 	'Porygon-Z': ['Pz','Poryz','PorygonZ'],
 	'Tyranitar': ['Ttar'],
-	'Pumkaboo': ['Pumpkaboo-Average'],
-	'Gourgeist': ['Gourgeist-Average'],
-	'Aegislash': ['Aegislash-Blade'],
+	'Pumkaboo': ['Pumpkaboo-Average','Pumpkabooaverage'],
+	'Gourgeist': ['Gourgeist-Average','Gourgeistaverage'],
+	'Aegislash': ['Aegislash-Blade','Aegislashblade'],
 	'Floette': ['Floetteeternalflower','Floette-Eternal-Flower']
 }
