@@ -79,7 +79,7 @@ aliases={
 	'Keldeo': ['Keldeo-R','Keldeo-Resolution','Keldeo-Resolute'],
 	'Meloetta': ['Meloetta-S','Meloetta-Pirouette'],
 	'Genesect': ['Genesect-Douse','Genesect-Burn','Genesect-Shock','Genesect-Chill','Genesect-D','Genesect-S','Genesect-B','Genesect-C','Genesectdouse','Genesectburn','Genesectshock','Genesectchill'],
-	'Darmanitan': ['Darmanitan-D','Darmanitan-Zen'],
+	'Darmanitan': ['Darmanitan-D','Darmanitan-Zen','Darmanitanzen'],
 	'Basculin': ['Basculin-Blue-Striped','Basculin-A','Basculinbluestriped'],
 	'Kyurem-Black': ['Kyurem-B'],
 	'Kyurem-White': ['Kyurem-W'],
