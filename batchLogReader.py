@@ -136,7 +136,11 @@ def LogReader(filename,tier,movesets,ratings):
 				if species in aliases[s]:
 					species = s
 					break
-			species=keyLookup[keyify(species)]
+			try:	
+				species=keyLookup[keyify(species)]
+			except:
+				sys.stderr.write(species+' not in keyLookup.\n Skipping log:\n'+filename+'\n')
+				return False
 		
 			ts.append([trainer,species])
 
