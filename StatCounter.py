@@ -66,7 +66,7 @@ filename="Stats/metagame/"+tier+specs+".txt"
 d = os.path.dirname(filename)
 if not os.path.exists(d):
 	os.makedirs(d)
-if tier not in ["1v1", "challengecup1vs1","doublesvgc2013","gbusingles","gen1oubeta","gen2oubeta","gen4oubeta","gen4uubeta","globalshowdown","smogondoubles","tiershift"]:
+if tier not in ["1v1", "challengecup1vs1"]:
 	metagamefile=open(filename,'w')
 else:
 	metagamefile=False
