@@ -14,7 +14,10 @@ def keyify(s):
 
 #our weighting function
 def weighting(rating,deviation,cutoff):
+	if deviation > 100 and cutoff > 1500:
+		return 0.0
 	return (math.erf(float(rating-cutoff)/float(deviation)/math.sqrt(2.0))+1.0)/2.0
+	#return victoryChance(rating,deviation,cutoff,0.0)
 	#this is for logistic weighting
 	#s=math.sqrt(3.0)*float(deviation)/math.pi
 	#return (math.tanh(float(rating-cutoff)/s/2.0)+1.0)/2.0
