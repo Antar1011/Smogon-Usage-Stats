@@ -123,7 +123,9 @@ def LogReader(filename,tier,movesets,ratings):
 				species = log[team][i]['species']
 			else: #apparently randbats usually don't contain the species field?
 				species = log[team][i]['name']
-
+			if len(species) == 0:
+				sys.stderr.write('Problem with '+filename+'\n')
+				return False
 			#very odd that these == needed--I've seen ".Species", "(Species)", "species", "Species)", "SPECIES"...
 			if species[0] not in string.lowercase + string.uppercase:
 				species=species[1:]
@@ -141,7 +143,11 @@ def LogReader(filename,tier,movesets,ratings):
 			except:
 				sys.stderr.write(species+' not in keyLookup.\n Skipping log:\n'+filename+'\n')
 				return False
-		
+			if species.endswith('-Mega'):
+				species = species[:-5]
+			elif species.endswith('-Mega-X') or species.endswith('-Mega-Y'):
+				species = species[:-7]
+
 			ts.append([trainer,species])
 
 			if 'item' in log[team][i].keys():
@@ -288,6 +294,10 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
+				if species.endswith('-Mega'):
+					species = species[:-5]
+				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y'):
+					species = species[:-7]
 				active[0]=ts.index([ts[0][0],species])
 			if (spacelog and line[0:13] == "| switch | p2") or (not spacelog and line[0:10] == "|switch|p2"):
 				end = string.rfind(line,'|')-1*spacelog
@@ -298,6 +308,10 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
+				if species.endswith('-Mega'):
+					species = species[:-5]
+				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y'):
+					species = species[:-7]
 				active[1]=ts.index([ts[11][0],species])
 				break
 		start=log['log'].index(line)+1
@@ -431,6 +445,18 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
+				if species.endswith('-Mega'):
+					species = species[:-5]
+				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y'):
+					species = species[:-7]
+				if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
+					if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
+					#if Shaymin-Sky gets frozen, it reverts to land forme
+						species = 'Shaymin-Sky'
+					else:
+						sys.stderr.write('Problem with '+filename+'\n')
+						sys.stderr.write('(Pokemon not in ts)\n')
+						return False
 				active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
 				#really, it would be better to go back and revise previous affected matchups, but that be a lot more work
 
@@ -484,6 +510,18 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
+				if species.endswith('-Mega'):
+					species = species[:-5]
+				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y'):
+					species = species[:-7]
+				if [ts[11*(int(line[p])-1)][0],species] not in ts:
+					if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
+					#if Shaymin-Sky gets frozen, it reverts to land forme
+						species = 'Shaymin-Sky'
+					else:
+						sys.stderr.write('Problem with '+filename+'\n')
+						sys.stderr.write('(Pokemon not in ts)\n')
+						return False
 				active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
 
 	for i in range(len(matchups)):
