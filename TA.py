@@ -15,6 +15,10 @@ file = open('baseStats.json')
 baseStats = json.loads(file.readline())
 file.close()
 
+file = open('types.json')
+types = json.loads(file.readline())
+file.close()
+
 def statFormula(base,lv,nat,iv,ev):
 	if nat == -1: #for HP
 		return (iv+2*base+ev/4+100)*lv/100+10
@@ -52,31 +56,50 @@ megas=[	['abomasnow','abomasite','snowwarning'],
 	['aerodactyl','aerodactylite','toughclaws'],
 	['aggron','aggronite','filter'],
 	['alakazam','alakazite','trace'],
+	['altaria','altarianite','pixilate'],
 	['ampharos','ampharosite','moldbreaker'],
+	['audino','audinite','healer'],
 	['banette','banettite','prankster'],
+	['beedrill','beedrillite','adaptability'],
 	['blastoise','blastoisinite','megalauncher'],
 	['blaziken','blazikenite','speedboost'],
+	['camerupt','cameruptite','sheerforce'],
 	['charizard','charizarditex','toughclaws'],
 	['charizard','charizarditey','drought'],
+	['diancie','diancite','magicbounce'],
+	['gallade','galladite','innerfocus'],
 	['garchomp','garchompite','sandforce'],
 	['gardevoir','gardevoirite','pixilate'],
 	['gengar','gengarite','shadowtag'],
+	['glalie','glalitite','refrigerate'],
 	['gyarados','gyaradosite','moldbreaker'],
 	['heracross','heracronite','skilllink'],
 	['houndoom','houndoominite','solarpower'],
 	['kangaskhan','kangaskhanite','parentalbond'],
+	['latias','latiasite','levitate'],
+	['latios','latiosite','levitate'],
+	['lopunny','lopunnite','scrappy'],
 	['lucario','lucarionite','adaptability'],
 	['manectric','manectite','intimidate'],
 	['mawile','mawilite','hugepower'],
 	['medicham','medichamite','purepower'],
+	['metagross','metagrossite','toughclaws'],
 	['mewtwo','mewtwonitex','steadfast'],
 	['mewtwo','mewtwonitey','insomnia'],
+	['pidgeot','pidgeotite','noguard'],
 	['pinsir','pinsirite','aerilate'],
+	['sableye','sablenite','magicbounce'],
+	['salamence','salamencite','aerilate'],
+	['sceptile','sceptilite','lightningrod'],
 	['scizor','scizorite','technician'],
+	['sharpedo','sharpedonite','strongjaw'],
+	['slowbro','slowbronite','shellarmor'],
+	['steelix','steelixite','sandforce'],
+	['swampert','swampertite','swiftswim'],
 	['tyranitar','tyranitarite','sandstream'],
 	['venusaur','venusaurite','thickfat'],
-	['latios','latiosite','levitate'],
-	['latias','latiasite','levitate']]
+	['kyogre','blueorb','primordialsea'],
+	['groudon','redorb','desolateland']]
 	
 def analyzePoke(poke):
 	if poke['species'] not in baseStats.keys():
@@ -145,7 +168,7 @@ def analyzePoke(poke):
 		stalliness += 0.5
 	if len(set(['healbell','aromatherapy']).intersection(poke['moves'])) != 0:
 		stalliness += 0.5
-	if poke['ability'] in ['chlorophyll', 'download', 'hustle', 'moxie', 'reckless', 'sandrush', 'solarpower', 'swiftswim', 'technician', 'tintedlens', 'darkaura', 'fairyaura', 'infiltrator', 'parentalbond', 'protean', 'strongjaws', 'sweetveil', 'toughclaws']:
+	if poke['ability'] in ['chlorophyll', 'download', 'hustle', 'moxie', 'reckless', 'sandrush', 'solarpower', 'swiftswim', 'technician', 'tintedlens', 'darkaura', 'fairyaura', 'infiltrator', 'parentalbond', 'protean', 'strongjaw', 'sweetveil', 'toughclaws','aerilate','normalize','pixilate','refrigerate']:
 		stalliness -= 0.5
 	if poke['ability'] in ['flareboost', 'guts', 'quickfeet'] and poke['item'] == 'flameorb':
 		stalliness -= 1.0
@@ -237,25 +260,40 @@ def analyzePoke(poke):
 def analyzeTeam(team):
 	tbias = 0
 	tstalliness = []
+	possibleTypes = False
+
 	for poke in team:
+		if possibleTypes == False:
+			possibleTypes = set(types[poke['species']])
+		else:
+			possibleTypes = possibleTypes.intersection(types[poke['species']])
 		analysis = analyzePoke(poke)
 		if analysis is None:
 			return None
 		(stalliness,bias) = analysis 
 		
-		for mega in megas:
-			if [poke['species'],poke['item']] == mega[:2]:
-				megaspecies = poke['species']+'mega'
-				if poke['item'].endswith('x'):
-					megaspecies +='x'
-				elif poke['item'].endswith('y'):
-					megaspecies += 'y'
-				megapoke = copy.deepcopy(poke)
-				megapoke['species']=megaspecies
-				megapoke['ability']=mega[2]
-				stalliness += analyzePoke(megapoke)[0]
-				stalliness /= 2.0
-				break
+		if poke['species'] == 'rayquaza' and 'dragonascent' in poke['moves']:
+			megapoke = copy.deepcopy(poke)
+			megapoke['species']='rayquazamega'
+			megapoke['ability']='deltastream'
+			stalliness += analyzePoke(megapoke)[0]
+			stalliness /= 2.0
+		else:
+			for mega in megas:
+				if [poke['species'],poke['item']] == mega[:2]:
+					megaspecies = poke['species']+'mega'
+					if poke['item'].endswith('x'):
+						megaspecies +='x'
+					elif poke['item'].endswith('y'):
+						megaspecies += 'y'
+					if megaspecies in ['kyogremega','groudonmega']:
+						megaspecies=megaspecies[:-4]+'primal'
+					megapoke = copy.deepcopy(poke)
+					megapoke['species']=megaspecies
+					megapoke['ability']=mega[2]
+					stalliness += analyzePoke(megapoke)[0]
+					stalliness /= 2.0
+					break
 
 		#final correction
 		stalliness=stalliness-math.log(3,2)
@@ -265,14 +303,6 @@ def analyzeTeam(team):
 		tstalliness.append(stalliness)
 
 	#team-type detection
-	#tstalliness=sorted(tstalliness, key=lambda tstalliness:tstalliness)
-	#allsix=sum(tstalliness)/len(tstalliness)
-	#topfive=sum(tstalliness[1:])/(len(tstalliness)-1)
-	#bottomfive=sum(tstalliness[:len(tstalliness)-1])/(len(tstalliness)-1)
-	#if topfive-allsix > allsix-bottomfive:
-	#	tstalliness=topfive
-	#else:
-	#	tstalliness=bottomfive
 	tstalliness = sum(tstalliness) / len(tstalliness)
 	tags = []	
 
@@ -282,7 +312,7 @@ def analyzeTeam(team):
 	count = 0
 	detected = False
 	for poke in team:
-		if poke['ability'] == 'drizzle':
+		if poke['ability'] in ['drizzle','primordialsea']:
 			detected = True
 			break
 		elif poke['item'] == 'damprock' and 'raindance' in poke['moves']:
@@ -300,7 +330,7 @@ def analyzeTeam(team):
 	count = 0
 	detected = False
 	for poke in team:
-		if poke['ability'] == 'drought':
+		if poke['ability'] in ['drought','desolateland']:
 			detected = True
 			break
 		elif [poke['species'],poke['item']] == ['charizard','charizarditey']:
@@ -402,8 +432,6 @@ def analyzeTeam(team):
 	if (count[0] > 1 and count[1] > 1) or (count[0] > 2):
 		 tags.append('gravity')
 
-
-
 	#voltturn
 	count = 0
 
@@ -466,7 +494,10 @@ def analyzeTeam(team):
 	if count > 1:
 		tags.append('swagplay')
 		
-
+	#monotype
+	possibleTypes = list(possibleTypes)
+	for monotype in possibleTypes:
+		tags.append('mono'+monotype.lower())
 
 	#stalliness stuff
 	if tstalliness <= -1.0:

@@ -143,9 +143,15 @@ def LogReader(filename,tier,movesets,ratings):
 			except:
 				sys.stderr.write(species+' not in keyLookup.\n Skipping log:\n'+filename+'\n')
 				return False
+				
+			for s in aliases: #combine appearance-only variations and weird PS quirks
+				if species in aliases[s]:
+					species = s
+					break
+
 			if species.endswith('-Mega'):
 				species = species[:-5]
-			elif species.endswith('-Mega-X') or species.endswith('-Mega-Y'):
+			elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
 				species = species[:-7]
 
 			ts.append([trainer,species])
@@ -177,7 +183,11 @@ def LogReader(filename,tier,movesets,ratings):
 			while len(moves)<4:
 				moves.append('')
 			for j in range(len(moves)): #make all moves lower-case and space-free
-				moves[j] = keyify(moves[j])
+				old = moves[j]
+				try: 
+					moves[j] = keyify(moves[j])
+				except TypeError:
+					moves[j] = ''
 			#figure out Hidden Power from IVs
 			if 'ability' in log[team][i].keys():
 				ability = keyify(log[team][i]['ability'])
@@ -279,7 +289,7 @@ def LogReader(filename,tier,movesets,ratings):
 		turnsOut.append(0)
 		KOs.append(0)
 
-	if 'log' in log.keys() and tier not in ['doublesvgc2013dev','smogondoubles']: #doubles not currently supported
+	if 'log' in log.keys() and tier not in ['battlespotdoubles','battlespottriples','gen5smogondoubles','orassmogondoubles','randomdoublesbattle','smogondoubles','smogondoublesubers','smogondoublesuu','smogontriples','vgc2014']: #doubles not currently supported
 		#determine initial pokemon
 		active = [-1,-1]
 		for line in log['log']:
@@ -296,9 +306,16 @@ def LogReader(filename,tier,movesets,ratings):
 						break
 				if species.endswith('-Mega'):
 					species = species[:-5]
-				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y'):
+				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
 					species = species[:-7]
-				active[0]=ts.index([ts[0][0],species])
+				try:
+					active[0]=ts.index([ts[0][0],species])
+				except ValueError:
+					sys.stderr.write('Problem with '+filename+'\n')
+					sys.stderr.write('(Pokemon not in ts)\n')
+					sys.stderr.write(str([ts[0][0],species])+'\n')
+					return False
+				
 			if (spacelog and line[0:13] == "| switch | p2") or (not spacelog and line[0:10] == "|switch|p2"):
 				end = string.rfind(line,'|')-1*spacelog
 				species = line[string.rfind(line,'|',12+3*spacelog,end-1)+1+1*spacelog:end]
@@ -310,9 +327,15 @@ def LogReader(filename,tier,movesets,ratings):
 						break
 				if species.endswith('-Mega'):
 					species = species[:-5]
-				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y'):
+				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
 					species = species[:-7]
-				active[1]=ts.index([ts[11][0],species])
+				try:
+					active[1]=ts.index([ts[11][0],species])
+				except ValueError:
+					sys.stderr.write('Problem with '+filename+'\n')
+					sys.stderr.write('(Pokemon not in ts)\n')
+					sys.stderr.write(str([ts[11][0],species])+'\n')
+					return False
 				break
 		start=log['log'].index(line)+1
 
@@ -447,7 +470,7 @@ def LogReader(filename,tier,movesets,ratings):
 						break
 				if species.endswith('-Mega'):
 					species = species[:-5]
-				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y'):
+				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
 					species = species[:-7]
 				if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
 					if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
@@ -456,6 +479,7 @@ def LogReader(filename,tier,movesets,ratings):
 					else:
 						sys.stderr.write('Problem with '+filename+'\n')
 						sys.stderr.write('(Pokemon not in ts)\n')
+						sys.stderr.write(str([ts[11*(int(line[p])-1)][0],species])+'\n')
 						return False
 				active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
 				#really, it would be better to go back and revise previous affected matchups, but that be a lot more work
@@ -512,7 +536,7 @@ def LogReader(filename,tier,movesets,ratings):
 						break
 				if species.endswith('-Mega'):
 					species = species[:-5]
-				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y'):
+				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
 					species = species[:-7]
 				if [ts[11*(int(line[p])-1)][0],species] not in ts:
 					if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
@@ -521,6 +545,7 @@ def LogReader(filename,tier,movesets,ratings):
 					else:
 						sys.stderr.write('Problem with '+filename+'\n')
 						sys.stderr.write('(Pokemon not in ts)\n')
+						sys.stderr.write(str([ts[11*(int(line[p])-1)][0],species])+'\n')
 						return False
 				active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
 
