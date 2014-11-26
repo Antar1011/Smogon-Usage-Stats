@@ -11,18 +11,25 @@ megastats=[]
 total=0
 for species in stats['data'].keys():
 	total += sum(stats['data'][species]['Abilities'].values())
-	for mega in megas:
-		if keyify(species) == mega[0]:
-			try:
-				name = species
-				if mega[1][-1] in ['x','y']:
-					name+=' '+mega[1][-1].upper()
-				megastats.append([name,stats['data'][species]['Items'][mega[1]]])
-				if mega[1][-1] != 'x':
-					break
-			except KeyError:
-				if mega[1][-1] != 'x':
-					break
+	if keyify(species) == 'rayquaza':
+		name = species
+		try:
+			megastats.append([name,stats['data'][species]['Moves']['dragonascent']])
+		except KeyError:
+			pass
+	else:
+		for mega in megas:
+			if keyify(species) == mega[0]:
+				try:
+					name = species
+					if mega[1][-1] in ['x','y']:
+						name+=' '+mega[1][-1].upper()
+					megastats.append([name,stats['data'][species]['Items'][mega[1]]])
+					if mega[1][-1] != 'x':
+						break
+				except KeyError:
+					if mega[1][-1] != 'x':
+						break
 
 megastats=sorted(megastats, key=lambda megastats:-megastats[1])
 for mega in megastats:
