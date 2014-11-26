@@ -129,3 +129,27 @@ aliases={
 	'Aegislash': ['Aegislash-Blade','Aegislashblade'],
 	'Floette': ['Floetteeternalflower','Floette-Eternal-Flower']
 }
+
+nonSinglesFormats = [
+	'battlespotdoubles',
+	'battlespottriples',
+	'gen5smogondoubles',
+	'orassmogondoubles',
+	'randomdoublesbattle',
+	'randomtriplesbattle',
+	'smogondoubles',
+	'smogondoublesubers',
+	'smogondoublesuu',
+	'smogontriples'
+	'smogontriples',
+	'vgc2014'
+]
+
+non6v6Formats = [
+	'1v1',
+	'battlespotdoubles',
+	'battlespotsingles',
+	'challengecup1v1',
+	'gen5gbusingles',
+	'vgc2014'
+]

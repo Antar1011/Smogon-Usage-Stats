@@ -98,7 +98,7 @@ for line in raw:
 
 		weight={}
 		if 'turns' in battle.keys():
-			if battle['turns'] < 6 and tier not in ['challengecup1vs1','doublesvgc2013dev','smogondoubles','1v1','gbusingles','globalshowdown']:
+			if battle['turns'] < 6 and tier not in nonSinglesFormats and tier not in non6v6Formats:
 				continue
 		for player in ['p1','p2']:
 			team = []

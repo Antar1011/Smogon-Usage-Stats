@@ -289,7 +289,7 @@ def LogReader(filename,tier,movesets,ratings):
 		turnsOut.append(0)
 		KOs.append(0)
 
-	if 'log' in log.keys() and tier not in ['battlespotdoubles','battlespottriples','gen5smogondoubles','orassmogondoubles','randomdoublesbattle','smogondoubles','smogondoublesubers','smogondoublesuu','smogontriples','vgc2014']: #doubles not currently supported
+	if 'log' in log.keys() and tier not in nonSinglesFormats:
 		#determine initial pokemon
 		active = [-1,-1]
 		for line in log['log']:
