@@ -34,16 +34,13 @@ from common import *
 otherGuy = [1,0,2,4,3,5,7,6,9,8,11,10,12]
 
 cutoff = 1500 #this is our default, but we can change it for '1337' stats
-cutoffdeviation = 0 #nonzero for '1337' stats
 
 if (len(sys.argv) > 2):
 	cutoff = float(sys.argv[2])
 
 tier = str(sys.argv[1])
 
-specs = ''
-if cutoff != 1500:
-	specs = '-'+str(cutoff)
+specs = '-'+'{:.0f}'.format(cutoff)
 
 filename="Raw/"+tier#+".txt"
 file = gzip.open(filename,'rb')
@@ -250,7 +247,10 @@ else:
 	pokes=sorted(pokes, key=lambda pokes:-pokes[3])
 p=[]
 usagefile.write(" Total battles: "+str(battleCount)+"\n")
-usagefile.write(" Avg. weight/team: "+str(round(total['weighted']/battleCount/12,3))+"\n")
+try:
+	usagefile.write(" Avg. weight/team: "+str(round(total['weighted']/battleCount/12,3))+"\n")
+except ZeroDivisionError:
+	usagefile.write(" Avg. weight/team: 0\n")
 usagefile.write(" + ---- + ------------------ + --------- + ------ + ------- + ------ + ------- + \n")
 usagefile.write(" | Rank | Pokemon            | Usage %   | Raw    | %       | Real   | %       | \n")
 usagefile.write(" + ---- + ------------------ + --------- + ------ + ------- + ------ + ------- + \n")

@@ -10,7 +10,7 @@ import json
 import gzip
 import os
 
-from common import keyify,weighting,readTable
+from common import keyify,weighting,readTable,aliases
 from TA import nmod,statFormula,baseStats
 
 def movesetCounter(filename, cutoff,usage):
@@ -26,6 +26,10 @@ def movesetCounter(filename, cutoff,usage):
 			raw[i]=raw[i]+']'
 
 	species = keyLookup[filename[string.rfind(filename,'/')+1:]]
+	for alias in aliases:
+		if species in aliases[alias]:
+			species = alias
+			break
 
 	bias = []
 	stalliness = []
@@ -109,7 +113,11 @@ def movesetCounter(filename, cutoff,usage):
 	count = sum(abilities.values())
 
 	#teammate stats
-	teammates = teammateMatrix[species]
+	try:
+		teammates = teammateMatrix[species]
+	except KeyError:
+		sys.stderr.write('No teammates data for '+filename+' ('+str(cutoff)+')\n')
+		teammates={}
 	for s in teammates:
 		if s not in usage.keys():
 			teammates[s]=0.0
@@ -245,12 +253,8 @@ cutoffdeviation = 0
 
 if (len(sys.argv) > 2):
 	cutoff = float(sys.argv[2])
-if (len(sys.argv) > 3):
-	cutoffdeviation = float(sys.argv[3])
 
-specs = ''
-if cutoff != 1500 or cutoffdeviation != 0:
-	specs = '-'+str(cutoff)
+specs = '-'+'{:.0f}'.format(cutoff)
 
 file = open('Raw/moveset/'+str(sys.argv[1])+'/teammate'+specs+'.pickle')
 teammateMatrix = pickle.load(file)
