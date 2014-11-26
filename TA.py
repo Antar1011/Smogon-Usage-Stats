@@ -496,8 +496,10 @@ def analyzeTeam(team):
 		
 	#monotype
 	possibleTypes = list(possibleTypes)
-	for monotype in possibleTypes:
-		tags.append('mono'+monotype.lower())
+	if possibleTypes:
+		tags.append("monotype")
+		for monotype in possibleTypes:
+			tags.append('mono'+monotype.lower())
 
 	#stalliness stuff
 	if tstalliness <= -1.0:

@@ -599,6 +599,8 @@ if tier.endswith('current'):
 	tier=tier[:-7]
 if tier.startswith('pokebank'):
 	tier = tier[8:-4]
+if tier.startswith('oras'):
+	tier = tier[4:]
 if tier == 'capbeta':
 	tier = 'cap'
 if tier == 'vgc2014beta':
