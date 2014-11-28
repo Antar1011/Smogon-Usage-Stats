@@ -44,15 +44,6 @@ specs = '-'+'{:.0f}'.format(cutoff)
 
 filename="Raw/"+tier#+".txt"
 file = gzip.open(filename,'rb')
-raw = file.read()
-file.close()
-
-raw=raw.split('][')
-for i in range(len(raw)):
-	if (i>0):
-		raw[i]='['+raw[i]
-	if (i<len(raw)-1):
-		raw[i]=raw[i]+']'
 
 filename="Stats/"+tier+specs+".txt"
 d = os.path.dirname(filename)
@@ -90,7 +81,7 @@ ratingCounter = []
 weightCounter = []
 WLratings = {'win':[],'loss':[]}
 
-for line in raw:
+for line in file:
 	#print line
 	battles = json.loads(line)
 
@@ -167,7 +158,7 @@ for line in raw:
 					teammateMatrix[team[i]][team[j]]=teammateMatrix[team[i]][team[j]]+weight[player] #teammate stats are weighted
 					teammateMatrix[team[j]][team[i]]=teammateMatrix[team[i]][team[j]] #nice symmetric matrix
 
-		if tier not in ['doublesvgc2013dev','doublesvgc2013','smogondoubles']: #lead stats for doubles is not currently supported
+		if tier not in nonSinglesFormats: #lead stats for doubles is not currently supported
 			#lead stats
 			leads=['empty','empty']
 			if len(battle['matchups'])==0:
@@ -202,22 +193,22 @@ for line in raw:
 				leadCounter['raw'][species]=leadCounter['raw'][species]+1.0
 				leadCounter['weighted'][species]=leadCounter['weighted'][species]+weight[['p1','p2'][i]]
 
-		#encounter Matrix
-		w=min(weight.values())
-		for matchup in battle['matchups']:
-			if matchup[0] not in encounterMatrix.keys():
-				encounterMatrix[matchup[0]]={}
-			if matchup[1] not in encounterMatrix.keys():
-				encounterMatrix[matchup[1]]={}
-			if matchup[1] not in encounterMatrix[matchup[0]].keys():
-				encounterMatrix[matchup[0]][matchup[1]]=[0 for k in range(13)]
-				encounterMatrix[matchup[1]][matchup[0]]=[0 for k in range(13)]
-			encounterMatrix[matchup[0]][matchup[1]][matchup[2]]=encounterMatrix[matchup[0]][matchup[1]][matchup[2]]+w #encounter Matrix is weighed
-			encounterMatrix[matchup[1]][matchup[0]][otherGuy[matchup[2]]]=encounterMatrix[matchup[1]][matchup[0]][otherGuy[matchup[2]]]+w #by the inferior player
+			#encounter Matrix
+			w=min(weight.values())
+			for matchup in battle['matchups']:
+				if matchup[0] not in encounterMatrix.keys():
+					encounterMatrix[matchup[0]]={}
+				if matchup[1] not in encounterMatrix.keys():
+					encounterMatrix[matchup[1]]={}
+				if matchup[1] not in encounterMatrix[matchup[0]].keys():
+					encounterMatrix[matchup[0]][matchup[1]]=[0 for k in range(13)]
+					encounterMatrix[matchup[1]][matchup[0]]=[0 for k in range(13)]
+				encounterMatrix[matchup[0]][matchup[1]][matchup[2]]=encounterMatrix[matchup[0]][matchup[1]][matchup[2]]+w #encounter Matrix is weighed
+				encounterMatrix[matchup[1]][matchup[0]][otherGuy[matchup[2]]]=encounterMatrix[matchup[1]][matchup[0]][otherGuy[matchup[2]]]+w #by the inferior player
 
 		battleCount = battleCount + 1
 	
-
+file.close()
 total={}
 for i in ['raw','real','weighted']:
 	total[i] = sum(counter[i].values())
@@ -257,12 +248,12 @@ usagefile.write(" + ---- + ------------------ + --------- + ------ + ------- + -
 for i in range(0,len(pokes)):
 	if pokes[i][1] == 0:
 		break
-	usagefile.write(' | %-4d | %-18s | %8.5f%% | %-6d | %6.3f%% | %-6d | %6.3f%% | \n' % (i+1,pokes[i][0],100.0*pokes[i][3]/total['weighted']*6.0,pokes[i][1],100.0*pokes[i][1]/total['raw']*6.0,pokes[i][2],100.0*pokes[i][2]/max(total['real'],1.0)*6.0))
+	usagefile.write(' | %-4d | %-18s | %8.5f%% | %-6d | %6.3f%% | %-6d | %6.3f%% | \n' % (i+1,pokes[i][0],100.0*pokes[i][3]/max(total['weighted'],1.0)*6.0,pokes[i][1],100.0*pokes[i][1]/max(total['raw'],1.0)*6.0,pokes[i][2],100.0*pokes[i][2]/max(total['real'],1.0)*6.0))
 	p.append(pokes[i])
 usagefile.write(" + ---- + ------------------ + --------- + ------ + ------- + ------ + ------- + \n")
 usagefile.close()
 
-if tier not in ['doublesvgc2013dev','doublesvgc2013','smogondoubles','1v1']: #lead stats for doubles is not currently supported
+if tier not in nonSinglesFormats and tier not in ['1v1','challengecup1vs1']: #lead stats for doubles is not currently supported
 	#lead analysis
 
 	filename="Stats/leads/"+tier+specs+".txt"
@@ -287,7 +278,7 @@ if tier not in ['doublesvgc2013dev','doublesvgc2013','smogondoubles','1v1']: #le
 	for i in range(0,len(pokes)):
 		if pokes[i][1] == 0:
 			break
-		leadsfile.write(" | %-4d | %-18s | %8.5f%% | %-6d | %6.3f%% | \n" % (i+1,pokes[i][0],100.0*pokes[i][2]/sum(leadCounter['weighted'].values()),pokes[i][1],100.0*pokes[i][1]/sum(leadCounter['raw'].values())))
+		leadsfile.write(" | %-4d | %-18s | %8.5f%% | %-6d | %6.3f%% | \n" % (i+1,pokes[i][0],100.0*pokes[i][2]/max(1.0,sum(leadCounter['weighted'].values())),pokes[i][1],100.0*pokes[i][1]/max(1.0,sum(leadCounter['raw'].values()))))
 	leadsfile.write(" + ---- + ------------------ + --------- + ------ + ------- + \n")
 	leadsfile.close()
 
@@ -302,126 +293,88 @@ if metagamefile:
 		line = ' '+tags[i][0]
 		for j in range(len(tags[i][0]),30):
 			line = line + '.'
-		line = line + '%8.5f%%' % (100.0*tags[i][1]/total['weighted'])
+		line = line + '%8.5f%%' % (100.0*tags[i][1]/max(1.0,total['weighted']))
 		metagamefile.write(line+'\n')
 	metagamefile.write('\n')
 
 	#stalliness
 	stallCounter=sorted(stallCounter, key=lambda stallCounter:stallCounter[0])
 
-	#figure out a good bin range by looking at .1% and 99.9% points
-	low = stallCounter[len(stallCounter)/1000][0]
-	high = stallCounter[len(stallCounter)-len(stallCounter)/1000-1][0]
+	if stallCounter:
+		#figure out a good bin range by looking at .1% and 99.9% points
+		low = stallCounter[len(stallCounter)/1000][0]
+		high = stallCounter[len(stallCounter)-len(stallCounter)/1000-1][0]
+		
 
-	nbins = 13 #this is actually only a rough idea--I think it might be the minimum?
+		nbins = 13 #this is actually only a rough idea--I think it might be the minimum?
 
-	if (low > 0):
-		low = 0.0
-	elif (high < 0):
-		high = 0.0
+		if (low > 0):
+			low = 0.0
+		elif (high < 0):
+			high = 0.0
 
-	binSize = (high-low)/(nbins-1)
-	#this is bound to be an ugly number, so let's make it pretty
-	for x in [10,5,2.5,2,1.5,1,0.5,0.25,0.2,0.1,0.05]:
-		if binSize > x:
-			break
-	#if binSize < 0.05, fuck it--I'm not zooming in any further
-	binSize = x
-	histogram = [[0.0,0]]
-	x=binSize
-	while x+binSize/2 < high:
-		histogram.append([x,0])
-		x=x+binSize
-	x=-binSize
-	while x-binSize/2 > low:
-		histogram.append([x,0])
-		x=x-binSize
-	histogram=sorted(histogram, key=lambda histogram:histogram[0])
-	nbins = len(histogram)
+		binSize = (high-low)/(nbins-1)
+		#this is bound to be an ugly number, so let's make it pretty
+		for x in [10,5,2.5,2,1.5,1,0.5,0.25,0.2,0.1,0.05]:
+			if binSize > x:
+				break
+		#if binSize < 0.05, fuck it--I'm not zooming in any further
+		binSize = x
+		histogram = [[0.0,0]]
+		x=binSize
+		while x+binSize/2 < high:
+			histogram.append([x,0])
+			x=x+binSize
+		x=-binSize
+		while x-binSize/2 > low:
+			histogram.append([x,0])
+			x=x-binSize
+		histogram=sorted(histogram, key=lambda histogram:histogram[0])
+		nbins = len(histogram)
 
-	for start in range(len(stallCounter)):
-		if stallCounter[start] >= histogram[0][0]-binSize/2:
-			break
+		for start in range(len(stallCounter)):
+			if stallCounter[start] >= histogram[0][0]-binSize/2:
+				break
 
-	j=0
-	for i in range(start,len(stallCounter)):
-		while stallCounter[i][0] > histogram[0][0]+binSize*(j+0.5):
-			j=j+1
-		if j>=len(histogram):
-			break
-		histogram[j][1] = histogram[j][1]+stallCounter[i][1]
+		j=0
+		for i in range(start,len(stallCounter)):
+			while stallCounter[i][0] > histogram[0][0]+binSize*(j+0.5):
+				j=j+1
+			if j>=len(histogram):
+				break
+			histogram[j][1] = histogram[j][1]+stallCounter[i][1]
 
-	maximum = 0
-	for i in range(len(histogram)):
-		if histogram[i][1] > maximum:
-			maximum = histogram[i][1]
-
-	nblocks = 30 #maximum number of blocks to go across
-	blockSize = maximum/nblocks
-
-	if blockSize > 0:
-		x=0.0
-		y=0.0
-		for score in stallCounter:
-			x=x+score[0]*score[1]
-			y=y+score[1]	
-
-		#print histogram
-		metagamefile.write(' Stalliness (mean: %6.3f)\n'%(x/y))
+		maximum = 0
 		for i in range(len(histogram)):
-			if histogram[i][0]%(2.0*binSize) < binSize/2:
-				line = ' '
-				if histogram[i][0]>0.0:
-					line=line+'+'
-				elif histogram[i][0] == 0.0:
-					line=line+' '
-				line = line+'%3.1f|'%(histogram[i][0])
-			else:
-				line = '     |'
-			for j in range(int((histogram[i][1]+blockSize/2)/blockSize)):#poor man's rounding
-				line = line + '#'
-			metagamefile.write(line+'\n')
-		metagamefile.write(' more negative = more offensive, more positive = more stall\n')
-		metagamefile.write(' one # = %5.2f%%\n'%(100.0*blockSize/y))
+			if histogram[i][1] > maximum:
+				maximum = histogram[i][1]
+
+		nblocks = 30 #maximum number of blocks to go across
+		blockSize = maximum/nblocks
+
+		if blockSize > 0:
+			x=0.0
+			y=0.0
+			for score in stallCounter:
+				x=x+score[0]*score[1]
+				y=y+score[1]	
+
+			#print histogram
+			metagamefile.write(' Stalliness (mean: %6.3f)\n'%(x/y))
+			for i in range(len(histogram)):
+				if histogram[i][0]%(2.0*binSize) < binSize/2:
+					line = ' '
+					if histogram[i][0]>0.0:
+						line=line+'+'
+					elif histogram[i][0] == 0.0:
+						line=line+' '
+					line = line+'%3.1f|'%(histogram[i][0])
+				else:
+					line = '     |'
+				for j in range(int((histogram[i][1]+blockSize/2)/blockSize)):#poor man's rounding
+					line = line + '#'
+				metagamefile.write(line+'\n')
+			metagamefile.write(' more negative = more offensive, more positive = more stall\n')
+			metagamefile.write(' one # = %5.2f%%\n'%(100.0*blockSize/y))
 
 	metagamefile.close()
-#outfile=open('stall.dat','w')
-#for line in metricCounter:
-#	for item in line:
-#		outfile.write(str(item)+'\t')
-#	outfile.write('\n')
-#outfile.close()
-#filename="Stats/rating/"+tier+".txt"
-#d = os.path.dirname(filename)
-#if not os.path.exists(d):
-#	os.makedirs(d)
-#outfile=open(filename,'w')
-#scores=['r','rd','rpr','rprd']
-#for score in scores:
-#	outfile.write(score+'\t')
-#outfile.write('\n')
-#for rating in ratingCounter:
-#	for score in scores:
-#		outfile.write(str(rating[score])+'\t')
-#	outfile.write('\n')
-#outfile.close()
-
-#filename="Stats/weighting/"+tier+specs+".txt"
-#d = os.path.dirname(filename)
-#if not os.path.exists(d):
-#	os.makedirs(d)
-#outfile=open(filename,'w')
-#for line in weightCounter:
-#	outfile.write(str(line)+'\n')
-#outfile.close()
-
-#for outcome in ['win','loss']:
-#	filename="Stats/wl/"+tier+specs+outcome+".txt"
-#	d = os.path.dirname(filename)
-#	if not os.path.exists(d):
-#		os.makedirs(d)
-#	outfile=open(filename,'w')
-#	for line in WLratings[outcome]:
-#		outfile.write('\t'.join([str(i) for i in line])+'\n')
-#	outfile.close()
-

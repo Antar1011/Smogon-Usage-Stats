@@ -142,7 +142,8 @@ nonSinglesFormats = [
 	'smogondoublesuu',
 	'smogontriples'
 	'smogontriples',
-	'vgc2014'
+	'vgc2014',
+	'battlespotspecial7'
 ]
 
 non6v6Formats = [
@@ -151,5 +152,6 @@ non6v6Formats = [
 	'battlespotsingles',
 	'challengecup1v1',
 	'gen5gbusingles',
-	'vgc2014'
+	'vgc2014',
+	'battlespotspecial7'
 ]

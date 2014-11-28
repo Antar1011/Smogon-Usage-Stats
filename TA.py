@@ -226,7 +226,7 @@ def analyzePoke(poke):
 		stalliness -= 0.5
 	if poke['ability'] == 'harvest' or 'recycle' in poke['moves']:
 		stalliness += 1.0
-	if len(set(['jumpkick', 'doubleedge', 'submission', 'petaldance', 'hijumpkick', 'outrage', 'volttackle', 'closecombat', 'flareblitz', 'bravebird', 'woodhammer', 'headsmash', 'headcharge', 'wildcharge', 'takedown']).intersection(poke['moves'])) != 0:
+	if len(set(['jumpkick', 'doubleedge', 'submission', 'petaldance', 'hijumpkick', 'outrage', 'volttackle', 'closecombat', 'flareblitz', 'bravebird', 'woodhammer', 'headsmash', 'headcharge', 'wildcharge', 'takedown', 'dragonascent']).intersection(poke['moves'])) != 0:
 		stalliness -= 0.5
 	if len(set(['selfdestruct', 'explosion', 'destinybond', 'perishsong', 'memento', 'healingwish', 'lunardance', 'finalgambit']).intersection(poke['moves'])) != 0:
 		stalliness -= 1.0

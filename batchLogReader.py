@@ -632,7 +632,7 @@ for filename in os.listdir(sys.argv[1]):
 	if x:
 		writeme.append(x)
 outfile=gzip.open(outname,'ab')
-outfile.write(json.dumps(writeme))
+outfile.write(json.dumps(writeme)+'\n')
 outfile.close()
 
 if ratings != None:
