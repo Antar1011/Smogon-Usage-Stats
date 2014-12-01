@@ -46,4 +46,4 @@ function process {
 }
 export -f process
 
-ls Raw/ | parallel -j 3 process
+ls -S Raw/ | parallel -j 3 process
