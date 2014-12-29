@@ -146,7 +146,11 @@ def LogReader(filename,tier,movesets,ratings):
 			except:
 				sys.stderr.write(species+' not in keyLookup.\n Skipping log:\n'+filename+'\n')
 				return False
-				
+
+			for s in aliases: #this 2nd one is needed to deal with Nidoran
+				if species in aliases[s]:
+					species = s
+					break
 			if not hackmons:
 				if species.endswith('-Mega'):
 					species = species[:-5]
@@ -324,7 +328,7 @@ def LogReader(filename,tier,movesets,ratings):
 								active[0] = i
 					if active[0]==-1:
 						sys.stderr.write('Problem with '+filename+'\n')
-						sys.stderr.write('(Pokemon not in ts)\n')
+						sys.stderr.write('(Pokemon not in ts) (1)\n')
 						sys.stderr.write(str([ts[0][0],species])+'\n')
 						return False
 				
@@ -358,7 +362,7 @@ def LogReader(filename,tier,movesets,ratings):
 								active[0] = i
 					if active[1]==-1:
 						sys.stderr.write('Problem with '+filename+'\n')
-						sys.stderr.write('(Pokemon not in ts)\n')
+						sys.stderr.write('(Pokemon not in ts) (2)\n')
 						sys.stderr.write(str([ts[11][0],species])+'\n')
 						return False
 				break
@@ -518,7 +522,7 @@ def LogReader(filename,tier,movesets,ratings):
 									break
 						if not found:
 							sys.stderr.write('Problem with '+filename+'\n')
-							sys.stderr.write('(Pokemon not in ts)\n')
+							sys.stderr.write('(Pokemon not in ts) (3)\n')
 							sys.stderr.write(str([ts[11*(int(line[p])-1)][0],species])+'\n')
 							return False
 				active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
@@ -598,8 +602,9 @@ def LogReader(filename,tier,movesets,ratings):
 									found = True
 									break
 						if not found:
+							print ts
 							sys.stderr.write('Problem with '+filename+'\n')
-							sys.stderr.write('(Pokemon not in ts)\n')
+							sys.stderr.write('(Pokemon not in ts) (4)\n')
 							sys.stderr.write(str([ts[11*(int(line[p])-1)][0],species])+'\n')
 							return False
 				active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
