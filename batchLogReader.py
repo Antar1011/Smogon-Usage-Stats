@@ -18,6 +18,9 @@ from common import *
 from TA import *
 
 def LogReader(filename,tier,movesets,ratings):
+
+	hackmons = 'ackmons' in tier
+
 	file = open(filename)
 	raw = file.readline()
 	file.close()
@@ -144,15 +147,11 @@ def LogReader(filename,tier,movesets,ratings):
 				sys.stderr.write(species+' not in keyLookup.\n Skipping log:\n'+filename+'\n')
 				return False
 				
-			for s in aliases: #combine appearance-only variations and weird PS quirks
-				if species in aliases[s]:
-					species = s
-					break
-
-			if species.endswith('-Mega'):
-				species = species[:-5]
-			elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-				species = species[:-7]
+			if not hackmons:
+				if species.endswith('-Mega'):
+					species = species[:-5]
+				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+					species = species[:-7]
 
 			ts.append([trainer,species])
 
@@ -304,17 +303,30 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				if species.endswith('-Mega'):
-					species = species[:-5]
-				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-					species = species[:-7]
+				if not hackmons:
+					if species.endswith('-Mega'):
+						species = species[:-5]
+					elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+						species = species[:-7]
 				try:
 					active[0]=ts.index([ts[0][0],species])
 				except ValueError:
-					sys.stderr.write('Problem with '+filename+'\n')
-					sys.stderr.write('(Pokemon not in ts)\n')
-					sys.stderr.write(str([ts[0][0],species])+'\n')
-					return False
+					#try undoing a mega evolution
+					if species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+						if species.endswith('-Mega'):
+							speciesBase = species[:-5]
+						else:
+							speciesBase = species[:-7]
+
+						for i in xrange(6):
+							if ts[i][1].startswith(speciesBase):
+								species = ts[i][1]
+								active[0] = i
+					if active[0]==-1:
+						sys.stderr.write('Problem with '+filename+'\n')
+						sys.stderr.write('(Pokemon not in ts)\n')
+						sys.stderr.write(str([ts[0][0],species])+'\n')
+						return False
 				
 			if (spacelog and line[0:13] == "| switch | p2") or (not spacelog and line[0:10] == "|switch|p2"):
 				end = string.rfind(line,'|')-1*spacelog
@@ -325,17 +337,30 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				if species.endswith('-Mega'):
-					species = species[:-5]
-				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-					species = species[:-7]
+				if not hackmons:
+					if species.endswith('-Mega'):
+						species = species[:-5]
+					elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+						species = species[:-7]
 				try:
 					active[1]=ts.index([ts[11][0],species])
 				except ValueError:
-					sys.stderr.write('Problem with '+filename+'\n')
-					sys.stderr.write('(Pokemon not in ts)\n')
-					sys.stderr.write(str([ts[11][0],species])+'\n')
-					return False
+					#try undoing a mega evolution
+					if species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+						if species.endswith('-Mega'):
+							speciesBase = species[:-5]
+						else:
+							speciesBase = species[:-7]
+
+						for i in xrange(6,12):
+							if ts[i][1].startswith(speciesBase):
+								species = ts[i][1]
+								active[0] = i
+					if active[1]==-1:
+						sys.stderr.write('Problem with '+filename+'\n')
+						sys.stderr.write('(Pokemon not in ts)\n')
+						sys.stderr.write(str([ts[11][0],species])+'\n')
+						return False
 				break
 		start=log['log'].index(line)+1
 
@@ -468,19 +493,34 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				if species.endswith('-Mega'):
-					species = species[:-5]
-				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-					species = species[:-7]
-				if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
+				if not hackmons:
+					if species.endswith('-Mega'):
+						species = species[:-5]
+					elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+						species = species[:-7]
+				if [ts[11*(int(line[p])-1)][0],species] not in ts:
 					if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
-					#if Shaymin-Sky gets frozen, it reverts to land forme
+						#if Shaymin-Sky gets frozen, it reverts to land forme
 						species = 'Shaymin-Sky'
 					else:
-						sys.stderr.write('Problem with '+filename+'\n')
-						sys.stderr.write('(Pokemon not in ts)\n')
-						sys.stderr.write(str([ts[11*(int(line[p])-1)][0],species])+'\n')
-						return False
+						found = False
+						#try undoing a mega evolution
+						if species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+							if species.endswith('-Mega'):
+								speciesBase = species[:-5]
+							else:
+								speciesBase = species[:-7]
+
+							for i in xrange(6*(int(line[p])-1),6*int(line[p])):
+								if ts[i][1].startswith(speciesBase):
+									species = ts[i][1]
+									found = True
+									break
+						if not found:
+							sys.stderr.write('Problem with '+filename+'\n')
+							sys.stderr.write('(Pokemon not in ts)\n')
+							sys.stderr.write(str([ts[11*(int(line[p])-1)][0],species])+'\n')
+							return False
 				active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
 				#really, it would be better to go back and revise previous affected matchups, but that be a lot more work
 
@@ -534,19 +574,34 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				if species.endswith('-Mega'):
-					species = species[:-5]
-				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-					species = species[:-7]
+				if not hackmons:
+					if species.endswith('-Mega'):
+						species = species[:-5]
+					elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+						species = species[:-7]
 				if [ts[11*(int(line[p])-1)][0],species] not in ts:
 					if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
 					#if Shaymin-Sky gets frozen, it reverts to land forme
 						species = 'Shaymin-Sky'
 					else:
-						sys.stderr.write('Problem with '+filename+'\n')
-						sys.stderr.write('(Pokemon not in ts)\n')
-						sys.stderr.write(str([ts[11*(int(line[p])-1)][0],species])+'\n')
-						return False
+						found = False
+						#try undoing a mega evolution
+						if species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+							if species.endswith('-Mega'):
+								speciesBase = species[:-5]
+							else:
+								speciesBase = species[:-7]
+
+							for i in xrange(6*(int(line[p])-1),6*int(line[p])):
+								if ts[i][1].startswith(speciesBase):
+									species = ts[i][1]
+									found = True
+									break
+						if not found:
+							sys.stderr.write('Problem with '+filename+'\n')
+							sys.stderr.write('(Pokemon not in ts)\n')
+							sys.stderr.write(str([ts[11*(int(line[p])-1)][0],species])+'\n')
+							return False
 				active[int(line[p])-1]=ts.index([ts[11*(int(line[p])-1)][0],species])
 
 	for i in range(len(matchups)):
