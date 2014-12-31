@@ -33,14 +33,21 @@ from common import *
 #this is a lookup table for the outcomes if poke1 and poke2 were exchanged
 otherGuy = [1,0,2,4,3,5,7,6,9,8,11,10,12]
 
-cutoff = 1500 #this is our default, but we can change it for '1337' stats
 
-if (len(sys.argv) > 2):
-	cutoff = float(sys.argv[2])
 
 tier = str(sys.argv[1])
+cutoff = 1500 #this is our default, but we can change it for '1337' stats
+teamtype = None
 
-specs = '-'+'{:.0f}'.format(cutoff)
+if len(sys.argv) > 2:
+	cutoff = float(sys.argv[2])
+	if len(sys.argv) > 3:
+		teamtype = keyify(sys.argv[3])
+
+specs = '-'
+if teamtype:
+	specs += teamtype+'-'
+specs += '{:.0f}'.format(cutoff)
 
 filename="Raw/"+tier#+".txt"
 file = gzip.open(filename,'rb')
@@ -92,6 +99,9 @@ for line in file:
 			if battle['turns'] < 6 and tier not in nonSinglesFormats and tier not in non6v6Formats:
 				continue
 		for player in ['p1','p2']:
+			if teamtype:
+				if teamtype not in battle[player]['tags']:
+					continue
 			team = []
 			if 'rating' in battle[player].keys():
 				if 'rpr' in battle[player]['rating'].keys() and 'rprd' in battle[player]['rating'].keys():
@@ -180,6 +190,8 @@ for line in file:
 				print battle
 
 			for i in range(2):
+				if ['p1','p2'][i] not in weight:
+					continue
 				species = leads[i]
 				#annoying alias shit
 				for alias in aliases:
@@ -194,17 +206,18 @@ for line in file:
 				leadCounter['weighted'][species]=leadCounter['weighted'][species]+weight[['p1','p2'][i]]
 
 			#encounter Matrix
-			w=min(weight.values())
-			for matchup in battle['matchups']:
-				if matchup[0] not in encounterMatrix.keys():
-					encounterMatrix[matchup[0]]={}
-				if matchup[1] not in encounterMatrix.keys():
-					encounterMatrix[matchup[1]]={}
-				if matchup[1] not in encounterMatrix[matchup[0]].keys():
-					encounterMatrix[matchup[0]][matchup[1]]=[0 for k in range(13)]
-					encounterMatrix[matchup[1]][matchup[0]]=[0 for k in range(13)]
-				encounterMatrix[matchup[0]][matchup[1]][matchup[2]]=encounterMatrix[matchup[0]][matchup[1]][matchup[2]]+w #encounter Matrix is weighed
-				encounterMatrix[matchup[1]][matchup[0]][otherGuy[matchup[2]]]=encounterMatrix[matchup[1]][matchup[0]][otherGuy[matchup[2]]]+w #by the inferior player
+			if not teamtype:
+				w=min(weight.values())
+				for matchup in battle['matchups']:
+					if matchup[0] not in encounterMatrix.keys():
+						encounterMatrix[matchup[0]]={}
+					if matchup[1] not in encounterMatrix.keys():
+						encounterMatrix[matchup[1]]={}
+					if matchup[1] not in encounterMatrix[matchup[0]].keys():
+						encounterMatrix[matchup[0]][matchup[1]]=[0 for k in range(13)]
+						encounterMatrix[matchup[1]][matchup[0]]=[0 for k in range(13)]
+					encounterMatrix[matchup[0]][matchup[1]][matchup[2]]=encounterMatrix[matchup[0]][matchup[1]][matchup[2]]+w #encounter Matrix is weighed
+					encounterMatrix[matchup[1]][matchup[0]][otherGuy[matchup[2]]]=encounterMatrix[matchup[1]][matchup[0]][otherGuy[matchup[2]]]+w #by the inferior player
 
 		battleCount = battleCount + 1
 	
