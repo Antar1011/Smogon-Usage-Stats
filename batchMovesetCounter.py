@@ -13,7 +13,7 @@ import os
 from common import keyify,weighting,readTable,aliases
 from TA import nmod,statFormula,baseStats
 
-def movesetCounter(filename, cutoff,usage):
+def movesetCounter(filename, cutoff, teamtype, usage):
 	file = gzip.open(filename,'rb')
 	raw = file.read()
 	file.close()
@@ -44,6 +44,9 @@ def movesetCounter(filename, cutoff,usage):
 	for line in raw:
 		movesets = json.loads(line)
 		for moveset in movesets:
+			if teamtype:
+				if teamtype not in moveset['tags']:
+					continue
 			rawCount = rawCount+1
 			weight=weighting(1500.0,130.0,cutoff)
 			if 'rating' in moveset.keys():
@@ -250,11 +253,17 @@ keyLookup['']='Nothing'
 
 cutoff = 1500
 cutoffdeviation = 0
+teamtype = None
 
 if (len(sys.argv) > 2):
 	cutoff = float(sys.argv[2])
+	if (len(sys.argv) > 3):
+		teamtype = keyify(sys.argv[3])
 
-specs = '-'+'{:.0f}'.format(cutoff)
+specs = '-'
+if teamtype:
+	specs += teamtype+'-'
+specs += '{:.0f}'.format(cutoff)
 
 file = open('Raw/moveset/'+str(sys.argv[1])+'/teammate'+specs+'.pickle')
 teammateMatrix = pickle.load(file)
@@ -279,11 +288,11 @@ if sys.argv[1] in ['randombattle','challengecup','challengecup1v1','seasonal']:
 else:
 	pokes=sorted(pokes, key=lambda pokes:-pokes[1])
 
-chaos = {'info': {'metagame': str(sys.argv[1]), 'cutoff': cutoff, 'cutoff deviation': cutoffdeviation, 'number of battles': nBattles},'data':{}}
+chaos = {'info': {'metagame': str(sys.argv[1]), 'cutoff': cutoff, 'cutoff deviation': cutoffdeviation, 'team type': teamtype, 'number of battles': nBattles},'data':{}}
 for poke in pokes:
 	if poke[1] < 0.0001: #1/100th of a percent
 		break
-	stuff = movesetCounter('Raw/moveset/'+str(sys.argv[1])+'/'+keyify(poke[0]),cutoff,usage)
+	stuff = movesetCounter('Raw/moveset/'+str(sys.argv[1])+'/'+keyify(poke[0]),cutoff,teamtype,usage)
 	chaos['data'][poke[0]]=stuff
 
 

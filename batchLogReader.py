@@ -114,10 +114,7 @@ def LogReader(filename,tier,movesets,ratings):
 	#get pokemon info
 	for team in ['p1team','p2team']:
 
-		if team == 'p1team':
-			trainer = log['p1']
-		else:
-			trainer = log['p2']
+		trainer = log[team[:2]]
 
 		teams[team]=[]
 
@@ -217,6 +214,16 @@ def LogReader(filename,tier,movesets,ratings):
 			for move in moves:
 				teams[team][len(teams[team])-1]['moves'].append(move)
 
+		if len(log[team]) < 6:
+			for i in range(6-len(log[team])):
+				ts.append([trainer,'empty'])
+		analysis = analyzeTeam(teams[team])
+		if analysis is None:
+			sys.stderr.write('Problem with '+filename+'\n')
+			return False
+		teams[team].append({'bias': analysis['bias'], 'stalliness': analysis['stalliness'], 'tags': analysis['tags']})
+
+		for poke in teams[team][:-1]:
 			#write to moveset file
 			#outname = "Raw/moveset/"+tier+"/"+keyify(species)#+".txt"
 			#d = os.path.dirname(outname)
@@ -224,13 +231,14 @@ def LogReader(filename,tier,movesets,ratings):
 			#	os.makedirs(d)
 			#msfile=open(outname,'ab')
 			writeme={'trainer':trainer.encode('ascii', 'ignore'),
-				'level':level,
-				'ability':ability,
-				'item':item,
-				'nature':nature,
-				'ivs':ivs,
-				'evs':evs,
-				'moves':moves}
+				'level':poke['level'],
+				'ability':poke['ability'],
+				'item':poke['item'],
+				'nature':poke['nature'],
+				'ivs':poke['ivs'],
+				'evs':poke['evs'],
+				'moves':poke['moves'],
+				'tags':analysis['tags']}
 			if team in rating.keys():
 				writeme['rating']=rating[team]
 			#if whowon == 0:
@@ -241,18 +249,11 @@ def LogReader(filename,tier,movesets,ratings):
 				writeme['outcome']='loss'
 			#msfile.write(lzma.compress(json.dumps(writeme))+'\n')
 			#msfile.close()
-			if keyify(species) not in movesets.keys():
-				movesets[keyify(species)]=[]
-			movesets[keyify(species)].append(writeme)
+			if keyify(poke['species']) not in movesets.keys():
+				movesets[keyify(poke['species'])]=[]
+			movesets[keyify(poke['species'])].append(writeme)
 
-		if len(log[team]) < 6:
-			for i in range(6-len(log[team])):
-				ts.append([trainer,'empty'])
-		analysis = analyzeTeam(teams[team])
-		if analysis is None:
-			sys.stderr.write('Problem with '+filename+'\n')
-			return False
-		teams[team].append({'bias': analysis['bias'], 'stalliness': analysis['stalliness'], 'tags': analysis['tags']})
+
 		if (team == 'p1team' and whowon == 1) or (team == 'p2team' and whowon == 2):
 			teams[team][len(teams[team])-1]['outcome']='win'
 		elif whowon != 0:
