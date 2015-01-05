@@ -189,6 +189,10 @@ def LogReader(filename,tier,movesets,ratings):
 				except TypeError:
 					moves[j] = ''
 			#figure out Hidden Power from IVs
+			if 'hiddenpower' in moves:
+				hptype=15*(ivs['hp']%2+2*(ivs['atk']%2)+4*(ivs['def']%2)+8*(ivs['spe']%2)+16*(ivs['spa']%2)+32*(ivs['spd']%2))/63
+				moves.remove('hiddenpower')
+				moves.insert(0,'hiddenpower'+['fighting','flying','poison','ground','rock','bug','ghost','steel','fire','water','grass','electric','psychic','ice','dragon','dark'][hptype])
 			if 'ability' in log[team][i].keys():
 				ability = keyify(log[team][i]['ability'])
 			else:
