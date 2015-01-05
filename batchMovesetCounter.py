@@ -35,6 +35,7 @@ def movesetCounter(filename, cutoff, teamtype, usage):
 	stalliness = []
 	abilities = {}
 	items = {}
+	happinesses = {}
 	spreads = {}
 	moves = {}
 	movesets = []
@@ -102,7 +103,7 @@ def movesetCounter(filename, cutoff, teamtype, usage):
 			spread=spread+str(moveset['evs']['spe'])
 			if spread not in spreads:
 				spreads[spread] = 0.0
-			spreads[spread] = spreads[spread] + weight
+			spreads[spread] += weight
 
 			for move in moveset['moves']:
 				if move in keyLookup:
@@ -111,7 +112,12 @@ def movesetCounter(filename, cutoff, teamtype, usage):
 					#	continue
 					if move not in moves:
 						moves[move] = 0.0
-					moves[move] = moves[move]+weight
+					moves[move] += weight
+
+			happiness = moveset['happiness']
+			if happiness not in happinesses.keys():
+				happinesses[happiness]=0.0
+			happinesses[happiness]+=weight
 
 	count = sum(abilities.values())
 
@@ -147,6 +153,7 @@ def movesetCounter(filename, cutoff, teamtype, usage):
 		'Items': items,
 		'Spreads': spreads,
 		'Moves': moves,
+		'Happiness' : happinesses,
 		'Teammates': teammates,
 		'Checks and Counters': cc}
 

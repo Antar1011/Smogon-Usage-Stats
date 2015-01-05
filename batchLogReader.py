@@ -162,6 +162,10 @@ def LogReader(filename,tier,movesets,ratings):
 					item = 'nothing'
 			else:
 				item = 'nothing'
+			if 'happiness' in log[team][i].keys():
+				happiness = log[team][i]['happiness']
+			else:
+				happiness = 255
 			if 'nature' in log[team][i].keys():
 				nature = keyify(log[team][i]['nature'])
 				if nature not in nmod.keys(): #zarel said this is what PS does
@@ -208,6 +212,7 @@ def LogReader(filename,tier,movesets,ratings):
 				'nature': nature,
 				'item': item,
 				'evs': {},
+				'happiness': happiness,
 				'moves': [],
 				'ability': ability,
 				'level': level,
@@ -242,6 +247,7 @@ def LogReader(filename,tier,movesets,ratings):
 				'ivs':poke['ivs'],
 				'evs':poke['evs'],
 				'moves':poke['moves'],
+				'happiness':poke['happiness'],
 				'tags':analysis['tags']}
 			if team in rating.keys():
 				writeme['rating']=rating[team]
