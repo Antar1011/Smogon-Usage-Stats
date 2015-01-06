@@ -138,11 +138,13 @@ nonSinglesFormats = [
 	'randomdoublesbattle',
 	'randomtriplesbattle',
 	'smogondoubles',
+	'smogondoublessuspecttest',
 	'smogondoublesubers',
 	'smogondoublesuu',
 	'smogontriples'
 	'smogontriples',
 	'vgc2014',
+	'vgc2015',
 	'battlespotspecial7'
 ]
 
