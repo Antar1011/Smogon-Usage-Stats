@@ -127,7 +127,9 @@ aliases={
 	'Pumkaboo': ['Pumpkaboo-Average','Pumpkabooaverage'],
 	'Gourgeist': ['Gourgeist-Average','Gourgeistaverage'],
 	'Aegislash': ['Aegislash-Blade','Aegislashblade'],
-	'Floette': ['Floetteeternalflower','Floette-Eternal-Flower']
+	'Floette-Eternal-Flower' : ['Floetteeternalflower']
+	'Pikachu' : ['Pikachu-Cosplay','Pikachu-Belle','Pikachu-Rock-Star','Pikachu-Pop-Star','Pikachu-PhD','Pikachu-Libre']
+	'Meowstic' : ['Meowstic-F']
 }
 
 nonSinglesFormats = [
