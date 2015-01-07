@@ -697,14 +697,32 @@ if not os.path.exists(d):
 	os.makedirs(d)
 writeme=[]
 movesets={}
+count=0
 for filename in os.listdir(sys.argv[1]):
 	#print filename
 	x = LogReader(sys.argv[1]+'/'+filename,tier,movesets,ratings)
 	if x:
 		writeme.append(x)
-outfile=gzip.open(outname,'ab')
-outfile.write(json.dumps(writeme)+'\n')
-outfile.close()
+		count += 1
+		
+		if count % 10000 == 0:
+
+			outfile=gzip.open(outname,'ab')
+			outfile.write(json.dumps(writeme)+'\n')
+			outfile.close()
+
+			#write to moveset file
+			for species in movesets.keys():
+				outname = "Raw/moveset/"+tier+"/"+species#+".txt"
+				d = os.path.dirname(outname)
+				if not os.path.exists(d):
+					os.makedirs(d)
+				msfile=gzip.open(outname,'ab')		
+				msfile.write(json.dumps(movesets[species]))
+				msfile.close()
+
+			writeme = []
+			movesets={}
 
 if ratings != None:
 	for player in ratings.keys():
@@ -712,14 +730,4 @@ if ratings != None:
 	ratingfile=open(sys.argv[4],'w+')
 	ratingfile.write(json.dumps(ratings))
 	ratingfile.close()
-
-#write to moveset file
-for species in movesets.keys():
-	outname = "Raw/moveset/"+tier+"/"+species#+".txt"
-	d = os.path.dirname(outname)
-	if not os.path.exists(d):
-		os.makedirs(d)
-	msfile=gzip.open(outname,'ab')		
-	msfile.write(json.dumps(movesets[species]))
-	msfile.close()
 
