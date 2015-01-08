@@ -723,6 +723,20 @@ for filename in os.listdir(sys.argv[1]):
 
 			writeme = []
 			movesets={}
+if writeme:
+	outfile=gzip.open(outname,'ab')
+	outfile.write(json.dumps(writeme)+'\n')
+	outfile.close()
+
+	#write to moveset file
+	for species in movesets.keys():
+		outname = "Raw/moveset/"+tier+"/"+species#+".txt"
+		d = os.path.dirname(outname)
+		if not os.path.exists(d):
+			os.makedirs(d)
+		msfile=gzip.open(outname,'ab')		
+		msfile.write(json.dumps(movesets[species]))
+		msfile.close()
 
 if ratings != None:
 	for player in ratings.keys():
