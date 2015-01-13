@@ -40,16 +40,17 @@ def readTable(filename):
 	nBattles = int(table[0][16:])
 
 	for i in range(5,len(table)):
-		name = table[i][10:29]
-	
-		if (name[0] == '-'):
+		line = table[i].split('|')
+		if len(line)<3:
 			break
+		name = line[2][1:]
 
 		while name[len(name)-1] == ' ': 
 			#remove extraneous spaces
 			name = name[0:len(name)-1]
+
+		pct = line[3][1:9]
 	
-		pct = table[i][31:39]
 		usage[name]=float(pct)/100.0
 
 	return usage,nBattles
