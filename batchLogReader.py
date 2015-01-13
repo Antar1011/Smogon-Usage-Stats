@@ -148,6 +148,7 @@ def LogReader(filename,tier,movesets,ratings):
 				if species in aliases[s]:
 					species = s
 					break
+
 			if not hackmons:
 				if species.endswith('-Mega'):
 					species = species[:-5]
@@ -207,6 +208,7 @@ def LogReader(filename,tier,movesets,ratings):
 				level = int(log[team][i]['level'])
 			else:
 				level = 100
+			
 			teams[team].append({
 				'species': keyify(species),
 				'nature': nature,
@@ -222,11 +224,12 @@ def LogReader(filename,tier,movesets,ratings):
 				teams[team][len(teams[team])-1]['ivs'][stat] = ivs[stat]
 			for move in moves:
 				teams[team][len(teams[team])-1]['moves'].append(move)
-
+		
 		if len(log[team]) < 6:
 			for i in range(6-len(log[team])):
 				ts.append([trainer,'empty'])
 		analysis = analyzeTeam(teams[team])
+		
 		if analysis is None:
 			sys.stderr.write('Problem with '+filename+'\n')
 			return False
@@ -690,7 +693,6 @@ if len(sys.argv) > 4:
 			ratings = {}
 		print ratings
 
-
 outname = "Raw/"+tier#+".txt"
 d = os.path.dirname(outname)
 if not os.path.exists(d):
@@ -706,7 +708,7 @@ for filename in os.listdir(sys.argv[1]):
 		count += 1
 		
 		if count % 10000 == 0:
-
+			outname = "Raw/"+tier#+".txt"
 			outfile=gzip.open(outname,'ab')
 			outfile.write(json.dumps(writeme)+'\n')
 			outfile.close()
@@ -724,6 +726,7 @@ for filename in os.listdir(sys.argv[1]):
 			writeme = []
 			movesets={}
 if writeme:
+	outname = "Raw/"+tier#+".txt"
 	outfile=gzip.open(outname,'ab')
 	outfile.write(json.dumps(writeme)+'\n')
 	outfile.close()

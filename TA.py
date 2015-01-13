@@ -271,8 +271,17 @@ def analyzeTeam(team):
 		if analysis is None:
 			return None
 		(stalliness,bias) = analysis 
-		
-		if poke['species'] == 'rayquaza' and 'dragonascent' in poke['moves']:
+		if poke['species'] == 'meloetta' and 'relicsong' in poke['moves']:
+			megapoke = copy.deepcopy(poke)
+			megapoke['species']='meloettapirouette'
+			stalliness += analyzePoke(megapoke)[0]
+			stalliness /= 2.0
+		elif poke['species'] == 'darmanitan' and poke['ability'] == 'zenmode':
+			megapoke = copy.deepcopy(poke)
+			megapoke['species']='darmanitanzen'
+			stalliness += analyzePoke(megapoke)[0]
+			stalliness /= 2.0
+		elif poke['species'] == 'rayquaza' and 'dragonascent' in poke['moves']:
 			megapoke = copy.deepcopy(poke)
 			megapoke['species']='rayquazamega'
 			megapoke['ability']='deltastream'
