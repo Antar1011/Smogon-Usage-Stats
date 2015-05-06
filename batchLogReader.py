@@ -242,6 +242,8 @@ def LogReader(filename,tier,movesets,ratings):
 			#if not os.path.exists(d):
 			#	os.makedirs(d)
 			#msfile=open(outname,'ab')
+			if poke['species'] == 'meloettapirouette':
+				print filename
 			writeme={'trainer':trainer.encode('ascii', 'ignore'),
 				'level':poke['level'],
 				'ability':poke['ability'],
@@ -681,6 +683,14 @@ if tier == 'vgc2014beta':
 	tier = 'vgc2014'
 if tier.startswith('xybattlespot') and tier.endswith('beta'):
 	tier = tier[:-4]
+if tier in ['battlespotdoubles', 'battlespotdoublesvgc2015']:
+	tier = 'vgc2015'
+if tier == 'smogondoubles':
+	tier = 'doublesou'
+if tier == 'smogondoublesubers':
+	tier = 'doublesubers'
+if tier == 'smogondoublesuu':
+	tier = 'doublesuu'
 #elif tier[:8]=='seasonal':
 #	tier='seasonal'
 

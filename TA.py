@@ -105,13 +105,7 @@ def analyzePoke(poke):
 	if poke['species'] not in baseStats.keys():
 		sys.stderr.write(poke['species']+" is not listed in baseStats.json\n")
 		sys.stderr.write("You may want to fix that.\n")
-		return None
-	
-	if poke['species'] == 'meloetta' and 'relicsong' in poke['moves']:
-		poke['species']='meloettapirouette'
-	elif poke['species'] == 'darmanitan' and poke['ability'] == 'zenmode':
-		poke['species']='darmanitanzen'
-		
+		return None	
 
 	#technically I don't need to do this as a separate loop, but I'm doing it this way for modularity's sake
 	stats = []
