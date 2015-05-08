@@ -21,6 +21,9 @@ def usageToTiers(usage):
 	return (OU,UU)
 
 def raiseAndDrop(curTiers,usage):
+	for poke in usage:
+		if poke not in curTiers:
+			curTiers[poke]='UU'
 	newTiers={}
 	#start with Ubers
 	for poke in curTiers.keys():
@@ -108,13 +111,25 @@ def main():
 	usageLC = {}
 	usageDoubles = {}
 
+	month="."
+	getUsage(month+"/Stats/lc-1630.txt",0,20.0,usageLC)
+	getUsage(month+"/Stats/lcuu-1630.txt",1,20.0,usageLC)
+	getUsage(month+"/Stats/doublesou-1695.txt",0,20.0,usageDoubles)
+	getUsage(month+"/Stats/doublesuu-1630.txt",1,20.0,usageDoubles)
+
 	month="2015-03"
+	getUsage(month+"/Stats/lc-1630.txt",0,3.0*25136/(25136+13373),usageLC)
+	getUsage(month+"/Stats/lcsuspecttest-1630.txt",0,3.0*13373/(25136+13373),usageLC)
+	getUsage(month+"/Stats/lcuu-1630.txt",1,3.0,usageLC)
+	getUsage(month+"/Stats/smogondoubles-1695.txt",0,3.0,usageDoubles)
+	getUsage(month+"/Stats/smogondoublesuu-1630.txt",1,3.0,usageDoubles)
 
-	getUsage(month+"/Stats/lc-1630.txt",0,24.0,usageLC)
-	getUsage(month+"/Stats/lcuu-1630.txt",1,24.0,usageLC)
-
-	getUsage(month+"/Stats/smogondoubles-1695.txt",0,24.0,usageDoubles)
-	getUsage(month+"/Stats/smogondoublesuu-1630.txt",1,24.0,usageDoubles)
+	month="2015-02"
+	getUsage(month+"/Stats/lc-1630.txt",0,1.0*28433/(28433+15568),usageLC)
+	getUsage(month+"/Stats/lcsuspecttest-1630.txt",0,1.0*15568/(28433+15568),usageLC)
+	getUsage(month+"/Stats/lcuu-1630.txt",1,1.0,usageLC)
+	getUsage(month+"/Stats/smogondoubles-1695.txt",0,1.0,usageDoubles)
+	getUsage(month+"/Stats/smogondoublesuu-1630.txt",1,1.0,usageDoubles)
 
 
 	#generate three-month tables and start working on that new tier list
@@ -128,7 +143,8 @@ def main():
 	print ""
 	for poke in curTiers['LC']:
 		if curTiers['LC'][poke] != newTiers['LC'][poke]:
-			print keyLookup[poke]+" moved from LC "+curTiers['LC'][poke]+" to LC "+newTiers['LC'][poke]
+			if newTiers['LC'][poke] != 'NU':
+				print keyLookup[poke]+" moved from LC "+curTiers['LC'][poke]+" to LC "+newTiers['LC'][poke]
 
 	print ""
 	print ""
@@ -143,7 +159,16 @@ def main():
 	print ""
 	for poke in curTiers['Doubles']:
 		if curTiers['Doubles'][poke] != newTiers['Doubles'][poke]:
-			print keyLookup[poke]+" moved from Doubles "+curTiers['Doubles'][poke]+" to Doubles "+newTiers['Doubles'][poke]
+			if newTiers['Doubles'][poke] != 'NU':
+				print keyLookup[poke]+" moved from Doubles "+curTiers['Doubles'][poke]+" to Doubles "+newTiers['Doubles'][poke]
+
+	print ""
+	printme = "Initial Doubles UU: "
+	for poke in newTiers['Doubles']:
+		if newTiers['Doubles'][poke] == 'UU':
+			printme += keyLookup[poke]+', '
+	printme = printme[:-2]
+	print printme
 
 
 
