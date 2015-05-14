@@ -135,7 +135,7 @@ def main():
 	#generate three-month tables and start working on that new tier list
 	newTiers={}
 
-	print "[size=4]Little Cup[/size]"
+	print "[size=5][b]Little Cup[/b][/size]"
 	(LCOU,LCUU) = usageToTiers(usageLC)
 	makeTable(LCOU,"LC OU",keyLookup)
 	#makeTable(LCUU,"LC UU",keyLookup)
@@ -148,7 +148,7 @@ def main():
 
 	print ""
 	print ""
-	print "[size=4]Doubles[/size]"
+	print "[size=5][b]Doubles[/b][/size]"
 
 	(doublesOU,doublesUU) = usageToTiers(usageDoubles)
 	makeTable(doublesOU,"Doubles OU",keyLookup)
@@ -157,16 +157,19 @@ def main():
 	
 	newTiers['Doubles']=raiseAndDrop(curTiers['Doubles'],usageDoubles)
 	print ""
+	initialUU = []
 	for poke in curTiers['Doubles']:
+		if newTiers['Doubles'][poke] == 'UU':
+			initialUU.append(poke)
 		if curTiers['Doubles'][poke] != newTiers['Doubles'][poke]:
 			if newTiers['Doubles'][poke] != 'NU':
 				print keyLookup[poke]+" moved from Doubles "+curTiers['Doubles'][poke]+" to Doubles "+newTiers['Doubles'][poke]
 
+	initialUU = sorted(initialUU)
 	print ""
-	printme = "Initial Doubles UU: "
-	for poke in newTiers['Doubles']:
-		if newTiers['Doubles'][poke] == 'UU':
-			printme += keyLookup[poke]+', '
+	printme = "[b]Initial Doubles UU:[/b] "
+	for poke in initialUU:
+		printme += keyLookup[poke]+', '
 	printme = printme[:-2]
 	print printme
 
