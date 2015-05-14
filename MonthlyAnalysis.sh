@@ -13,7 +13,7 @@ function process {
 
 	echo "Processing "$tier >> log.log
 
-	if [[ $tier == "ou" ]] || [[ $tier == "doublesou" ]] || [[ $tier == "randombattle" || $tier == 'oususpecttest' ]] || [[ $tier == "smogondoublessuspecttest" ]] [[ $tier == "doublesoususpecttest" ]]; then
+	if [[ $tier == "ou" ]] || [[ $tier == "doublesou" ]] || [[ $tier == "randombattle" || $tier == 'oususpecttest' ]] || [[ $tier == "smogondoublessuspecttest" ]] || [[ $tier == "doublesoususpecttest" ]]; then
 		pypy StatCounter.py $tier 1695 &&
 		pypy batchMovesetCounter.py $tier 1695 > Stats/moveset/$tier-1695.txt &&
 		pypy MegaCounter.py Stats/chaos/$tier-1695.json > Stats/mega/$tier-1695.txt
