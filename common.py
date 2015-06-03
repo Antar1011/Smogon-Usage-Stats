@@ -161,5 +161,7 @@ non6v6Formats = [
 	'challengecup1v1',
 	'gen5gbusingles',
 	'vgc2014',
-	'battlespotspecial7'
+	'vgc2015',
+	'battlespotspecial7',
+	'pgllittlecup'
 ]
