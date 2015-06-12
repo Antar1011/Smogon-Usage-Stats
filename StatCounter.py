@@ -95,8 +95,11 @@ for line in file:
 	for battle in battles:
 
 		weight={}
+		t=tier
+		if tier.endswith('suspecttest'):
+			t=t[:-11]
 		if 'turns' in battle.keys():
-			if battle['turns'] < 6 and tier not in nonSinglesFormats and tier not in non6v6Formats:
+			if battle['turns'] < 6 and t not in nonSinglesFormats and t not in non6v6Formats:
 				continue
 		for player in ['p1','p2']:
 			if teamtype:
