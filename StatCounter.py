@@ -98,8 +98,10 @@ for line in file:
 		t=tier
 		if tier.endswith('suspecttest'):
 			t=t[:-11]
-		if 'turns' in battle.keys():
-			if battle['turns'] < 6 and t not in nonSinglesFormats and t not in non6v6Formats:
+		if 'turns' in battle.keys() and t not in non6v6Formats:
+			if battle['turns'] < 6 and t not in nonSinglesFormats:
+				continue
+			elif battle['turns'] < 2:
 				continue
 		for player in ['p1','p2']:
 			if teamtype:
