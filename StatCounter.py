@@ -88,6 +88,10 @@ ratingCounter = []
 weightCounter = []
 WLratings = {'win':[],'loss':[]}
 
+t=tier
+if tier.endswith('suspecttest'):
+	t=t[:-11]
+
 for line in file:
 	#print line
 	battles = json.loads(line)
@@ -95,11 +99,8 @@ for line in file:
 	for battle in battles:
 
 		weight={}
-		t=tier
-		if tier.endswith('suspecttest'):
-			t=t[:-11]
 		if 'turns' in battle.keys() and t not in non6v6Formats:
-			if battle['turns'] < 6 and t not in nonSinglesFormats:
+			if battle['turns'] < 3 and t not in nonSinglesFormats:
 				continue
 			elif battle['turns'] < 2:
 				continue
@@ -173,7 +174,7 @@ for line in file:
 					teammateMatrix[team[i]][team[j]]=teammateMatrix[team[i]][team[j]]+weight[player] #teammate stats are weighted
 					teammateMatrix[team[j]][team[i]]=teammateMatrix[team[i]][team[j]] #nice symmetric matrix
 
-		if tier not in nonSinglesFormats: #lead stats for doubles is not currently supported
+		if t not in nonSinglesFormats: #lead stats for doubles is not currently supported
 			#lead stats
 			leads=['empty','empty']
 			if len(battle['matchups'])==0:
@@ -271,7 +272,7 @@ for i in range(0,len(pokes)):
 usagefile.write(" + ---- + ------------------ + --------- + ------ + ------- + ------ + ------- + \n")
 usagefile.close()
 
-if tier not in nonSinglesFormats and tier not in ['1v1','challengecup1vs1']: #lead stats for doubles is not currently supported
+if t not in nonSinglesFormats and t not in ['1v1','challengecup1vs1']: #lead stats for doubles is not currently supported
 	#lead analysis
 
 	filename="Stats/leads/"+tier+specs+".txt"
