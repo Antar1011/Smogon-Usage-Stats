@@ -117,19 +117,18 @@ def main():
 	getUsage(month+"/Stats/doublesou-1695.txt",0,20.0,usageDoubles)
 	getUsage(month+"/Stats/doublesuu-1630.txt",1,20.0,usageDoubles)
 
-	month="2015-03"
-	getUsage(month+"/Stats/lc-1630.txt",0,3.0*25136/(25136+13373),usageLC)
-	getUsage(month+"/Stats/lcsuspecttest-1630.txt",0,3.0*13373/(25136+13373),usageLC)
-	getUsage(month+"/Stats/lcuu-1630.txt",1,3.0,usageLC)
-	getUsage(month+"/Stats/smogondoubles-1695.txt",0,3.0,usageDoubles)
-	getUsage(month+"/Stats/smogondoublesuu-1630.txt",1,3.0,usageDoubles)
+	month="2015-06"
+	getUsage(month+"/Stats/lc-1630.txt",0,3.0,usageLC)
+	getUsage(month+"/Stats/doublesou-1695.txt",0,3.0*88415/(88415+57448),usageDoubles)
+	getUsage(month+"/Stats/doublesoususpecttest-1695.txt",0,3.0*57448/(88415+57448),usageDoubles)
+	getUsage(month+"/Stats/doublesuu-1630.txt",1,3.0,usageDoubles)
 
-	month="2015-02"
-	getUsage(month+"/Stats/lc-1630.txt",0,1.0*28433/(28433+15568),usageLC)
-	getUsage(month+"/Stats/lcsuspecttest-1630.txt",0,1.0*15568/(28433+15568),usageLC)
+	month="2015-05"
+	getUsage(month+"/Stats/lc-1630.txt",0,1.0,usageLC)
 	getUsage(month+"/Stats/lcuu-1630.txt",1,1.0,usageLC)
-	getUsage(month+"/Stats/smogondoubles-1695.txt",0,1.0,usageDoubles)
-	getUsage(month+"/Stats/smogondoublesuu-1630.txt",1,1.0,usageDoubles)
+	getUsage(month+"/Stats/doublesou-1695.txt",0,1.0*117583/(117583+46798),usageDoubles)
+	getUsage(month+"/Stats/doublesoususpecttest-1695.txt",0,1.0*117583/(117583+46798),usageDoubles)
+	getUsage(month+"/Stats/doublesuu-1630.txt",1,1.0,usageDoubles)
 
 
 	#generate three-month tables and start working on that new tier list
@@ -167,7 +166,7 @@ def main():
 
 	initialUU = sorted(initialUU)
 	print ""
-	printme = "[b]Initial Doubles UU:[/b] "
+	printme = "[b]Doubles NU banlist:[/b] "
 	for poke in initialUU:
 		printme += keyLookup[poke]+', '
 	printme = printme[:-2]

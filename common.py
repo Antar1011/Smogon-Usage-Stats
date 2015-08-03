@@ -59,7 +59,7 @@ def getUsage(filename,col,weight,usage):
 	tempUsage, nBattles = readTable(filename)
 	for i in tempUsage:
 		if keyify(i) not in usage:
-			usage[keyify(i)]=[0,0,0,0]
+			usage[keyify(i)]=[0,0,0,0,0]
 		if i != 'empty':
 			usage[keyify(i)][col] = usage[keyify(i)][col]+weight*6.0*tempUsage[i]/sum(tempUsage.values())/24
 

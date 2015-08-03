@@ -27,8 +27,8 @@ def main():
 	raw = file.readline()
 	file.close()
 
-	rise = 0.03406367107 #0.06696700846 #0.04515839608
-	drop = 0.03406367107 #0.01717940145 #0.02284003156
+	rise =  0.03406367107 #0.04515839608 #0.06696700846 
+	drop =  0.03406367107 #0.02284003156 #0.01717940145
 	#in case the user copy/pasted with the quotes still on
 	if raw[0] == '"':
 		raw=raw[1:]
@@ -40,7 +40,7 @@ def main():
 	curTiers = {}
 	NFE=[]
 	for poke in formatsData:
-		if poke in ['pichuspikyeared', 'unownb', 'unownc', 'unownd', 'unowne', 'unownf', 'unowng', 'unownh', 'unowni', 'unownj', 'unownk', 'unownl', 'unownm', 'unownn', 'unowno', 'unownp', 'unownq', 'unownr', 'unowns', 'unownt', 'unownu', 'unownv', 'unownw', 'unownx', 'unowny', 'unownz', 'unownem', 'unownqm', 'burmysandy', 'burmytrash', 'cherrimsunshine', 'shelloseast', 'gastrodoneast', 'deerlingsummer', 'deerlingautumn', 'deerlingwinter', 'sawsbucksummer', 'sawsbuckautumn', 'sawsbuckwinter', 'keldeoresolution', 'genesectdouse', 'genesectburn', 'genesectshock', 'genesectchill', 'basculinbluestriped', 'darmanitanzen','keldeoresolute']:
+		if poke in ['pichuspikyeared', 'unownb', 'unownc', 'unownd', 'unowne', 'unownf', 'unowng', 'unownh', 'unowni', 'unownj', 'unownk', 'unownl', 'unownm', 'unownn', 'unowno', 'unownp', 'unownq', 'unownr', 'unowns', 'unownt', 'unownu', 'unownv', 'unownw', 'unownx', 'unowny', 'unownz', 'unownem', 'unownqm', 'burmysandy', 'burmytrash', 'cherrimsunshine', 'shelloseast', 'gastrodoneast', 'deerlingsummer', 'deerlingautumn', 'deerlingwinter', 'sawsbucksummer', 'sawsbuckautumn', 'sawsbuckwinter', 'keldeoresolution', 'genesectdouse', 'genesectburn', 'genesectshock', 'genesectchill', 'basculinbluestriped', 'darmanitanzen','keldeoresolute','pikachucosplay']:
 			continue
 		if 'isNonstandard' in formatsData[poke]:
 			if formatsData[poke]['isNonstandard']:
@@ -54,7 +54,7 @@ def main():
 		old = formatsData[poke]['tier']
 		if old in ['NFE','LC']:
 			NFE.append(poke)
-		if old == 'Illegal':
+		if old == 'Illegal' or old == 'Unreleased':
 			continue
 		elif old not in ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']:
 			old = 'PU'
@@ -63,29 +63,35 @@ def main():
 	usage = {} #track usage across all relevant tiers [OU,UU,RU,NU]
 
 	month="."
-
 	getUsage(month+"/Stats/ou-1695.txt",0,20.0,usage)
-	getUsage(month+"/Stats/uu-1630.txt",1,20.0,usage)
+	getUsage(month+"/Stats/uu-1630.txt",1,20.0*163139/(163139+168300),usage)
+	getUsage(month+"/Stats/uususpecttest-1630.txt",1,20.0*168300/(163139+168300),usage)
 	getUsage(month+"/Stats/ru-1630.txt",2,20.0,usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,20.0*56035/(56035+49446),usage)
-	getUsage(month+"/Stats/nususpecttest-1630.txt",3,20.0*49446/(56035+49446),usage)
+	getUsage(month+"/Stats/nu-1630.txt",3,20.0*95484/(95484+44655),usage)
+	getUsage(month+"/Stats/nususpecttest-1630.txt",3,20.0*44655/(95484+44655),usage)
+	getUsage(month+"/Stats/pu-1630.txt",4,20.0,usage)
 
-	month="2015-03"
-	getUsage(month+"/Stats/ou-1695.txt",0,3.0,usage)
-	getUsage(month+"/Stats/uu-1630.txt",1,3.0*164246/(164246+75140),usage)
-	getUsage(month+"/Stats/uususpecttest-1630.txt",1,3.0*75140/(164246+75140),usage)
-	getUsage(month+"/Stats/ru-1630.txt",2,3.0,usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,3.0,usage)
+	month="2015-06"
+	getUsage(month+"/Stats/ou-1695.txt",0,4.0,usage)
+	getUsage(month+"/Stats/uu-1630.txt",1,4.0*266634/(266634+38457),usage)
+	getUsage(month+"/Stats/uususpecttest-1630.txt",1,4.0*38457/(266634+38457),usage)
+	getUsage(month+"/Stats/ru-1630.txt",2,4.0*73021/(73021+20123),usage)
+	getUsage(month+"/Stats/rususpecttest-1630.txt",2,4.0*20123/(73021+20123),usage)
+	getUsage(month+"/Stats/nu-1630.txt",3,4.0*69083/(69083+69692),usage)
+	getUsage(month+"/Stats/nususpecttest-1630.txt",3,4.0*69692/(69083+69692),usage)
+	getUsage(month+"/Stats/pu-1630.txt",4,3.0,usage)
 
-	month="2015-02"
-	getUsage(month+"/Stats/ou-1695.txt",0,1.0*516212/(718885+516212),usage)
-	getUsage(month+"/Stats/oususpecttest-1695.txt",0,1.0*718885/(718885+516212),usage)
-	getUsage(month+"/Stats/uu-1630.txt",1,1.0*195336/(195336+59375),usage)
-	getUsage(month+"/Stats/uususpecttest-1630.txt",1,1.0*59375/(195336+59375),usage)
-	getUsage(month+"/Stats/ru-1630.txt",2,1.0*30638/(30638+42929),usage)
-	getUsage(month+"/Stats/rususpecttest-1630.txt",2,1.0*42929/(30638+42929),usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,1.0*39390/(39390+58248),usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,1.0*58248/(39390+58248),usage)
+	month="2015-05"
+
+	getUsage(month+"/Stats/ou-1695.txt",0,1.0*516465/(516465+665187),usage)
+	getUsage(month+"/Stats/oususpecttest-1695.txt",0,1.0*665187/(516465+665187),usage)
+	getUsage(month+"/Stats/uu-1630.txt",1,1.0*183896/(183896+102034),usage)
+	getUsage(month+"/Stats/uususpecttest-1630.txt",1,1.0*102034/(183896+102034),usage)
+	getUsage(month+"/Stats/ru-1630.txt",2,1.0*57756/(57756+28786),usage)
+	getUsage(month+"/Stats/rususpecttest-1630.txt",2,1.0*28786/(57756+28786),usage)
+	getUsage(month+"/Stats/nu-1630.txt",3,1.0*98745/(98745+21846),usage)
+	getUsage(month+"/Stats/nususpecttest-1630.txt",3,1.0*21846/(98745+21846),usage)
+	getUsage(month+"/Stats/pu-1630.txt",4,1.0,usage)
 
 
 	#generate three-month tables and start working on that new tier list
@@ -93,6 +99,7 @@ def main():
 	UU = []
 	RU = []
 	NU = []
+	PU = []
 	for i in usage:
 		if usage[i][0] > 0.0:
 			OU.append([i,usage[i][0]])
@@ -102,10 +109,13 @@ def main():
 			RU.append([i,usage[i][2]])
 		if usage[i][3] > 0.0:
 			NU.append([i,usage[i][3]])
+		if usage[i][4] > 0.0:
+			PU.append([i,usage[i][4]])
 	OU = sorted(OU, key=lambda OU:-OU[1])
 	UU = sorted(UU, key=lambda UU:-UU[1])
 	RU = sorted(RU, key=lambda RU:-RU[1])
 	NU = sorted(NU, key=lambda NU:-NU[1])
+	PU = sorted(PU, key=lambda PU:-PU[1])
 
 	makeTable(OU,"OU",keyLookup)
 	makeTable(UU,"UU",keyLookup)
@@ -207,6 +217,23 @@ def main():
 	for poke in curTiers:
 		if curTiers[poke] != newTiers[poke]:
 			print keyLookup[poke]+" moved from "+curTiers[poke]+" to "+newTiers[poke]
+
+	print ""
+	print ""
+	print "[size=5][b]FU[/b][/size]"
+	print "FU is an unofficial banlist based on an unofficial metagame. It is not currently supported on any simulator, but since we have usage stats for PU, and since [url=http://www.smogon.com/forums/forums/pu.327/?prefix_id=282]people have expressed interest in such a metagame[/url], here is a proper banlist:" 
+	makeTable(PU,"PU",keyLookup)
+	fuBanlist = []
+	for poke in usage.keys():
+		if newTiers[poke] == 'PU' and (usage[poke][4] >= drop or curTiers[poke] == 'NU'):
+			fuBanlist.append(poke)
+
+	fuBanlist = sorted(fuBanlist)
+	printme = "[b]Banlist:[/b] "
+	for poke in fuBanlist:
+		printme += keyLookup[poke]+', '
+	printme = printme[:-2]
+	print printme
 
 if __name__ == "__main__":
     main()
