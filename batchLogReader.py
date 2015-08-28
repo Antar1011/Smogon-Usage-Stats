@@ -17,104 +17,13 @@ import cPickle as pickle
 from common import *
 from TA import *
 
-def LogReader(filename,tier,movesets,ratings):
+file = open('keylookup.pickle')
+keyLookup = pickle.load(file)
+file.close()
 
-	hackmons = 'ackmons' in tier
-
-	file = open(filename)
-	raw = file.readline()
-	file.close()
-	
-	if raw=='"log"': #https://github.com/Zarel/Pokemon-Showdown/commit/92a4f85e0abe9d3a9febb0e6417a7710cabdc303
-		return False
-	try:
-		log = json.loads(raw)
-	except ValueError:
-		sys.stderr.write(filename+' is not a valid log.\n')
-		return False
-
-	#determine log type
-	spacelog = True
-	doublelog = True
-	if 'log' in log.keys():
-		if log['log'][0][0:2] != '| ':
-			spacelog = False
-
-	#check for log length
-	#if tier not in ['challengecup1vs1','doublesvgc2013dev','smogondoubles','1v1','gbusingles','globalshowdown']:
-	#	longEnough = False
-	#	if 'log' not in log.keys():
-	#		if int(log['turns']) > 5: 
-	#			longEnough = True
-	#	else:
-	#		for line in log['log']:
-	#			if (spacelog and line[2:10] == 'turn | 6') or (not spacelog and line[1:7] == 'turn|6'):
-	#				longEnough = True
-	#				break
-	#	if not longEnough:
-	#		return False
-
-	if 'turns' not in log.keys():
-		print filename+' has no turn count'
-		return False
-		
-
-	#get info on the trainers & pokes involved
-	ts = []
-	teams = {}
-	rating = {}
-
-	whowon = 0 #0 for tie/unknown, 1 for p1, 2 for p2
-	if 'log' in log.keys():
-		#if '|tie' in log['log']:
-		#	whowon = 0
-		if '|win|'+log['p1'] in log['log']:
-			whowon = 1
-		if '|win|'+log['p2'] in log['log']:
-			if whowon == 1:
-				sys.stderr.write(filename+'\n')
-				sys.stderr.write('This battle had two winners.\n')
-				return False
-			else:
-				whowon = 2
-	if ratings == None:
-		for i in [['p1rating','p1team'],['p2rating','p2team']]:
-			if i[0] in log.keys():
-				rating[i[1]]={}
-				if type(log[i[0]]) is dict:
-					for j in ['r','rd','rpr','rprd']:
-						if j in log[i[0]].keys():
-							try:
-								rating[i[1]][j]=float(log[i[0]][j])
-							#looks like it's possible that rating will be recorded as "None". In that case, just
-							#treat it as if it's not even there (read: no need to freak out and do the below)
-
-							except TypeError:
-								pass
-							#	sys.stderr.write('Problem in '+filename+':\n')
-							#	sys.stderr.write(i[0]+'['+j+']='+str(log[i[0]][j])+'\n')
-							#	return False
-								
-							
-				#gxe = round(10000 / (1 + pow(10.0,(((1500 - rpr)) * math.pi / math.sqrt(3 * pow(math.log(10.0),2.0) * pow(rprd,2.0) + 2500 * (64 * pow(math.pi,2.0) + 147 * pow(math.log(10.0),2))))))) / 100
-				#acre= rpr-1.4079126393*rprd
-				#not used: 'w','l','t','sigma','rptime','rpsigma','lacre','oldacre','oldrdacre'	
-	else:
-		for player in [log['p1'],log['p2']]:
-			if player not in ratings.keys():
-				ratings[player]=Glicko.newPlayer()
-		Glicko.update(ratings[log['p1']],ratings[log['p2']],whowon)
-		for player in [[log['p1'],'p1team'],[log['p2'],'p2team']]:
-			r=ratings[player[0]]['R']
-			rd=ratings[player[0]]['RD']
-			rpr=Glicko.provisional(ratings[player[0]])['R']
-			rprd=Glicko.provisional(ratings[player[0]])['RD']
-			rating[player[1]]={'r':r,'rd':rd,'rpr':rpr,'rprd':rprd}
-
-	#get pokemon info
+def getTeamsFromLog(log,hackmons):
+	teams={}
 	for team in ['p1team','p2team']:
-
-		trainer = log[team[:2]]
 
 		teams[team]=[]
 
@@ -141,7 +50,7 @@ def LogReader(filename,tier,movesets,ratings):
 			try:	
 				species=keyLookup[keyify(species)]
 			except:
-				sys.stderr.write(species+' not in keyLookup.\n Skipping log:\n'+filename+'\n')
+				sys.stderr.write(species+' not in keyLookup.\n')
 				return False
 
 			for s in aliases: #this 2nd one is needed to deal with Nidoran
@@ -154,8 +63,6 @@ def LogReader(filename,tier,movesets,ratings):
 					species = species[:-5]
 				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
 					species = species[:-7]
-
-			ts.append([trainer,species])
 
 			if 'item' in log[team][i].keys():
 				item = keyify(log[team][i]['item'])
@@ -210,7 +117,7 @@ def LogReader(filename,tier,movesets,ratings):
 				level = 100
 			
 			teams[team].append({
-				'species': keyify(species),
+				'species': species,
 				'nature': nature,
 				'item': item,
 				'evs': {},
@@ -224,6 +131,110 @@ def LogReader(filename,tier,movesets,ratings):
 				teams[team][len(teams[team])-1]['ivs'][stat] = ivs[stat]
 			for move in moves:
 				teams[team][len(teams[team])-1]['moves'].append(move)
+	return teams
+
+def LogReader(filename,tier,movesets,ratings):
+
+	hackmons = 'ackmons' in tier
+
+	file = open(filename)
+	raw = file.readline()
+	file.close()
+	
+	if raw=='"log"': #https://github.com/Zarel/Pokemon-Showdown/commit/92a4f85e0abe9d3a9febb0e6417a7710cabdc303
+		return False
+	try:
+		log = json.loads(raw)
+	except ValueError:
+		sys.stderr.write(filename+' is not a valid log.\n')
+		return False
+
+	#determine log type
+	spacelog = True
+	doublelog = True
+	if 'log' in log.keys():
+		if log['log'][0][0:2] != '| ':
+			spacelog = False
+
+	#check for log length
+	#if tier not in ['challengecup1vs1','doublesvgc2013dev','smogondoubles','1v1','gbusingles','globalshowdown']:
+	#	longEnough = False
+	#	if 'log' not in log.keys():
+	#		if int(log['turns']) > 5: 
+	#			longEnough = True
+	#	else:
+	#		for line in log['log']:
+	#			if (spacelog and line[2:10] == 'turn | 6') or (not spacelog and line[1:7] == 'turn|6'):
+	#				longEnough = True
+	#				break
+	#	if not longEnough:
+	#		return False
+
+	if 'turns' not in log.keys():
+		print filename+' has no turn count'
+		return False
+		
+
+	#get info on the trainers & pokes involved
+	ts = []
+	rating = {}
+
+	whowon = 0 #0 for tie/unknown, 1 for p1, 2 for p2
+	if 'log' in log.keys():
+		#if '|tie' in log['log']:
+		#	whowon = 0
+		if '|win|'+log['p1'] in log['log']:
+			whowon = 1
+		if '|win|'+log['p2'] in log['log']:
+			if whowon == 1:
+				sys.stderr.write(filename+'\n')
+				sys.stderr.write('This battle had two winners.\n')
+				return False
+			else:
+				whowon = 2
+	if ratings == None:
+		for i in [['p1rating','p1team'],['p2rating','p2team']]:
+			if i[0] in log.keys():
+				rating[i[1]]={}
+				if type(log[i[0]]) is dict:
+					for j in ['r','rd','rpr','rprd']:
+						if j in log[i[0]].keys():
+							try:
+								rating[i[1]][j]=float(log[i[0]][j])
+							#looks like it's possible that rating will be recorded as "None". In that case, just
+							#treat it as if it's not even there (read: no need to freak out and do the below)
+
+							except TypeError:
+								pass
+							#	sys.stderr.write('Problem in '+filename+':\n')
+							#	sys.stderr.write(i[0]+'['+j+']='+str(log[i[0]][j])+'\n')
+							#	return False
+								
+							
+				#gxe = round(10000 / (1 + pow(10.0,(((1500 - rpr)) * math.pi / math.sqrt(3 * pow(math.log(10.0),2.0) * pow(rprd,2.0) + 2500 * (64 * pow(math.pi,2.0) + 147 * pow(math.log(10.0),2))))))) / 100
+				#acre= rpr-1.4079126393*rprd
+				#not used: 'w','l','t','sigma','rptime','rpsigma','lacre','oldacre','oldrdacre'	
+	else:
+		for player in [log['p1'],log['p2']]:
+			if player not in ratings.keys():
+				ratings[player]=Glicko.newPlayer()
+		Glicko.update(ratings[log['p1']],ratings[log['p2']],whowon)
+		for player in [[log['p1'],'p1team'],[log['p2'],'p2team']]:
+			r=ratings[player[0]]['R']
+			rd=ratings[player[0]]['RD']
+			rpr=Glicko.provisional(ratings[player[0]])['R']
+			rprd=Glicko.provisional(ratings[player[0]])['RD']
+			rating[player[1]]={'r':r,'rd':rd,'rpr':rpr,'rprd':rprd}
+
+	#get pokemon info
+	teams = getTeamsFromLog(log,hackmons)
+	if teams == False:
+		 sys.stderr.write('Skipping log:\n'+filename+'\n')
+		 return False
+	for team in ['p1team','p2team']:
+		trainer = log[team[:2]]
+		for poke in teams[team]:
+			ts.append([trainer,poke['species']])
 		
 		if len(log[team]) < 6:
 			for i in range(6-len(log[team])):
@@ -242,7 +253,7 @@ def LogReader(filename,tier,movesets,ratings):
 			#if not os.path.exists(d):
 			#	os.makedirs(d)
 			#msfile=open(outname,'ab')
-			if poke['species'] == 'meloettapirouette':
+			if keyify(poke['species']) == 'meloettapirouette':
 				print filename
 			writeme={'trainer':trainer.encode('ascii', 'ignore'),
 				'level':poke['level'],
@@ -473,7 +484,7 @@ def LogReader(filename,tier,movesets,ratings):
 								break
 						if not tryAgain:
 							sys.stderr.write("Nick not found.\n")
-							sys.stderr.write("In file: "+sys.argv[1]+"\n")
+							sys.stderr.write("In file: "+argv[1]+"\n")
 							sys.stderr.write(line[6+3*spacelog:]+"\n")
 							sys.stderr.write(str(nicks)+"\n")
 							return False
@@ -646,7 +657,7 @@ def LogReader(filename,tier,movesets,ratings):
 		i = i+1
 		if i>=len(ts):
 			sys.stderr.write("Something's wrong here.\n")
-			sys.stderr.write("In file: "+sys.argv[1]+"\n")
+			sys.stderr.write("In file: "+argv[1]+"\n")
 			sys.stderr.write(str(ts)+"\n")
 			return False
 
@@ -665,96 +676,94 @@ def LogReader(filename,tier,movesets,ratings):
 	#outfile.write(lzma.compress(json.dumps(writeme))+'\n')
 	return writeme
 
+def main(argv):
+	tier = argv[2]
+	if tier.endswith('current'):
+		tier=tier[:-7]
+	if tier.startswith('pokebank'):
+		tier = tier[8:-4]
+	if tier.startswith('oras'):
+		tier = tier[4:]
+	if tier == 'capbeta':
+		tier = 'cap'
+	if tier == 'vgc2014beta':
+		tier = 'vgc2014'
+	if tier.startswith('xybattlespot') and tier.endswith('beta'):
+		tier = tier[:-4]
+	if tier in ['battlespotdoubles', 'battlespotdoublesvgc2015']:
+		tier = 'vgc2015'
+	if tier == 'smogondoubles':
+		tier = 'doublesou'
+	if tier == 'smogondoublesubers':
+		tier = 'doublesubers'
+	if tier == 'smogondoublesuu':
+		tier = 'doublesuu'
+	#elif tier[:8]=='seasonal':
+	#	tier='seasonal'
 
-file = open('keylookup.pickle')
-keyLookup = pickle.load(file)
-file.close()
+	ratings = None
+	if len(argv) > 4:
+		if argv[3] == '-redoRatings':
+			try:
+				ratings = json.loads(open(argv[4]).readline())
+			except:
+				ratings = {}
+			print ratings
 
-tier = sys.argv[2]
-if tier.endswith('current'):
-	tier=tier[:-7]
-if tier.startswith('pokebank'):
-	tier = tier[8:-4]
-if tier.startswith('oras'):
-	tier = tier[4:]
-if tier == 'capbeta':
-	tier = 'cap'
-if tier == 'vgc2014beta':
-	tier = 'vgc2014'
-if tier.startswith('xybattlespot') and tier.endswith('beta'):
-	tier = tier[:-4]
-if tier in ['battlespotdoubles', 'battlespotdoublesvgc2015']:
-	tier = 'vgc2015'
-if tier == 'smogondoubles':
-	tier = 'doublesou'
-if tier == 'smogondoublesubers':
-	tier = 'doublesubers'
-if tier == 'smogondoublesuu':
-	tier = 'doublesuu'
-#elif tier[:8]=='seasonal':
-#	tier='seasonal'
-
-ratings = None
-if len(sys.argv) > 4:
-	if sys.argv[3] == '-redoRatings':
-		try:
-			ratings = json.loads(open(sys.argv[4]).readline())
-		except:
-			ratings = {}
-		print ratings
-
-outname = "Raw/"+tier#+".txt"
-d = os.path.dirname(outname)
-if not os.path.exists(d):
-	os.makedirs(d)
-writeme=[]
-movesets={}
-count=0
-for filename in os.listdir(sys.argv[1]):
-	#print filename
-	x = LogReader(sys.argv[1]+'/'+filename,tier,movesets,ratings)
-	if x:
-		writeme.append(x)
-		count += 1
-		
-		if count % 10000 == 0:
-			outname = "Raw/"+tier#+".txt"
-			outfile=gzip.open(outname,'ab')
-			outfile.write(json.dumps(writeme)+'\n')
-			outfile.close()
-
-			#write to moveset file
-			for species in movesets.keys():
-				outname = "Raw/moveset/"+tier+"/"+species#+".txt"
-				d = os.path.dirname(outname)
-				if not os.path.exists(d):
-					os.makedirs(d)
-				msfile=gzip.open(outname,'ab')		
-				msfile.write(json.dumps(movesets[species]))
-				msfile.close()
-
-			writeme = []
-			movesets={}
-if writeme:
 	outname = "Raw/"+tier#+".txt"
-	outfile=gzip.open(outname,'ab')
-	outfile.write(json.dumps(writeme)+'\n')
-	outfile.close()
+	d = os.path.dirname(outname)
+	if not os.path.exists(d):
+		os.makedirs(d)
+	writeme=[]
+	movesets={}
+	count=0
+	for filename in os.listdir(argv[1]):
+		#print filename
+		x = LogReader(argv[1]+'/'+filename,tier,movesets,ratings)
+		if x:
+			writeme.append(x)
+			count += 1
+			
+			if count % 10000 == 0:
+				outname = "Raw/"+tier#+".txt"
+				outfile=gzip.open(outname,'ab')
+				outfile.write(json.dumps(writeme)+'\n')
+				outfile.close()
 
-	#write to moveset file
-	for species in movesets.keys():
-		outname = "Raw/moveset/"+tier+"/"+species#+".txt"
-		d = os.path.dirname(outname)
-		if not os.path.exists(d):
-			os.makedirs(d)
-		msfile=gzip.open(outname,'ab')		
-		msfile.write(json.dumps(movesets[species]))
-		msfile.close()
+				#write to moveset file
+				for species in movesets.keys():
+					outname = "Raw/moveset/"+tier+"/"+species#+".txt"
+					d = os.path.dirname(outname)
+					if not os.path.exists(d):
+						os.makedirs(d)
+					msfile=gzip.open(outname,'ab')		
+					msfile.write(json.dumps(movesets[species]))
+					msfile.close()
 
-if ratings != None:
-	for player in ratings.keys():
-		Glicko.newRatingPeriod(ratings[player])
-	ratingfile=open(sys.argv[4],'w+')
-	ratingfile.write(json.dumps(ratings))
-	ratingfile.close()
+				writeme = []
+				movesets={}
+	if writeme:
+		outname = "Raw/"+tier#+".txt"
+		outfile=gzip.open(outname,'ab')
+		outfile.write(json.dumps(writeme)+'\n')
+		outfile.close()
 
+		#write to moveset file
+		for species in movesets.keys():
+			outname = "Raw/moveset/"+tier+"/"+species#+".txt"
+			d = os.path.dirname(outname)
+			if not os.path.exists(d):
+				os.makedirs(d)
+			msfile=gzip.open(outname,'ab')		
+			msfile.write(json.dumps(movesets[species]))
+			msfile.close()
+
+	if ratings != None:
+		for player in ratings.keys():
+			Glicko.newRatingPeriod(ratings[player])
+		ratingfile=open(argv[4],'w+')
+		ratingfile.write(json.dumps(ratings))
+		ratingfile.close()
+
+if __name__ == "__main__":
+    main(sys.argv)

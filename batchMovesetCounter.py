@@ -9,8 +9,9 @@ import cPickle as pickle
 import json
 import gzip
 import os
+import math
 
-from common import keyify,weighting,readTable,aliases
+from common import keyify,weighting,readTable,aliases,victoryChance
 from TA import nmod,statFormula,baseStats
 
 def movesetCounter(filename, cutoff, teamtype, usage):
@@ -41,6 +42,7 @@ def movesetCounter(filename, cutoff, teamtype, usage):
 	movesets = []
 	weights = []
 	rawCount = 0
+	gxes={}
 	
 	for line in raw:
 		movesets = json.loads(line)
@@ -52,6 +54,16 @@ def movesetCounter(filename, cutoff, teamtype, usage):
 			weight=weighting(1500.0,130.0,cutoff)
 			if 'rating' in moveset.keys():
 				if 'rpr' in moveset['rating'].keys() and 'rprd' in moveset['rating'].keys():
+					gxe = victoryChance(moveset['rating']['rpr'],moveset['rating']['rprd'],1500.0,130.0)
+					gxe=int(round(100*gxe))
+
+					addMe=True
+					if moveset['trainer'] in gxes:
+						if gxes[moveset['trainer']] > gxe:
+							addMe = False
+					if addMe:
+						gxes[moveset['trainer']]=gxe
+
 					if moveset['rating']['rprd'] != 0.0:
 						weight=weighting(moveset['rating']['rpr'],moveset['rating']['rprd'],cutoff)
 						weights.append(weight)
@@ -120,6 +132,7 @@ def movesetCounter(filename, cutoff, teamtype, usage):
 			happinesses[happiness]+=weight
 
 	count = sum(abilities.values())
+	gxes=list(reversed(sorted(gxes.values())))
 
 	#teammate stats
 	try:
@@ -147,8 +160,11 @@ def movesetCounter(filename, cutoff, teamtype, usage):
 				#cc[s]=p-4*d #using a CRE-style calculation
 				cc[s]=[n,p,d]
 
+	maxGXE = [len(gxes),gxes[0],gxes[len(gxes)/100-1],gxes[5*len(gxes)/100]-1]
+
 	stuff = {
 		'Raw count': rawCount,
+		'Viability Ceiling': maxGXE,
 		'Abilities': abilities,
 		'Items': items,
 		'Spreads': spreads,
@@ -184,6 +200,11 @@ def movesetCounter(filename, cutoff, teamtype, usage):
 		line = line+str(sum(weights)/len(weights))
 	else:
 		line = line+'---'
+	while len(line) < tablewidth+2:
+		line = line + ' '
+	line = line + '| '
+	print line
+	line = ' | Viability Ceiling: %d'%(maxGXE[1])
 	while len(line) < tablewidth+2:
 		line = line + ' '
 	line = line + '| '
@@ -300,6 +321,7 @@ for poke in pokes:
 	if poke[1] < 0.0001: #1/100th of a percent
 		break
 	stuff = movesetCounter('Raw/moveset/'+str(sys.argv[1])+'/'+keyify(poke[0]),cutoff,teamtype,usage)
+	stuff['usage']=poke[1]
 	chaos['data'][poke[0]]=stuff
 
 

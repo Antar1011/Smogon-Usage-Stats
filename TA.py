@@ -10,6 +10,7 @@ import sys
 import json
 import math
 import copy
+from common import keyify
 
 file = open('baseStats.json')
 baseStats = json.loads(file.readline())
@@ -102,24 +103,25 @@ megas=[	['abomasnow','abomasite','snowwarning'],
 	['groudon','redorb','desolateland']]
 	
 def analyzePoke(poke):
-	if poke['species'] not in baseStats.keys():
-		sys.stderr.write(poke['species']+" is not listed in baseStats.json\n")
+	species=keyify(poke['species'])
+	if species not in baseStats.keys():
+		sys.stderr.write(species+" is not listed in baseStats.json\n")
 		sys.stderr.write("You may want to fix that.\n")
 		return None	
 
 	#technically I don't need to do this as a separate loop, but I'm doing it this way for modularity's sake
 	stats = []
-	if poke['species'] == 'shedinja':
+	if species == 'shedinja':
 		stats.append(1)
 	else:
-		stats.append(statFormula(baseStats[poke['species']]['hp'],poke['level'],-1,poke['ivs']['hp'],poke['evs']['hp']))
-	stats.append(statFormula(baseStats[poke['species']]['atk'],poke['level'],nmod[poke['nature']][0],poke['ivs']['atk'],poke['evs']['atk']))
-	stats.append(statFormula(baseStats[poke['species']]['def'],poke['level'],nmod[poke['nature']][1],poke['ivs']['def'],poke['evs']['def']))
-	stats.append(statFormula(baseStats[poke['species']]['spa'],poke['level'],nmod[poke['nature']][3],poke['ivs']['spa'],poke['evs']['spa']))
-	stats.append(statFormula(baseStats[poke['species']]['spd'],poke['level'],nmod[poke['nature']][4],poke['ivs']['spd'],poke['evs']['spd']))
-	stats.append(statFormula(baseStats[poke['species']]['spe'],poke['level'],nmod[poke['nature']][2],poke['ivs']['spe'],poke['evs']['spe']))
+		stats.append(statFormula(baseStats[species]['hp'],poke['level'],-1,poke['ivs']['hp'],poke['evs']['hp']))
+	stats.append(statFormula(baseStats[species]['atk'],poke['level'],nmod[poke['nature']][0],poke['ivs']['atk'],poke['evs']['atk']))
+	stats.append(statFormula(baseStats[species]['def'],poke['level'],nmod[poke['nature']][1],poke['ivs']['def'],poke['evs']['def']))
+	stats.append(statFormula(baseStats[species]['spa'],poke['level'],nmod[poke['nature']][3],poke['ivs']['spa'],poke['evs']['spa']))
+	stats.append(statFormula(baseStats[species]['spd'],poke['level'],nmod[poke['nature']][4],poke['ivs']['spd'],poke['evs']['spd']))
+	stats.append(statFormula(baseStats[species]['spe'],poke['level'],nmod[poke['nature']][2],poke['ivs']['spe'],poke['evs']['spe']))
 
-	if poke['species'] == 'aegislash' and poke['ability'] == 'stancechange': #check for attacking move as well?
+	if species == 'aegislash' and poke['ability'] == 'stancechange': #check for attacking move as well?
 		stats[1] =  statFormula(baseStats['aegislashblade']['atk'],poke['level'],nmod[poke['nature']][0],poke['ivs']['atk'],poke['evs']['atk'])
 		stats[2] += statFormula(baseStats['aegislashblade']['def'],poke['level'],nmod[poke['nature']][1],poke['ivs']['def'],poke['evs']['def'])
 		stats[3] =  statFormula(baseStats['aegislashblade']['spa'],poke['level'],nmod[poke['nature']][3],poke['ivs']['spa'],poke['evs']['spa'])
@@ -129,15 +131,15 @@ def analyzePoke(poke):
 
 	#calculate base stalliness
 	bias = poke['evs']['atk']+poke['evs']['spa']-poke['evs']['hp']-poke['evs']['def']-poke['evs']['spd']
-	if poke['species'] == 'shedinja':
+	if species == 'shedinja':
 		stalliness = 0
-	elif poke['species'] == 'ditto':
+	elif species == 'ditto':
 		stalliness = math.log(3,2) #eventually I'll want to replace this with mean stalliness for the tier
 	else:
 		try:
 			stalliness=-math.log(((2.0*poke['level']+10)/250*max(stats[1],stats[3])/max(stats[2],stats[4])*120+2)*0.925/stats[0],2)
 		except:
-			sys.stderr.write('Got a problem with a '+poke['species']+'\n')
+			sys.stderr.write('Got a problem with a '+species+'\n')
 			sys.stderr.write(poke)
 			return None
 
@@ -228,23 +230,23 @@ def analyzePoke(poke):
 		stalliness -= 1.0
 	if poke['ability'] in ['sandstream','snowwarning'] or 'sandstorm' in poke['moves'] or 'hail' in poke['moves']:
 		stalliness += 0.5
-	if poke['species'] in ['latios', 'latias'] and poke['item'] == 'souldew':
+	if species in ['latios', 'latias'] and poke['item'] == 'souldew':
 		stalliness -= 0.5
-	if poke['species'] == 'pikachu' and poke['item'] == 'lightball':
+	if species == 'pikachu' and poke['item'] == 'lightball':
 		stalliness -= 1.0
-	if poke['species'] in ['cubone', 'marowak'] and poke['item'] == 'thickclub':
+	if species in ['cubone', 'marowak'] and poke['item'] == 'thickclub':
 		stalliness -= 1.0
-	if poke['species'] == 'clamperl' and poke['item'] == 'deepseatooth':
+	if species == 'clamperl' and poke['item'] == 'deepseatooth':
 		stalliness -= 1.0
-	if poke['species'] == 'clamperl' and poke['item'] == 'deepseascale':
+	if species == 'clamperl' and poke['item'] == 'deepseascale':
 		stalliness += 1.0
 	if poke['item'] in ['expertbelt', 'wiseglasses', 'muscleband', 'dracoplate', 'dreadplate', 'earthplate', 'fistplate', 'flameplate', 'icicleplate', 'insectplate', 'ironplate', 'meadowplate', 'mindplate', 'skyplate', 'splashplate', 'spookyplate', 'stoneplate', 'toxicplate', 'zapplate', 'blackglasses', 'charcoal', 'dragonfang', 'hardstone', 'magnet', 'metalcoat', 'miracleseed', 'mysticwater', 'nevermeltice', 'poisonbarb', 'sharpbeak', 'silkscarf', 'silverpowder', 'softsand', 'spelltag', 'twistedspoon', 'pixieplate']:
 		stalliness -= 0.25
-	if poke['species'] == 'dialga' and poke['item'] == 'adamantorb':
+	if species == 'dialga' and poke['item'] == 'adamantorb':
 		stalliness -= 0.25
-	if poke['species'] == 'palkia' and poke['item'] == 'lustrousorb':
+	if species == 'palkia' and poke['item'] == 'lustrousorb':
 		stalliness = stalliness - 0.25
-	if poke['species'] == 'giratinaorigin' and poke['item'] == 'griseousorb': #it's better be holding a Griseous Orb
+	if species == 'giratinaorigin' and poke['item'] == 'griseousorb': #it's better be holding a Griseous Orb
 		stalliness -= 0.25
 	if poke['item'] == 'weaknesspolicy':
 		stalliness -= 1.0
@@ -257,34 +259,35 @@ def analyzeTeam(team):
 	possibleTypes = False
 
 	for poke in team:
+		species = keyify(poke['species'])
 		if possibleTypes == False:
-			possibleTypes = set(types[poke['species']])
+			possibleTypes = set(types[species])
 		else:
-			possibleTypes = possibleTypes.intersection(types[poke['species']])
+			possibleTypes = possibleTypes.intersection(types[species])
 		analysis = analyzePoke(poke)
 		if analysis is None:
 			return None
 		(stalliness,bias) = analysis 
-		if poke['species'] == 'meloetta' and 'relicsong' in poke['moves']:
+		if species == 'meloetta' and 'relicsong' in poke['moves']:
 			megapoke = copy.deepcopy(poke)
-			megapoke['species']='meloettapirouette'
+			megaspecies='meloettapirouette'
 			stalliness += analyzePoke(megapoke)[0]
 			stalliness /= 2.0
-		elif poke['species'] == 'darmanitan' and poke['ability'] == 'zenmode':
+		elif species == 'darmanitan' and poke['ability'] == 'zenmode':
 			megapoke = copy.deepcopy(poke)
-			megapoke['species']='darmanitanzen'
+			megaspecies='darmanitanzen'
 			stalliness += analyzePoke(megapoke)[0]
 			stalliness /= 2.0
-		elif poke['species'] == 'rayquaza' and 'dragonascent' in poke['moves']:
+		elif species == 'rayquaza' and 'dragonascent' in poke['moves']:
 			megapoke = copy.deepcopy(poke)
-			megapoke['species']='rayquazamega'
+			megaspecies='rayquazamega'
 			megapoke['ability']='deltastream'
 			stalliness += analyzePoke(megapoke)[0]
 			stalliness /= 2.0
 		else:
 			for mega in megas:
-				if [poke['species'],poke['item']] == mega[:2]:
-					megaspecies = poke['species']+'mega'
+				if [species,poke['item']] == mega[:2]:
+					megaspecies = species+'mega'
 					if poke['item'].endswith('x'):
 						megaspecies +='x'
 					elif poke['item'].endswith('y'):
@@ -292,7 +295,7 @@ def analyzeTeam(team):
 					if megaspecies in ['kyogremega','groudonmega']:
 						megaspecies=megaspecies[:-4]+'primal'
 					megapoke = copy.deepcopy(poke)
-					megapoke['species']=megaspecies
+					megaspecies=megaspecies
 					megapoke['ability']=mega[2]
 					stalliness += analyzePoke(megapoke)[0]
 					stalliness /= 2.0
@@ -336,7 +339,7 @@ def analyzeTeam(team):
 		if poke['ability'] in ['drought','desolateland']:
 			detected = True
 			break
-		elif [poke['species'],poke['item']] == ['charizard','charizarditey']:
+		elif [species,poke['item']] == ['charizard','charizarditey']:
 			detected = True
 			break
 		elif poke['item'] == 'heatrock' and 'sunnyday' in poke['moves']:
@@ -409,7 +412,7 @@ def analyzeTeam(team):
 	for poke in team:
 		if 'trickroom' in poke['moves'] and 'imprison' not in poke['moves']:
 			count[0] += 1
-		elif (poke['nature'] in ['brave', 'relaxed', 'quiet', 'sassy'] or baseStats[poke['species']]['spe'] <= 50) and poke['evs']['spe'] < 5: #or I could just use actual stats and speed factor
+		elif (poke['nature'] in ['brave', 'relaxed', 'quiet', 'sassy'] or baseStats[species]['spe'] <= 50) and poke['evs']['spe'] < 5: #or I could just use actual stats and speed factor
 			count[1] += 1
 
 	if (count[0] > 1 and count[1] > 1) or (count[0] > 2):
@@ -452,7 +455,7 @@ def analyzeTeam(team):
 	for poke in team:
 		if poke['ability'] in ['magnetpull', 'arenatrap', 'shadowtag'] or len(set(['block','meanlook','spiderweb']).intersection(poke['moves'])) != 0:
 			count[0] += 1
-		elif poke['species'] in ['dratini', 'dragonair', 'bagon', 'shelgon', 'axew', 'fraxure', 'haxorus', 'druddigon', 'dragonite', 'altaria', 'salamence', 'latias', 'latios', 'rayquaza', 'gible', 'gabite', 'garchomp', 'reshiram', 'zekrom', 'kyurem', 'kyuremwhite', 'kyuremblack', 'kingdra', 'vibrava', 'flygon', 'dialga', 'palkia', 'giratina', 'giratinaorigin', 'deino', 'zweilous', 'hydreigon']:
+		elif species in ['dratini', 'dragonair', 'bagon', 'shelgon', 'axew', 'fraxure', 'haxorus', 'druddigon', 'dragonite', 'altaria', 'salamence', 'latias', 'latios', 'rayquaza', 'gible', 'gabite', 'garchomp', 'reshiram', 'zekrom', 'kyurem', 'kyuremwhite', 'kyuremblack', 'kingdra', 'vibrava', 'flygon', 'dialga', 'palkia', 'giratina', 'giratinaorigin', 'deino', 'zweilous', 'hydreigon']:
 			count[1] += 1
 	if count[0] > 0 and count[1] > 1:
 		tags.append('dragmag')
