@@ -27,8 +27,8 @@ def main():
 	raw = file.readline()
 	file.close()
 
-	rise =  0.03406367107 #0.04515839608 #0.06696700846 
-	drop =  0.03406367107 #0.02284003156 #0.01717940145
+	rise =  0.06696700846#0.03406367107 #0.04515839608
+	drop =  0.01717940145#0.03406367107 #0.02284003156
 	#in case the user copy/pasted with the quotes still on
 	if raw[0] == '"':
 		raw=raw[1:]
@@ -52,6 +52,8 @@ def main():
 		if 'tier' not in formatsData[poke].keys():
 			continue
 		old = formatsData[poke]['tier']
+		if old[0] == '(':
+			old = old[1:-1]
 		if old in ['NFE','LC']:
 			NFE.append(poke)
 		if old == 'Illegal' or old == 'Unreleased':
@@ -70,29 +72,6 @@ def main():
 	getUsage(month+"/Stats/nu-1630.txt",3,20.0*95484/(95484+44655),usage)
 	getUsage(month+"/Stats/nususpecttest-1630.txt",3,20.0*44655/(95484+44655),usage)
 	getUsage(month+"/Stats/pu-1630.txt",4,20.0,usage)
-
-	month="2015-06"
-	getUsage(month+"/Stats/ou-1695.txt",0,4.0,usage)
-	getUsage(month+"/Stats/uu-1630.txt",1,4.0*266634/(266634+38457),usage)
-	getUsage(month+"/Stats/uususpecttest-1630.txt",1,4.0*38457/(266634+38457),usage)
-	getUsage(month+"/Stats/ru-1630.txt",2,4.0*73021/(73021+20123),usage)
-	getUsage(month+"/Stats/rususpecttest-1630.txt",2,4.0*20123/(73021+20123),usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,4.0*69083/(69083+69692),usage)
-	getUsage(month+"/Stats/nususpecttest-1630.txt",3,4.0*69692/(69083+69692),usage)
-	getUsage(month+"/Stats/pu-1630.txt",4,3.0,usage)
-
-	month="2015-05"
-
-	getUsage(month+"/Stats/ou-1695.txt",0,1.0*516465/(516465+665187),usage)
-	getUsage(month+"/Stats/oususpecttest-1695.txt",0,1.0*665187/(516465+665187),usage)
-	getUsage(month+"/Stats/uu-1630.txt",1,1.0*183896/(183896+102034),usage)
-	getUsage(month+"/Stats/uususpecttest-1630.txt",1,1.0*102034/(183896+102034),usage)
-	getUsage(month+"/Stats/ru-1630.txt",2,1.0*57756/(57756+28786),usage)
-	getUsage(month+"/Stats/rususpecttest-1630.txt",2,1.0*28786/(57756+28786),usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,1.0*98745/(98745+21846),usage)
-	getUsage(month+"/Stats/nususpecttest-1630.txt",3,1.0*21846/(98745+21846),usage)
-	getUsage(month+"/Stats/pu-1630.txt",4,1.0,usage)
-
 
 	#generate three-month tables and start working on that new tier list
 	OU = []
