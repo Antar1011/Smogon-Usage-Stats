@@ -160,7 +160,9 @@ def movesetCounter(filename, cutoff, teamtype, usage):
 				#cc[s]=p-4*d #using a CRE-style calculation
 				cc[s]=[n,p,d]
 
-	maxGXE = [len(gxes),gxes[0],gxes[len(gxes)/100-1],gxes[5*len(gxes)/100]-1]
+	maxGXE = [0,0,0,0]
+	if len(gxes) > 0:
+		maxGXE = [len(gxes),gxes[0],gxes[int(math.ceil(0.01*len(gxes)))-1],gxes[int(math.ceil(0.20*len(gxes)))-1]]
 
 	stuff = {
 		'Raw count': rawCount,
