@@ -40,29 +40,13 @@ def getTeamsFromLog(log,hackmons):
 				species=species[1:]
 			while species[len(species)-1] in ')". ':
 				species=species[:len(species)-1]
-			if species[0] in string.lowercase or species[1] in string.uppercase:
-				species = species.title()
+			species = keyify(species)
 
-			for s in aliases: #combine appearance-only variations and weird PS quirks
-				if species in aliases[s]:
-					species = s
-					break
-			try:	
-				species=keyLookup[keyify(species)]
-			except:
-				sys.stderr.write(species+' not in keyLookup.\n')
-				return False
-
-			for s in aliases: #this 2nd one is needed to deal with Nidoran
-				if species in aliases[s]:
-					species = s
-					break
-
-			if not hackmons:
-				if species.endswith('-Mega'):
-					species = species[:-5]
-				elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-					species = species[:-7]
+			#if not hackmons:
+			#	if species.endswith('-Mega'):
+			#		species = species[:-5]
+			#	elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+			#		species = species[:-7]
 
 			if 'item' in log[team][i].keys():
 				item = keyify(log[team][i]['item'])
@@ -70,6 +54,8 @@ def getTeamsFromLog(log,hackmons):
 					item = 'nothing'
 			else:
 				item = 'nothing'
+
+
 			if 'happiness' in log[team][i].keys():
 				happiness = log[team][i]['happiness']
 			else:
@@ -115,6 +101,40 @@ def getTeamsFromLog(log,hackmons):
 				level = int(log[team][i]['level'])
 			else:
 				level = 100
+
+			if species == 'rayquaza' and 'dragonascent' in moves:
+				species='rayquazamega'
+				ability='deltastream'
+			else: 
+				for mega in megas:
+					if [species,item] == mega[:2]:
+						species = species+'mega'
+						if item.endswith('x'):
+							species +='x'
+						elif item.endswith('y'):
+							species += 'y'
+						if species in ['kyogremega','groudonmega']:
+							species=species[:-4]+'primal'
+						ability=mega[2]
+						break
+
+			if species[0] in string.lowercase or species[1] in string.uppercase:
+				species = species.title()
+
+			for s in aliases: #combine appearance-only variations and weird PS quirks
+				if species in aliases[s]:
+					species = s
+					break
+			try:	
+				species=keyLookup[keyify(species)]
+			except:
+				sys.stderr.write(species+' not in keyLookup.\n')
+				return False
+
+			for s in aliases: #this 2nd one is needed to deal with Nidoran
+				if species in aliases[s]:
+					species = s
+					break
 			
 			teams[team].append({
 				'species': species,
@@ -334,11 +354,11 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				if not hackmons:
-					if species.endswith('-Mega'):
-						species = species[:-5]
-					elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-						species = species[:-7]
+				#if not hackmons:
+				#	if species.endswith('-Mega'):
+				#		species = species[:-5]
+				#	elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+				#		species = species[:-7]
 				try:
 					active[0]=ts.index([ts[0][0],species])
 				except ValueError:
@@ -348,11 +368,13 @@ def LogReader(filename,tier,movesets,ratings):
 							speciesBase = species[:-5]
 						else:
 							speciesBase = species[:-7]
+					else:
+						speciesBase = species
 
-						for i in xrange(6):
-							if ts[i][1].startswith(speciesBase):
-								species = ts[i][1]
-								active[0] = i
+					for i in xrange(6):
+						if ts[i][1].startswith(speciesBase):
+							species = ts[i][1]
+							active[0] = i
 					if active[0]==-1:
 						sys.stderr.write('Problem with '+filename+'\n')
 						sys.stderr.write('(Pokemon not in ts) (1)\n')
@@ -368,11 +390,11 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				if not hackmons:
-					if species.endswith('-Mega'):
-						species = species[:-5]
-					elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-						species = species[:-7]
+				#if not hackmons:
+				#	if species.endswith('-Mega'):
+				#		species = species[:-5]
+				#	elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+				#		species = species[:-7]
 				try:
 					active[1]=ts.index([ts[11][0],species])
 				except ValueError:
@@ -382,11 +404,13 @@ def LogReader(filename,tier,movesets,ratings):
 							speciesBase = species[:-5]
 						else:
 							speciesBase = species[:-7]
+					else:
+						speciesBase = species
 
-						for i in xrange(6,12):
-							if ts[i][1].startswith(speciesBase):
-								species = ts[i][1]
-								active[0] = i
+					for i in xrange(6,12):
+						if ts[i][1].startswith(speciesBase):
+							species = ts[i][1]
+							active[1] = i
 					if active[1]==-1:
 						sys.stderr.write('Problem with '+filename+'\n')
 						sys.stderr.write('(Pokemon not in ts) (2)\n')
@@ -524,11 +548,11 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				if not hackmons:
-					if species.endswith('-Mega'):
-						species = species[:-5]
-					elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-						species = species[:-7]
+				#if not hackmons:
+				#	if species.endswith('-Mega'):
+				#		species = species[:-5]
+				#	elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+				#		species = species[:-7]
 				if [ts[11*(int(line[p])-1)][0],species] not in ts:
 					if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
 						#if Shaymin-Sky gets frozen, it reverts to land forme
@@ -541,12 +565,14 @@ def LogReader(filename,tier,movesets,ratings):
 								speciesBase = species[:-5]
 							else:
 								speciesBase = species[:-7]
+						else:
+							speciesBase = species
 
-							for i in xrange(6*(int(line[p])-1),6*int(line[p])):
-								if ts[i][1].startswith(speciesBase):
-									species = ts[i][1]
-									found = True
-									break
+						for i in xrange(6*(int(line[p])-1),6*int(line[p])):
+							if ts[i][1].startswith(speciesBase):
+								species = ts[i][1]
+								found = True
+								break
 						if not found:
 							sys.stderr.write('Problem with '+filename+'\n')
 							sys.stderr.write('(Pokemon not in ts) (3)\n')
@@ -605,11 +631,11 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				if not hackmons:
-					if species.endswith('-Mega'):
-						species = species[:-5]
-					elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-						species = species[:-7]
+				#if not hackmons:
+				#	if species.endswith('-Mega'):
+				#		species = species[:-5]
+				#	elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+				#		species = species[:-7]
 				if [ts[11*(int(line[p])-1)][0],species] not in ts:
 					if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
 					#if Shaymin-Sky gets frozen, it reverts to land forme
@@ -622,12 +648,14 @@ def LogReader(filename,tier,movesets,ratings):
 								speciesBase = species[:-5]
 							else:
 								speciesBase = species[:-7]
+						else:
+							speciesBase = species
 
-							for i in xrange(6*(int(line[p])-1),6*int(line[p])):
-								if ts[i][1].startswith(speciesBase):
-									species = ts[i][1]
-									found = True
-									break
+						for i in xrange(6*(int(line[p])-1),6*int(line[p])):
+							if ts[i][1].startswith(speciesBase):
+								species = ts[i][1]
+								found = True
+								break
 						if not found:
 							print ts
 							sys.stderr.write('Problem with '+filename+'\n')
