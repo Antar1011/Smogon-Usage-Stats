@@ -27,8 +27,8 @@ def main():
 	raw = file.readline()
 	file.close()
 
-	rise =  0.06696700846#0.03406367107 #0.04515839608
-	drop =  0.01717940145#0.03406367107 #0.02284003156
+	rise =  0.04515839608 #0.03406367107 #0.04515839608 #0.06696700846
+	drop =  0.02284003156 #0.03406367107 #0.02284003156 #0.01717940145
 	#in case the user copy/pasted with the quotes still on
 	if raw[0] == '"':
 		raw=raw[1:]
@@ -65,13 +65,23 @@ def main():
 	usage = {} #track usage across all relevant tiers [OU,UU,RU,NU]
 
 	month="."
-	getUsage(month+"/Stats/ou-1695.txt",0,20.0,usage)
-	getUsage(month+"/Stats/uu-1630.txt",1,20.0*163139/(163139+168300),usage)
-	getUsage(month+"/Stats/uususpecttest-1630.txt",1,20.0*168300/(163139+168300),usage)
-	getUsage(month+"/Stats/ru-1630.txt",2,20.0,usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,20.0*95484/(95484+44655),usage)
-	getUsage(month+"/Stats/nususpecttest-1630.txt",3,20.0*44655/(95484+44655),usage)
-	getUsage(month+"/Stats/pu-1630.txt",4,20.0,usage)
+	getUsage(month+"/Stats/ou-1695.txt",0,20.0*1452414/(1452414+570279),usage)
+	getUsage(month+"/Stats/oususpecttest-1695.txt",0,20.0*570279/(1452414+570279),usage)
+	getUsage(month+"/Stats/uu-1630.txt",1,20.0*172514/(172514+226085),usage)
+	getUsage(month+"/Stats/uususpecttest-1630.txt",1,20.0*226085/(172514+226085),usage)
+	getUsage(month+"/Stats/ru-1630.txt",2,20.0*96361/(96361+9423),usage)
+	getUsage(month+"/Stats/rususpecttest-1630.txt",2,20.0*9423/(96361+9423),usage)
+	getUsage(month+"/Stats/nu-1630.txt",3,20.0,usage)
+	getUsage(month+"/Stats/pu-1630.txt",4,20.0*35836/(35836+75909),usage)
+	getUsage(month+"/Stats/pususpecttest-1630.txt",4,20.0*75909/(35836+75909),usage)
+
+	month="2015-11/Mega-separated-stats"
+	getUsage(month+"/Stats/ou-1695.txt",0,4.0,usage)
+	getUsage(month+"/Stats/uu-1630.txt",1,4.0,usage)
+	getUsage(month+"/Stats/ru-1630.txt",2,4.0,usage)
+	getUsage(month+"/Stats/nu-1630.txt",3,4.0,usage)
+	getUsage(month+"/Stats/pu-1630.txt",4,4.0,usage)
+
 
 	#generate three-month tables and start working on that new tier list
 	OU = []
@@ -200,12 +210,13 @@ def main():
 	print ""
 	print ""
 	print "[size=5][b]FU[/b][/size]"
-	print "FU is an unofficial banlist based on an unofficial metagame. It is not currently supported on any simulator, but since we have usage stats for PU, and since [url=http://www.smogon.com/forums/forums/pu.327/?prefix_id=282]people have expressed interest in such a metagame[/url], here is a proper banlist:" 
+	print "FU is an unofficial tier. It is not currently supported on any simulator, but since [url=http://www.smogon.com/forums/forums/pu.327/?prefix_id=282]people have expressed interest in such a metagame[/url], here is a proper banlist:" 
 	makeTable(PU,"PU",keyLookup)
 	fuBanlist = []
 	for poke in usage.keys():
-		if newTiers[poke] == 'PU' and (usage[poke][4] >= drop or curTiers[poke] == 'NU'):
-			fuBanlist.append(poke)
+		if poke in curTiers:
+			if newTiers[poke] == 'PU' and (usage[poke][4] >= drop or curTiers[poke] == 'NU'):
+				fuBanlist.append(poke)
 
 	fuBanlist = sorted(fuBanlist)
 	printme = "[b]Banlist:[/b] "
