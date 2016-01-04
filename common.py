@@ -49,7 +49,7 @@ def readTable(filename):
 			#remove extraneous spaces
 			name = name[0:len(name)-1]
 
-		pct = line[3][1:9]
+		pct = line[3][1:line[3].index('%')]
 	
 		usage[name]=float(pct)/100.0
 
