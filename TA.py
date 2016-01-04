@@ -258,8 +258,16 @@ def analyzeTeam(team):
 	tstalliness = []
 	possibleTypes = False
 
-	for poke in team:
+	for p in team:
+
+		#for stats and moveset purposes, we're now counting mega Pokemon separately. But for Team Analysis, we still want to
+		#consider the base (this presumably breaks for hackmons, but w/e--hackmons has always been broken)
+		poke = copy.deepcopy(p)
+		if poke['species'].endswith('-Mega') or poke['species'].endswith('-Mega-X') or poke['species'].endswith('-Mega-Y') or poke['species'].endswith('-Primal'):
+			poke['species'] = poke['species'][:poke['species'].index('-')] #none of the megas have hyphenated names
+
 		species = keyify(poke['species'])
+
 		if possibleTypes == False:
 			possibleTypes = set(types[species])
 		else:
@@ -400,11 +408,21 @@ def analyzeTeam(team):
 	for poke in team:
 		if 'batonpass' in poke['moves']:
 			if len(set(['acupressure', 'bellydrum', 'bulkup', 'coil', 'curse', 'dragondance', 'growth', 'honeclaws', 'howl', 'meditate', 'sharpen', 'shellsmash', 'shiftgear', 'swordsdance', 'workup', 'calmmind', 'chargebeam', 'fierydance', 'nastyplot', 'tailglow', 'quiverdance', 'agility', 'autotomize', 'flamecharge', 'rockpolish', 'doubleteam', 'minimize', 'substitute', 'acidarmor', 'barrier', 'cosmicpower', 'cottonguard', 'defendorder', 'defensecurl', 'harden', 'irondefense', 'stockpile', 'withdraw', 'amnesia', 'charge', 'ingrain']).intersection(poke['moves'])) != 0 or poke['ability'] in ['angerpoint', 'contrary', 'moody', 'moxie', 'speedboost']: #check for setup move/ability
-				count = count + 1
+				count += 1
 				if count > 1:
 					break
 	if count > 1:
 		tags.append('batonpass')
+
+	#tailwind
+	count = 0
+	for poke in team:
+		if 'tailwind' in poke['moves']:
+			count += 1
+			if count > 1:
+				break
+	if count > 1:
+		tags.append('tailwind')
 
 	#trick room
 	count = [0,0]

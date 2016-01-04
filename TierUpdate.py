@@ -19,6 +19,8 @@ def makeTable(table,name,keyLookup):
 	print " + ---- + ------------------ + ------- + "
 	print "[/CODE][/HIDE]"
 
+tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
+
 def main():
 	file = open('keylookup.pickle')
 	keyLookup = pickle.load(file)
@@ -45,10 +47,10 @@ def main():
 		if 'isNonstandard' in formatsData[poke]:
 			if formatsData[poke]['isNonstandard']:
 				continue
-		if 'requiredItem' in formatsData[poke]:
-				continue
-		if poke == 'rayquazamega':
-			continue
+		#if 'requiredItem' in formatsData[poke]:
+		#		continue
+		#if poke == 'rayquazamega':
+		#	continue
 		if 'tier' not in formatsData[poke].keys():
 			continue
 		old = formatsData[poke]['tier']
@@ -58,13 +60,13 @@ def main():
 			NFE.append(poke)
 		if old == 'Illegal' or old == 'Unreleased':
 			continue
-		elif old not in ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']:
+		elif old not in tiers:
 			old = 'PU'
 		curTiers[poke]=old
 
 	usage = {} #track usage across all relevant tiers [OU,UU,RU,NU]
 
-	month="."
+	month="2015-12"
 	getUsage(month+"/Stats/ou-1695.txt",0,20.0*1452414/(1452414+570279),usage)
 	getUsage(month+"/Stats/oususpecttest-1695.txt",0,20.0*570279/(1452414+570279),usage)
 	getUsage(month+"/Stats/uu-1630.txt",1,20.0*172514/(172514+226085),usage)
@@ -84,6 +86,7 @@ def main():
 
 
 	#generate three-month tables and start working on that new tier list
+
 	OU = []
 	UU = []
 	RU = []
@@ -205,7 +208,13 @@ def main():
 	print ""
 	for poke in curTiers:
 		if curTiers[poke] != newTiers[poke]:
-			print keyLookup[poke]+" moved from "+curTiers[poke]+" to "+newTiers[poke]
+			species = keyLookup[poke]
+			if species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+				base = keyify(species[:species.index('-')]) #none of the megas have hyphenated names
+				if tiers.index(newTiers[base]) < tiers.index(newTiers[poke]): #if the base is in a higher tier
+					newTiers[poke] = newTiers[base]
+					continue
+			print species+" moved from "+curTiers[poke]+" to "+newTiers[poke]
 
 	print ""
 	print ""
