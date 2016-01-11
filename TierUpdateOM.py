@@ -5,8 +5,14 @@ import cPickle as pickle
 from common import keyify,getUsage
 from TierUpdate import makeTable
 
-rise = 0.03406367107 #0.06696700846 #0.04515839608
-drop = 0.03406367107 #0.01717940145 #0.02284003156
+rise = 0.04515839608 #0.03406367107 #0.06696700846 #0.04515839608
+drop = 0.02284003156 #0.03406367107 #0.01717940145 #0.02284003156
+
+tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
+
+file = open('keylookup.pickle')
+keyLookup = pickle.load(file)
+file.close()
 
 def usageToTiers(usage):
 	OU = []
@@ -20,10 +26,16 @@ def usageToTiers(usage):
 	UU = sorted(UU, key=lambda UU:-UU[1])
 	return (OU,UU)
 
-def raiseAndDrop(curTiers,usage):
+def raiseAndDrop(curTiers,usage,lowest):
 	for poke in usage:
 		if poke not in curTiers:
-			curTiers[poke]='UU'
+			species = keyLookup[poke]
+			if species.endswith('Mega') or species.endswith('Mega-X') or species.endswith('Mega-Y'):
+				base = keyify(species[:species.index('-')]) #none of the megas have hyphenated names
+				if base in curTiers:
+					curTiers[poke]=curTiers[base]
+			else:
+				curTiers[poke]=lowest
 	newTiers={}
 	#start with Ubers
 	for poke in curTiers.keys():
@@ -39,6 +51,8 @@ def raiseAndDrop(curTiers,usage):
 
 	#next do the UU drops
 	for poke in curTiers.keys():
+		if poke not in usage:
+			continue
 		if curTiers[poke] == 'OU' and poke not in newTiers.keys():
 			if usage[poke][0] < drop:
 				newTiers[poke] = 'UU'
@@ -68,9 +82,6 @@ def raiseAndDrop(curTiers,usage):
 	return newTiers
 
 def main():
-	file = open('keylookup.pickle')
-	keyLookup = pickle.load(file)
-	file.close()
 	file=open('formats.json')
 	raw = file.readline()
 	file.close()
@@ -88,7 +99,7 @@ def main():
 	formats = json.loads(raw)
 	banlists={}
 	for format in formats:
-		if format['name'] in ['LC','LC UU','Doubles OU', 'Doubles UU']:
+		if format['name'] in ['LC','LC UU','Doubles OU', 'Doubles UU', 'Doubles NU']:
 			banlist=[]
 			for entry in format['banlist']:
 				keyified=keyify(entry)
@@ -107,28 +118,21 @@ def main():
 		curTiers['Doubles'][poke]='Uber'
 	for poke in banlists['Doubles UU']:
 		curTiers['Doubles'][poke]='OU'
+	for poke in banlists['Doubles NU']:
+		curTiers['Doubles'][poke]='UU'
 
 	usageLC = {}
 	usageDoubles = {}
 
 	month="."
 	getUsage(month+"/Stats/lc-1630.txt",0,20.0,usageLC)
-	getUsage(month+"/Stats/lcuu-1630.txt",1,20.0,usageLC)
 	getUsage(month+"/Stats/doublesou-1695.txt",0,20.0,usageDoubles)
 	getUsage(month+"/Stats/doublesuu-1630.txt",1,20.0,usageDoubles)
 
-	month="2015-06"
-	getUsage(month+"/Stats/lc-1630.txt",0,3.0,usageLC)
-	getUsage(month+"/Stats/doublesou-1695.txt",0,3.0*88415/(88415+57448),usageDoubles)
-	getUsage(month+"/Stats/doublesoususpecttest-1695.txt",0,3.0*57448/(88415+57448),usageDoubles)
-	getUsage(month+"/Stats/doublesuu-1630.txt",1,3.0,usageDoubles)
-
-	month="2015-05"
-	getUsage(month+"/Stats/lc-1630.txt",0,1.0,usageLC)
-	getUsage(month+"/Stats/lcuu-1630.txt",1,1.0,usageLC)
-	getUsage(month+"/Stats/doublesou-1695.txt",0,1.0*117583/(117583+46798),usageDoubles)
-	getUsage(month+"/Stats/doublesoususpecttest-1695.txt",0,1.0*117583/(117583+46798),usageDoubles)
-	getUsage(month+"/Stats/doublesuu-1630.txt",1,1.0,usageDoubles)
+	month="2015-11/redo"
+	getUsage(month+"/Stats/lc-1630.txt",0,4.0,usageLC)
+	getUsage(month+"/Stats/doublesou-1695.txt",0,4.0,usageDoubles)
+	getUsage(month+"/Stats/doublesuu-1630.txt",1,4.0,usageDoubles)
 
 
 	#generate three-month tables and start working on that new tier list
@@ -138,7 +142,7 @@ def main():
 	(LCOU,LCUU) = usageToTiers(usageLC)
 	makeTable(LCOU,"LC OU",keyLookup)
 	#makeTable(LCUU,"LC UU",keyLookup)
-	newTiers['LC']=raiseAndDrop(curTiers['LC'],usageLC)
+	newTiers['LC']=raiseAndDrop(curTiers['LC'],usageLC,'UU')
 	print ""
 	for poke in curTiers['LC']:
 		if curTiers['LC'][poke] != newTiers['LC'][poke]:
@@ -154,32 +158,20 @@ def main():
 	makeTable(doublesUU,"Doubles UU",keyLookup)
 	
 	
-	newTiers['Doubles']=raiseAndDrop(curTiers['Doubles'],usageDoubles)
+	newTiers['Doubles']=raiseAndDrop(curTiers['Doubles'],usageDoubles,'NU')
 	print ""
-	initialUU = []
+	newUU = []
 	for poke in curTiers['Doubles']:
-		if newTiers['Doubles'][poke] == 'UU':
-			initialUU.append(poke)
 		if curTiers['Doubles'][poke] != newTiers['Doubles'][poke]:
-			if newTiers['Doubles'][poke] != 'NU':
-				print keyLookup[poke]+" moved from Doubles "+curTiers['Doubles'][poke]+" to Doubles "+newTiers['Doubles'][poke]
+			species = keyLookup[poke]
+			if species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+				base = keyify(species[:species.index('-')]) #none of the megas have hyphenated names
+				if tiers.index(newTiers['Doubles'][base]) < tiers.index(newTiers['Doubles'][poke]): #if the base is in a higher tier
+					newTiers['Doubles'][poke] = newTiers['Doubles'][base]
+					continue
+			
+			print keyLookup[poke]+" moved from Doubles "+curTiers['Doubles'][poke]+" to Doubles "+newTiers['Doubles'][poke]
 
-	initialUU = sorted(initialUU)
-	print ""
-	printme = "[b]Doubles NU banlist:[/b] "
-	for poke in initialUU:
-		printme += keyLookup[poke]+', '
-	printme = printme[:-2]
-	print printme
-
-
-
-
-
-	
-	
-
-	
 
 if __name__ == "__main__":
     main()
