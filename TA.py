@@ -100,7 +100,8 @@ megas=[	['abomasnow','abomasite','snowwarning'],
 	['tyranitar','tyranitarite','sandstream'],
 	['venusaur','venusaurite','thickfat'],
 	['kyogre','blueorb','primordialsea'],
-	['groudon','redorb','desolateland']]
+	['groudon','redorb','desolateland'],
+	['crucibelle','crucibellite','magicguard']]
 	
 def analyzePoke(poke):
 	species=keyify(poke['species'])
