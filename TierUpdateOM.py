@@ -5,8 +5,8 @@ import cPickle as pickle
 from common import keyify,getUsage
 from TierUpdate import makeTable
 
-rise = 0.04515839608 #0.03406367107 #0.06696700846 #0.04515839608
-drop = 0.02284003156 #0.03406367107 #0.01717940145 #0.02284003156
+rise = 0.03406367107 #0.06696700846 #0.04515839608
+drop = 0.03406367107 #0.01717940145 #0.02284003156
 
 tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
 
@@ -113,13 +113,16 @@ def main():
 	for poke in banlists['LC']:
 		curTiers['LC'][poke]='Uber'
 	for poke in banlists['LC UU']:
-		curTiers['LC'][poke]='OU'
+		if poke not in curTiers['LC'].keys():
+			curTiers['LC'][poke]='OU'
 	for poke in banlists['Doubles OU']:
 		curTiers['Doubles'][poke]='Uber'
 	for poke in banlists['Doubles UU']:
-		curTiers['Doubles'][poke]='OU'
+		if poke not in curTiers['Doubles'].keys():
+			curTiers['Doubles'][poke]='OU'
 	for poke in banlists['Doubles NU']:
-		curTiers['Doubles'][poke]='UU'
+		if poke not in curTiers['Doubles'].keys():
+			curTiers['Doubles'][poke]='UU'
 
 	usageLC = {}
 	usageDoubles = {}
@@ -129,10 +132,15 @@ def main():
 	getUsage(month+"/Stats/doublesou-1695.txt",0,20.0,usageDoubles)
 	getUsage(month+"/Stats/doublesuu-1630.txt",1,20.0,usageDoubles)
 
+	month="2015-12/redo"
+	getUsage(month+"/Stats/lc-1630.txt",0,3.0,usageLC)
+	getUsage(month+"/Stats/doublesou-1695.txt",0,3.0,usageDoubles)
+	getUsage(month+"/Stats/doublesuu-1630.txt",1,3.0,usageDoubles)
+
 	month="2015-11/redo"
-	getUsage(month+"/Stats/lc-1630.txt",0,4.0,usageLC)
-	getUsage(month+"/Stats/doublesou-1695.txt",0,4.0,usageDoubles)
-	getUsage(month+"/Stats/doublesuu-1630.txt",1,4.0,usageDoubles)
+	getUsage(month+"/Stats/lc-1630.txt",0,1.0,usageLC)
+	getUsage(month+"/Stats/doublesou-1695.txt",0,1.0,usageDoubles)
+	getUsage(month+"/Stats/doublesuu-1630.txt",1,1.0,usageDoubles)
 
 
 	#generate three-month tables and start working on that new tier list
