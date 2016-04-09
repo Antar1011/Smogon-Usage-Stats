@@ -3,7 +3,7 @@ Smogon-Usage-Stats
 
 Scripts for compiling usage stats from Smogon's Pokemon Showdown server
 
-
+Note: requires [PyExecJS](https://pypi.python.org/pypi/PyExecJS)
 
 Each month, Smogon's PS server logs millions of battles across dozens of metagames. These scripts read in those logs and distill them into usage statistics, from the simple counts used for tiering to detailed moveset and metagame statistics. The method for this boils down to the following:
 

@@ -2,7 +2,7 @@ import string
 import sys
 import json
 import cPickle as pickle
-from common import keyify,getUsage
+from common import keyify,getUsage,getBattleFormatsData
 
 def makeTable(table,name,keyLookup):
 
@@ -25,19 +25,11 @@ def main():
 	file = open('keylookup.pickle')
 	keyLookup = pickle.load(file)
 	file.close()
-	file=open('formats-data.json')
-	raw = file.readline()
-	file.close()
 
-	rise =  0.04515839608 #0.03406367107 #0.04515839608 #0.06696700846
-	drop =  0.02284003156 #0.03406367107 #0.02284003156 #0.01717940145
-	#in case the user copy/pasted with the quotes still on
-	if raw[0] == '"':
-		raw=raw[1:]
-	if raw[len(raw)-1] == '"':
-		raw=raw[:len(raw)-1]
+	rise =  0.04515839608 #0.06696700846 #0.03406367107
+	drop =  0.02284003156 #0.01717940145 #0.03406367107
 
-	formatsData = json.loads(raw)
+	formatsData = getBattleFormatsData()
 
 	curTiers = {}
 	NFE=[]
@@ -66,22 +58,23 @@ def main():
 
 	usage = {} #track usage across all relevant tiers [OU,UU,RU,NU]
 
-	month="2015-12"
-	getUsage(month+"/Stats/ou-1695.txt",0,20.0*1452414/(1452414+570279),usage)
-	getUsage(month+"/Stats/oususpecttest-1695.txt",0,20.0*570279/(1452414+570279),usage)
-	getUsage(month+"/Stats/uu-1630.txt",1,20.0*172514/(172514+226085),usage)
-	getUsage(month+"/Stats/uususpecttest-1630.txt",1,20.0*226085/(172514+226085),usage)
-	getUsage(month+"/Stats/ru-1630.txt",2,20.0*96361/(96361+9423),usage)
-	getUsage(month+"/Stats/rususpecttest-1630.txt",2,20.0*9423/(96361+9423),usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,20.0,usage)
-	getUsage(month+"/Stats/pu-1630.txt",4,20.0*35836/(35836+75909),usage)
-	getUsage(month+"/Stats/pususpecttest-1630.txt",4,20.0*75909/(35836+75909),usage)
+	month="."
+	getUsage(month+"/Stats/ou-1695.txt",0,20.0*2161701/(2161701+250126),usage)
+	getUsage(month+"/Stats/oususpecttest-1695.txt",0,20.0*250126/(2161701+250126),usage)
+	getUsage(month+"/Stats/uu-1630.txt",1,20.0,usage)
+	getUsage(month+"/Stats/ru-1630.txt",2,20.0*87260/(87260+35615),usage)
+	getUsage(month+"/Stats/rususpecttest-1630.txt",2,20.0*35615/(87260+35615),usage)
+	getUsage(month+"/Stats/nu-1630.txt",3,20.0*44678/(44678+80037),usage)
+	getUsage(month+"/Stats/nususpecttest-1630.txt",3,20.0*80037/(44678+80037),usage)
+	getUsage(month+"/Stats/pu-1630.txt",4,24.0,usage)
 
-	month="2015-11/Mega-separated-stats"
+	month="2016-02/"
 	getUsage(month+"/Stats/ou-1695.txt",0,4.0,usage)
 	getUsage(month+"/Stats/uu-1630.txt",1,4.0,usage)
-	getUsage(month+"/Stats/ru-1630.txt",2,4.0,usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,4.0,usage)
+	getUsage(month+"/Stats/ru-1630.txt",2,4.0*52610/(52610+62583),usage)
+	getUsage(month+"/Stats/rususpecttest-1630.txt",2,4.0*62583/(52610+62583),usage)
+	getUsage(month+"/Stats/nu-1630.txt",3,4.0*86806/(86806+28092),usage)
+	getUsage(month+"/Stats/nususpecttest-1630.txt",3,4.0*28092/(86806+28092),usage)
 	getUsage(month+"/Stats/pu-1630.txt",4,4.0,usage)
 
 

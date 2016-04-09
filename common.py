@@ -2,6 +2,9 @@
 
 import string
 import math
+import execjs
+import urllib2
+import json
 
 def keyify(s):
 	sout = ''
@@ -62,6 +65,10 @@ def getUsage(filename,col,weight,usage):
 			usage[keyify(i)]=[0,0,0,0,0]
 		if i != 'empty':
 			usage[keyify(i)][col] = usage[keyify(i)][col]+weight*6.0*tempUsage[i]/sum(tempUsage.values())/24
+
+def getBattleFormatsData():
+	js=urllib2.urlopen("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/formats-data.js").read().replace(';',',')
+	return json.loads(execjs.eval('exports={},'+js+'JSON.stringify(exports.BattleFormatsData)'))
 
 aliases={
 	'NidoranF': ['Nidoran-F'],
