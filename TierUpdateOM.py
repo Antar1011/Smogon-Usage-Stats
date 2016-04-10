@@ -2,7 +2,7 @@ import string
 import sys
 import json
 import cPickle as pickle
-from common import keyify,getUsage
+from common import keyify,readTable
 from TierUpdate import makeTable
 
 rise = 0.03406367107 #0.06696700846 #0.04515839608
@@ -13,6 +13,14 @@ tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
 file = open('keylookup.pickle')
 keyLookup = pickle.load(file)
 file.close()
+
+def getUsage(filename,col,weight,usage):
+	tempUsage, nBattles = readTable(filename)
+	for i in tempUsage:
+		if keyify(i) not in usage:
+			usage[keyify(i)]=[0,0,0,0,0]
+		if i != 'empty':
+			usage[keyify(i)][col] = usage[keyify(i)][col]+weight*6.0*tempUsage[i]/sum(tempUsage.values())/24
 
 def usageToTiers(usage):
 	OU = []

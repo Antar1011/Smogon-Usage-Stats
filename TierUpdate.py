@@ -2,7 +2,15 @@ import string
 import sys
 import json
 import cPickle as pickle
-from common import keyify,getUsage,getBattleFormatsData
+from common import keyify,readTable,getBattleFormatsData
+
+def getUsage(filename,col,weight,usage):
+	tempUsage, nBattles = readTable(filename)
+	for i in tempUsage:
+		if keyify(i) not in usage:
+			usage[keyify(i)]=[0,0,0,0,0]
+		if i != 'empty':
+			usage[keyify(i)][col] = usage[keyify(i)][col]+weight*6.0*tempUsage[i]/sum(tempUsage.values())/24
 
 def makeTable(table,name,keyLookup):
 
@@ -21,14 +29,14 @@ def makeTable(table,name,keyLookup):
 
 tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
 
-def main():
+def main(months):
 	file = open('keylookup.pickle')
 	keyLookup = pickle.load(file)
 	file.close()
 
-	rise =  0.04515839608 #0.06696700846 #0.03406367107
-	drop =  0.02284003156 #0.01717940145 #0.03406367107
-
+	rise =  [0.06696700846,0.04515839608,0.03406367107][len(months)-1]
+	drop =  [0.01717940145,0.02284003156,0.03406367107][len(months)-1]
+	
 	formatsData = getBattleFormatsData()
 
 	curTiers = {}
@@ -58,25 +66,46 @@ def main():
 
 	usage = {} #track usage across all relevant tiers [OU,UU,RU,NU]
 
-	month="."
-	getUsage(month+"/Stats/ou-1695.txt",0,20.0*2161701/(2161701+250126),usage)
-	getUsage(month+"/Stats/oususpecttest-1695.txt",0,20.0*250126/(2161701+250126),usage)
-	getUsage(month+"/Stats/uu-1630.txt",1,20.0,usage)
-	getUsage(month+"/Stats/ru-1630.txt",2,20.0*87260/(87260+35615),usage)
-	getUsage(month+"/Stats/rususpecttest-1630.txt",2,20.0*35615/(87260+35615),usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,20.0*44678/(44678+80037),usage)
-	getUsage(month+"/Stats/nususpecttest-1630.txt",3,20.0*80037/(44678+80037),usage)
-	getUsage(month+"/Stats/pu-1630.txt",4,24.0,usage)
+	remaining=24.0
+	for i in xrange(len(months)):
+		weight = remaining
+		if i + 1 < len(months):
+			if i == 0:
+				weight = 20.0
+			if i == 1:
+				weight = 3.0
+		remaining -= weight
+		usageTiers = ['ou','uu','ru','nu','pu']
+		for j in xrange(len(usageTiers)):		
 
-	month="2016-02/"
-	getUsage(month+"/Stats/ou-1695.txt",0,4.0,usage)
-	getUsage(month+"/Stats/uu-1630.txt",1,4.0,usage)
-	getUsage(month+"/Stats/ru-1630.txt",2,4.0*52610/(52610+62583),usage)
-	getUsage(month+"/Stats/rususpecttest-1630.txt",2,4.0*62583/(52610+62583),usage)
-	getUsage(month+"/Stats/nu-1630.txt",3,4.0*86806/(86806+28092),usage)
-	getUsage(month+"/Stats/nususpecttest-1630.txt",3,4.0*28092/(86806+28092),usage)
-	getUsage(month+"/Stats/pu-1630.txt",4,4.0,usage)
+			nRegular = nSuspect = 0
+			baseline = "1630"
+			if usageTiers[j] in ['ou']:
+				baseline = "1695"
+			try:
+				usageRegular, nRegular = readTable(months[i]+"/Stats/"+usageTiers[j]+"-"+baseline+".txt")
+			except IOError:
+				pass
+			try:
+				usageSuspect, nSuspect = readTable(months[i]+"/Stats/"+usageTiers[j]+"suspecttest-"+baseline+".txt")
+			except IOError:
+				pass
 
+			if nRegular > 0:
+				total = sum(usageRegular.values())
+				for poke in usageRegular:
+					if keyify(poke) not in usage:
+						usage[keyify(poke)]=[0]*len(usageTiers)
+					if poke != 'empty':
+						usage[keyify(poke)][j] += weight*nRegular/(nRegular+nSuspect)*6.0*usageRegular[poke]/total/24
+
+			if nSuspect > 0:
+				total = sum(usageSuspect.values())
+				for poke in usageSuspect:
+					if keyify(poke) not in usage:
+						usage[keyify(poke)]=[0]*len(usageTiers)
+					if poke != 'empty':
+						usage[keyify(poke)][j] += weight*nSuspect/(nRegular+nSuspect)*6.0*usageSuspect[poke]/total/24
 
 	#generate three-month tables and start working on that new tier list
 
@@ -228,5 +257,5 @@ def main():
 	print printme
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
 
