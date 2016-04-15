@@ -11,7 +11,7 @@ import copy
 #import cPickle as pickle
 import math
 import os
-import Glicko
+import ladderdev.Glicko as Glicko
 import cPickle as pickle
 
 from common import *
