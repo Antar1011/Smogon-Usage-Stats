@@ -21,7 +21,7 @@ file = open('keylookup.pickle')
 keyLookup = pickle.load(file)
 file.close()
 
-def getTeamsFromLog(log,hackmons):
+def getTeamsFromLog(log,mrayAllowed):
 	teams={}
 	for team in ['p1team','p2team']:
 
@@ -41,12 +41,6 @@ def getTeamsFromLog(log,hackmons):
 			while species[len(species)-1] in ')". ':
 				species=species[:len(species)-1]
 			species = keyify(species)
-
-			#if not hackmons:
-			#	if species.endswith('-Mega'):
-			#		species = species[:-5]
-			#	elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-			#		species = species[:-7]
 
 			if 'item' in log[team][i].keys():
 				item = keyify(log[team][i]['item'])
@@ -102,7 +96,7 @@ def getTeamsFromLog(log,hackmons):
 			else:
 				level = 100
 
-			if species == 'rayquaza' and 'dragonascent' in moves:
+			if species == 'rayquaza' and 'dragonascent' in moves and mrayAllowed:
 				species='rayquazamega'
 				ability='deltastream'
 			else: 
@@ -155,7 +149,7 @@ def getTeamsFromLog(log,hackmons):
 
 def LogReader(filename,tier,movesets,ratings):
 
-	hackmons = 'ackmons' in tier
+	mrayAllowed = tier not in ['ubers','battlefactory','megamons']
 
 	file = open(filename)
 	raw = file.readline()
@@ -247,7 +241,7 @@ def LogReader(filename,tier,movesets,ratings):
 			rating[player[1]]={'r':r,'rd':rd,'rpr':rpr,'rprd':rprd}
 
 	#get pokemon info
-	teams = getTeamsFromLog(log,hackmons)
+	teams = getTeamsFromLog(log,mrayAllowed)
 	if teams == False:
 		 sys.stderr.write('Skipping log:\n'+filename+'\n')
 		 return False
@@ -354,11 +348,7 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				#if not hackmons:
-				#	if species.endswith('-Mega'):
-				#		species = species[:-5]
-				#	elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-				#		species = species[:-7]
+
 				try:
 					active[0]=ts.index([ts[0][0],species])
 				except ValueError:
@@ -390,11 +380,7 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				#if not hackmons:
-				#	if species.endswith('-Mega'):
-				#		species = species[:-5]
-				#	elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-				#		species = species[:-7]
+
 				try:
 					active[1]=ts.index([ts[11][0],species])
 				except ValueError:
@@ -548,11 +534,7 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				#if not hackmons:
-				#	if species.endswith('-Mega'):
-				#		species = species[:-5]
-				#	elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-				#		species = species[:-7]
+
 				if [ts[11*(int(line[p])-1)][0],species] not in ts:
 					if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
 						#if Shaymin-Sky gets frozen, it reverts to land forme
@@ -631,11 +613,7 @@ def LogReader(filename,tier,movesets,ratings):
 					if species in aliases[s]:
 						species = s
 						break
-				#if not hackmons:
-				#	if species.endswith('-Mega'):
-				#		species = species[:-5]
-				#	elif species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
-				#		species = species[:-7]
+
 				if [ts[11*(int(line[p])-1)][0],species] not in ts:
 					if species == 'Shaymin' and [ts[11*(int(line[p])-1)][0],'Shaymin-Sky'] in ts:
 					#if Shaymin-Sky gets frozen, it reverts to land forme
