@@ -92,20 +92,18 @@ def main(months):
 				pass
 
 			if nRegular > 0:
-				total = sum(usageRegular.values())
 				for poke in usageRegular:
 					if keyify(poke) not in usage:
 						usage[keyify(poke)]=[0]*len(usageTiers)
 					if poke != 'empty':
-						usage[keyify(poke)][j] += weight*nRegular/(nRegular+nSuspect)*6.0*usageRegular[poke]/total/24
+						usage[keyify(poke)][j] += weight*nRegular/(nRegular+nSuspect)*usageRegular[poke]/24
 
 			if nSuspect > 0:
-				total = sum(usageSuspect.values())
 				for poke in usageSuspect:
 					if keyify(poke) not in usage:
 						usage[keyify(poke)]=[0]*len(usageTiers)
 					if poke != 'empty':
-						usage[keyify(poke)][j] += weight*nSuspect/(nRegular+nSuspect)*6.0*usageSuspect[poke]/total/24
+						usage[keyify(poke)][j] += weight*nSuspect/(nRegular+nSuspect)*usageSuspect[poke]/24
 
 	#generate three-month tables and start working on that new tier list
 
