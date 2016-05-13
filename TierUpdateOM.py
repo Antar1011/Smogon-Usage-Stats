@@ -2,11 +2,8 @@ import string
 import sys
 import json
 import cPickle as pickle
-from common import keyify,readTable
+from common import keyify,readTable,getFormats
 from TierUpdate import makeTable
-
-rise = 0.03406367107 #0.06696700846 #0.04515839608
-drop = 0.03406367107 #0.01717940145 #0.02284003156
 
 tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
 
@@ -89,22 +86,14 @@ def raiseAndDrop(curTiers,usage,lowest):
 
 	return newTiers
 
-def main():
-	file=open('formats.json')
-	raw = file.readline()
-	file.close()
+def main(months):
 	file = open('baseStats.json')
 	baseStats = json.loads(file.readline())
 	file.close()
 	validPokemon=baseStats.keys()
 
-	#in case the user copy/pasted with the quotes still on
-	if raw[0] == '"':
-		raw=raw[1:]
-	if raw[len(raw)-1] == '"':
-		raw=raw[:len(raw)-1]
 
-	formats = json.loads(raw)
+
 	banlists={}
 	for format in formats:
 		if format['name'] in ['LC','LC UU','Doubles OU', 'Doubles UU', 'Doubles NU']:
@@ -132,24 +121,68 @@ def main():
 		if poke not in curTiers['Doubles'].keys():
 			curTiers['Doubles'][poke]='UU'
 
+	rise =  [0.06696700846,0.04515839608,0.03406367107][len(months)-1]
+	drop =  [0.01717940145,0.02284003156,0.03406367107][len(months)-1]
+
 	usageLC = {}
 	usageDoubles = {}
 
-	month="."
-	getUsage(month+"/Stats/lc-1630.txt",0,20.0,usageLC)
-	getUsage(month+"/Stats/doublesou-1695.txt",0,20.0,usageDoubles)
-	getUsage(month+"/Stats/doublesuu-1630.txt",1,20.0,usageDoubles)
+	remaining=24.0
+	for i in xrange(len(months)):
+		weight = remaining
+		if i + 1 < len(months):
+			if i == 0:
+				weight = 20.0
+			if i == 1:
+				weight = 3.0
+		remaining -= weight
 
-	month="2015-12/redo"
-	getUsage(month+"/Stats/lc-1630.txt",0,3.0,usageLC)
-	getUsage(month+"/Stats/doublesou-1695.txt",0,3.0,usageDoubles)
-	getUsage(month+"/Stats/doublesuu-1630.txt",1,3.0,usageDoubles)
+		nRegular = nSuspect = 0
 
-	month="2015-11/redo"
-	getUsage(month+"/Stats/lc-1630.txt",0,1.0,usageLC)
-	getUsage(month+"/Stats/doublesou-1695.txt",0,1.0,usageDoubles)
-	getUsage(month+"/Stats/doublesuu-1630.txt",1,1.0,usageDoubles)
+		try:
+			usageRegular, nRegular = readTable(months[i]+"/Stats/lc-1630.txt")
+		except IOError:
+			pass
+		try:
+			usageSuspect, nSuspect = readTable(months[i]+"/Stats/lcsuspecttest-1630.txt")
+		except IOError:
+			pass
 
+		nRegular > 0:
+			for poke in usageRegular:
+				if keyify(poke) not in usage:
+					usageLC[keyify(poke)]=[0]
+				if poke != 'empty':
+					usageLC[keyify(poke)][0] += weight*nRegular/(nRegular+nSuspect)*6.0*usageRegular[poke]/24
+
+			if nSuspect > 0:
+				for poke in usageSuspect:
+					if keyify(poke) not in usage:
+						usageLC[keyify(poke)]=[0]
+					if poke != 'empty':
+						usageLC[keyify(poke)][0] += weight*nSuspect/(nRegular+nSuspect)*6.0*usageSuspect[poke]/24
+
+		usageTiers = ['doublesou','doublesuu']
+		for j in xrange(len(usageTiers)):
+			nRegular = nSuspect = 0
+			baseline = "1630"
+			if usageTiers[j] in ['doublesou']:
+				baseline = "1695"
+			try:
+				usageRegular, nRegular = readTable(months[i]+"/Stats/"+usageTiers[j]+"-"+baseline+".txt")
+			except IOError:
+				pass
+			try:
+				usageSuspect, nSuspect = readTable(months[i]+"/Stats/"+usageTiers[j]+"suspecttest-"+baseline+".txt")
+			except IOError:
+				pass
+
+			if nRegular > 0:
+				for poke in usageRegular:
+					if keyify(poke) not in usage:
+						usageDoubles[keyify(poke)]=[0]*len(usageTiers)
+					if poke != 'empty':
+						usageDoubles[keyify(poke)][j] += weight*nRegular/(nRegular+nSuspect)*usageRegular[poke]/24
 
 	#generate three-month tables and start working on that new tier list
 	newTiers={}
@@ -190,4 +223,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
