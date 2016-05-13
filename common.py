@@ -131,8 +131,9 @@ aliases={
 	'Aegislash': ['Aegislash-Blade','Aegislashblade'],
 	'Floette-Eternal-Flower' : ['Floetteeternalflower','Floetteeternal'],
 	'Pikachu' : ['Pikachu-Cosplay','Pikachu-Belle','Pikachu-Rock-Star','Pikachu-Pop-Star','Pikachu-PhD','Pikachu-Libre'],
-	'Meowstic' : ['Meowstic-F'],
-	'Bisharp' : ['Bsharp']
+	'Meowstic' : ['Meowstic-F','Meowstic-M','Meowsticf','Meowsticm'],
+	'Bisharp' : ['Bsharp'],
+	'Missingno' : ['Missingno.']
 }
 
 nonSinglesFormats = [
