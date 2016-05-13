@@ -31,7 +31,7 @@ def usageToTiers(usage):
 	UU = sorted(UU, key=lambda UU:-UU[1])
 	return (OU,UU)
 
-def raiseAndDrop(curTiers,usage,lowest):
+def raiseAndDrop(curTiers,usage,lowest,rise,drop):
 	for poke in usage:
 		if poke not in curTiers:
 			species = keyLookup[poke]
@@ -92,7 +92,7 @@ def main(months):
 	file.close()
 	validPokemon=baseStats.keys()
 
-
+	formats = getFormats()
 
 	banlists={}
 	for format in formats:
@@ -148,19 +148,19 @@ def main(months):
 		except IOError:
 			pass
 
-		nRegular > 0:
+		if nRegular > 0:
 			for poke in usageRegular:
-				if keyify(poke) not in usage:
-					usageLC[keyify(poke)]=[0]
+				if keyify(poke) not in usageLC:
+					usageLC[keyify(poke)]=[0,0]
 				if poke != 'empty':
-					usageLC[keyify(poke)][0] += weight*nRegular/(nRegular+nSuspect)*6.0*usageRegular[poke]/24
+					usageLC[keyify(poke)][0] += weight*nRegular/(nRegular+nSuspect)*usageRegular[poke]/24
 
 			if nSuspect > 0:
 				for poke in usageSuspect:
-					if keyify(poke) not in usage:
-						usageLC[keyify(poke)]=[0]
+					if keyify(poke) not in usageLC:
+						usageLC[keyify(poke)]=[0,0]
 					if poke != 'empty':
-						usageLC[keyify(poke)][0] += weight*nSuspect/(nRegular+nSuspect)*6.0*usageSuspect[poke]/24
+						usageLC[keyify(poke)][0] += weight*nSuspect/(nRegular+nSuspect)*usageSuspect[poke]/24
 
 		usageTiers = ['doublesou','doublesuu']
 		for j in xrange(len(usageTiers)):
@@ -179,10 +179,17 @@ def main(months):
 
 			if nRegular > 0:
 				for poke in usageRegular:
-					if keyify(poke) not in usage:
+					if keyify(poke) not in usageDoubles:
 						usageDoubles[keyify(poke)]=[0]*len(usageTiers)
 					if poke != 'empty':
 						usageDoubles[keyify(poke)][j] += weight*nRegular/(nRegular+nSuspect)*usageRegular[poke]/24
+
+			if nSuspect > 0:
+				for poke in usageSuspect:
+					if keyify(poke) not in usageDoubles:
+						usageDoubles[keyify(poke)]=[0]*len(usageTiers)
+					if poke != 'empty':
+						usageDoubles[keyify(poke)][j] += weight*nSuspect/(nRegular+nSuspect)*usageSuspect[poke]/24
 
 	#generate three-month tables and start working on that new tier list
 	newTiers={}
@@ -191,7 +198,7 @@ def main(months):
 	(LCOU,LCUU) = usageToTiers(usageLC)
 	makeTable(LCOU,"LC OU",keyLookup)
 	#makeTable(LCUU,"LC UU",keyLookup)
-	newTiers['LC']=raiseAndDrop(curTiers['LC'],usageLC,'UU')
+	newTiers['LC']=raiseAndDrop(curTiers['LC'],usageLC,'UU',rise,drop)
 	print ""
 	for poke in curTiers['LC']:
 		if curTiers['LC'][poke] != newTiers['LC'][poke]:
@@ -207,7 +214,7 @@ def main(months):
 	makeTable(doublesUU,"Doubles UU",keyLookup)
 	
 	
-	newTiers['Doubles']=raiseAndDrop(curTiers['Doubles'],usageDoubles,'NU')
+	newTiers['Doubles']=raiseAndDrop(curTiers['Doubles'],usageDoubles,'NU',rise,drop)
 	print ""
 	newUU = []
 	for poke in curTiers['Doubles']:
