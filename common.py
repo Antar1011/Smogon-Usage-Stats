@@ -78,10 +78,10 @@ aliases={
 	'Burmy': ['Burmy-G','Burmy-S'],
 	'Castform': ['Castform-Snowy','Castform-Rainy','Castform-Sunny'],
 	'Cherrim': ['Cherrim-Sunshine'],
-	'Shellos': ['Shellos-East'],
-	'Gastrodon': ['Gastrodon-East'],
-	'Deerling': ['Deerling-Summer','Deerling-Autumn','Deerling-Winter'],
-	'Sawsbuck': ['Sawsbuck-Summer','Sawsbuck-Autumn','Sawsbuck-Winter'],
+	'Shellos': ['Shellos-East','Shelloseast'],
+	'Gastrodon': ['Gastrodon-East','Gastrodoneast'],
+	'Deerling': ['Deerling-Summer','Deerling-Autumn','Deerling-Winter','deerlingsummer', 'deerlingautumn', 'deerlingwinter'],
+	'Sawsbuck': ['Sawsbuck-Summer','Sawsbuck-Autumn','Sawsbuck-Winter','Sawsbucksummer', 'Sawsbuckautumn', 'Sawsbuckwinter'],
 	'Tornadus-Therian': ['Tornadus-T'],
 	'Thundurus-Therian': ['Thundurus-T'],
 	'Landorus-Therian': ['Landorus-T'],
@@ -137,7 +137,11 @@ aliases={
 	'Pikachu' : ['Pikachu-Cosplay','Pikachu-Belle','Pikachu-Rock-Star','Pikachu-Pop-Star','Pikachu-PhD','Pikachu-Libre'],
 	'Meowstic' : ['Meowstic-F','Meowstic-M','Meowsticf','Meowsticm'],
 	'Bisharp' : ['Bsharp'],
-	'Missingno' : ['Missingno.']
+	'Missingno' : ['Missingno.'],
+	'Vivillon' : ["Vivillonarchipelago", "Vivilloncontinental", "Vivillonelegant", "Vivillongarden", "Vivillonhighplains", "Vivillonicysnow", "Vivillonjungle", "Vivillonmarine", "Vivillonmodern", "Vivillonmonsoon", "Vivillonocean", "Vivillonpolar", "Vivillonriver", "Vivillonsandstorm", "Vivillonsavanna", "Vivillonsun", "Vivillontundra", "Vivillonfancy", "Vivillonpokeball"],
+	'Floette' : ["floetteblue", "floetteorange", "floettewhite", "floetteyellow"],
+	'Florges' : ["florgesblue", "florgesorange", "florgeswhite", "florgesyellow"]
+
 }
 
 nonSinglesFormats = [
