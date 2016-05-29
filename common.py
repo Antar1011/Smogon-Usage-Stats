@@ -138,9 +138,9 @@ aliases={
 	'Meowstic' : ['Meowstic-F','Meowstic-M','Meowsticf','Meowsticm'],
 	'Bisharp' : ['Bsharp'],
 	'Missingno' : ['Missingno.'],
-	'Vivillon' : ["Vivillonarchipelago", "Vivilloncontinental", "Vivillonelegant", "Vivillongarden", "Vivillonhighplains", "Vivillonicysnow", "Vivillonjungle", "Vivillonmarine", "Vivillonmodern", "Vivillonmonsoon", "Vivillonocean", "Vivillonpolar", "Vivillonriver", "Vivillonsandstorm", "Vivillonsavanna", "Vivillonsun", "Vivillontundra", "Vivillonfancy", "Vivillonpokeball"],
-	'Floette' : ["floetteblue", "floetteorange", "floettewhite", "floetteyellow"],
-	'Florges' : ["florgesblue", "florgesorange", "florgeswhite", "florgesyellow"]
+	'Vivillon' : ["Vivillon-Archipelago", "Vivillon-Continental", "Vivillon-Elegant", "Vivillon-Garden", "Vivillon-Highplains", "Vivillon-Icysnow", "Vivillon-Jungle", "Vivillon-Marine", "Vivillon-Modern", "Vivillon-Monsoon", "Vivillon-Ocean", "Vivillon-Polar", "Vivillon-River", "Vivillon-Sandstorm", "Vivillon-Savanna", "Vivillon-Sun", "Vivillon-Tundra", "Vivillon-Fancy", "Vivillon-Pokeball"],
+	'Floette' : ["Floetteblue", "Floetteorange", "Floettewhite", "Floetteyellow"],
+	'Florges' : ["Florgesblue", "Florgesorange", "Florgeswhite", "Florgesyellow"]
 
 }
 
