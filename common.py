@@ -71,8 +71,8 @@ def getBattleFormatsData():
 aliases={
 	'NidoranF': ['Nidoran-F'],
 	'NidoranM': ['Nidoran-M'],
-	'Wormadam-Sandy': ['Wormadam-G', 'Wormadamtrash', 'Wormadam-Trash'],
-	'Wormadam-Trash': ['Wormadam-S', 'Wormadamsandy', 'Wormadam-Sandy'],
+	'Wormadam-Sandy': ['Wormadam-S', 'Wormadamsandy'],
+	'Wormadam-Trash': ['Wormadam-G', 'Wormadamtrash'],
 	'Giratina-Origin': ['Giratina-O'],
 	'Unown': ['Unown-B','Unown-C','Unown-D','Unown-E','Unown-F','Unown-G','Unown-H','Unown-I','Unown-J','Unown-K','Unown-L','Unown-M','Unown-N','Unown-O','Unown-P','Unown-Q','Unown-R','Unown-S','Unown-T','Unown-U','Unown-V','Unown-W','Unown-X','Unown-Y','Unown-Z','Unown-!','Unown-?'],
 	'Burmy': ['Burmy-G','Burmy-S', 'Burmy-Sandy', 'Burmysandy', 'Burmy-Trash', 'Burmytrash'],
