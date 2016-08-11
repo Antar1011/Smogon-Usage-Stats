@@ -92,11 +92,11 @@ def main(months):
 	file.close()
 	validPokemon=baseStats.keys()
 
-	formats = getFormats()
+	formats = json.loads(open('formats.json').read()[1:-2])
 
 	banlists={}
 	for format in formats:
-		if format['name'] in ['LC','LC UU','Doubles OU', 'Doubles UU', 'Doubles NU']:
+		if format['name'] in ['LC','LC UU','Doubles OU', 'Doubles UU']:
 			banlist=[]
 			for entry in format['banlist']:
 				keyified=keyify(entry)
@@ -117,9 +117,6 @@ def main(months):
 	for poke in banlists['Doubles UU']:
 		if poke not in curTiers['Doubles'].keys():
 			curTiers['Doubles'][poke]='OU'
-	for poke in banlists['Doubles NU']:
-		if poke not in curTiers['Doubles'].keys():
-			curTiers['Doubles'][poke]='UU'
 
 	rise =  [0.06696700846,0.04515839608,0.03406367107][len(months)-1]
 	drop =  [0.01717940145,0.02284003156,0.03406367107][len(months)-1]
@@ -211,10 +208,8 @@ def main(months):
 
 	(doublesOU,doublesUU) = usageToTiers(usageDoubles)
 	makeTable(doublesOU,"Doubles OU",keyLookup)
-	makeTable(doublesUU,"Doubles UU",keyLookup)
-	
-	
-	newTiers['Doubles']=raiseAndDrop(curTiers['Doubles'],usageDoubles,'NU',rise,drop)
+		
+	newTiers['Doubles']=raiseAndDrop(curTiers['Doubles'],usageDoubles,'UU',rise,drop)
 	print ""
 	newUU = []
 	for poke in curTiers['Doubles']:
@@ -225,8 +220,26 @@ def main(months):
 				if tiers.index(newTiers['Doubles'][base]) < tiers.index(newTiers['Doubles'][poke]): #if the base is in a higher tier
 					newTiers['Doubles'][poke] = newTiers['Doubles'][base]
 					continue
-			
-			print keyLookup[poke]+" moved from Doubles "+curTiers['Doubles'][poke]+" to Doubles "+newTiers['Doubles'][poke]
+			if newTiers['Doubles'][poke] != 'NU':
+				print keyLookup[poke]+" moved from Doubles "+curTiers['Doubles'][poke]+" to Doubles "+newTiers['Doubles'][poke]
+
+	print ""
+	print ""
+	print "[size=5][b]Doubles NU[/b][/size]"
+	print "Doubles NU is an unofficial metagame that's apparently so unpopular there's not even enough interest to support a challenge-only format. Still, it's conceivable that someone will want to play it, and that person should have an unofficial banlist to refer to. So..." 
+	makeTable(doublesUU,"Doubles UU",keyLookup)
+	dnuBanlist = []
+	for poke in usageDoubles.keys():
+		if poke in curTiers['Doubles']:
+			if newTiers['Doubles'][poke] == 'UU' and (usageDoubles[poke][1] >= drop or curTiers['Doubles'][poke] == 'OU'):
+				dnuBanlist.append(poke)
+
+	dnuBanlist = sorted(dnuBanlist)
+	printme = "[b]Banlist:[/b] "
+	for poke in dnuBanlist:
+		printme += keyLookup[poke]+', '
+	printme = printme[:-2]
+	print printme
 
 
 if __name__ == "__main__":
