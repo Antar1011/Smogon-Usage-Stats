@@ -161,6 +161,7 @@ nonSinglesFormats = [
 	'smogontriples',
 	'vgc2014',
 	'vgc2015',
+	'vgc2016',
 	'battlespotspecial7',
 	'doublesou',
 	'doublesubers'
@@ -175,6 +176,7 @@ non6v6Formats = [
 	'gen5gbusingles',
 	'vgc2014',
 	'vgc2015',
+	'vgc2016',
 	'battlespotspecial7',
 	'pgllittlecup'
 ]
