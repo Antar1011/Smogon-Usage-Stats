@@ -556,6 +556,15 @@ def LogReader(filename,tier,movesets,ratings):
 								found = True
 								break
 						if not found:
+							#maybe it's a nickname thing
+							nick = species[species.find(' ')+1:]
+							player_no = int(species[1])
+							for i in range(6):
+								if nicks[2*i+player_no-1].endswith(nick):
+									found = True
+									species = ts[6*(player_no-1)+i][1]
+									break
+						if not found:
 							sys.stderr.write('Problem with '+filename+'\n')
 							sys.stderr.write('(Pokemon not in ts) (3)\n')
 							sys.stderr.write(str([ts[11*(int(line[p])-1)][0],species])+'\n')
