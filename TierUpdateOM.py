@@ -92,17 +92,16 @@ def main(months):
 	file.close()
 	validPokemon=baseStats.keys()
 
-	formats = json.loads(open('formats.json').read()[1:-2])
+	formats = json.load(open('formats.json'))
 
 	banlists={}
-	for format in formats:
-		if format['name'] in ['LC','LC UU','Doubles OU', 'Doubles UU']:
-			banlist=[]
-			for entry in format['banlist']:
-				keyified=keyify(entry)
-				if keyified in validPokemon:
-					banlist.append(keyified)
-			banlists[format['name']]=banlist
+	for format in ('lc','lcuu','doublesou', 'doublesuu'):
+		banlist=[]
+		for entry in formats[format]['banlist']:
+			keyified=keyify(entry)
+			if keyified in validPokemon:
+				banlist.append(keyified)
+		banlists[formats[format]['name']]=banlist
 
 	curTiers= {}
 	curTiers['LC']={}
