@@ -133,7 +133,7 @@ aliases={
 	'Pumkaboo': ['Pumpkaboo-Average','Pumpkabooaverage'],
 	'Gourgeist': ['Gourgeist-Average','Gourgeistaverage'],
 	'Aegislash': ['Aegislash-Blade','Aegislashblade'],
-	'Floette-Eternal-Flower' : ['Floetteeternalflower','Floetteeternal'],
+	'Floette-Eternal' : ['Floetteeternalflower','Floetteeternal'],
 	'Pikachu' : ['Pikachu-Cosplay','Pikachu-Belle','Pikachu-Rock-Star','Pikachu-Pop-Star','Pikachu-PhD','Pikachu-Libre'],
 	'Meowstic' : ['Meowstic-F','Meowstic-M','Meowsticf','Meowsticm'],
 	'Bisharp' : ['Bsharp'],
