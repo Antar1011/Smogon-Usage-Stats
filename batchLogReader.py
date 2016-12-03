@@ -556,7 +556,13 @@ def LogReader(filename,tier,movesets,ratings):
 					else:
 						found = False
 						#try undoing a mega evolution
-						if species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+						if species == 'Greninja-Ash':
+							speciesBase = 'Greninja'
+						elif species == 'Zygarde-Complete':
+							speciesBase = 'Zygarde'
+						elif species.startswith('Mimikyu'):
+							speciesBase = 'Mimikyu'
+						elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
 							if species.endswith('-Mega'):
 								speciesBase = species[:-5]
 							else:
@@ -644,7 +650,13 @@ def LogReader(filename,tier,movesets,ratings):
 					else:
 						found = False
 						#try undoing a mega evolution
-						if species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+						if species == 'Greninja-Ash':
+							speciesBase = 'Greninja'
+						elif species == 'Zygarde-Complete':
+							speciesBase = 'Zygarde'
+						elif species.startswith('Mimikyu'):
+							speciesBase = 'Mimikyu'
+						elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
 							if species.endswith('-Mega'):
 								speciesBase = species[:-5]
 							else:
