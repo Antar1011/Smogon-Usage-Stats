@@ -142,8 +142,17 @@ aliases={
 	'Flabebe' : ["Flabebeblue", "Flabebeorange", "Flabebewhite", "Flabebeyellow", "Flabebe-Blue", "Flabebe-Orange", "Flabebe-White", "Flabebe-Yellow"],
 	'Floette' : ["Floetteblue", "Floetteorange", "Floettewhite", "Floetteyellow", "Floette-Blue", "Floette-Orange", "Floette-White", "Floette-Yellow"],
 	'Florges' : ["Florgesblue", "Florgesorange", "Florgeswhite", "Florgesyellow", "Florges-Blue", "Florges-Orange", "Florges-White", "Florges-Yellow"],
-	'Ditto': ['Dtto']
-
+	'Ditto': ['Dtto'],
+	'Magearna': ['Magearnaoriginal', 'Magearna-Original'],
+	'Minior': ['Minior{}'.format(color) for color in ('orange', 'yellow', 'green', 'blue', 'indigo', 'violet')] + ['Minior-{}'.format(color) for color in ('Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet')],
+	'Greninja-Ash': ['Ashgreninja', 'Ash-Greninja'],
+	'Zygarde-10%': ['Zydog', 'Zygardedog', 'Zygarde-Dog'],
+	'Zygarde': ['Zygarde-50%', 'Zygarde50'],
+	'Zygarde-Complete': ['Zyc', 'Zygarde-100%', 'Zygarde100', 'Zygarde-C', 'Zygarde-Full', 'Zygod', 'Perfect-Zygarde'],
+	'Oricorio': ['Oricorio-Baile', 'Oricoriobaile'],
+	'Oricorio-Sensu': ['Oricorio-S'],
+	'Lycanroc': ['Lycanroc-Midday', 'Lycanrocmidday', 'Lycanroc-Day', 'Lycanrocday'],
+	'Lycanroc-Midnight': ['Lycanroc-Night', 'Lycanrocnight']
 }
 
 nonSinglesFormats = [
