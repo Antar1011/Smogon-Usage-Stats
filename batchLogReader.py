@@ -99,6 +99,8 @@ def getTeamsFromLog(log,mrayAllowed):
 			if species == 'rayquaza' and 'dragonascent' in moves and mrayAllowed:
 				species='rayquazamega'
 				ability='deltastream'
+			elif species == 'greninja' and ability == 'battlebond':
+				species = 'greninjaash'
 			else: 
 				for mega in megas:
 					if [species,item] == mega[:2]:
@@ -353,7 +355,11 @@ def LogReader(filename,tier,movesets,ratings):
 					active[0]=ts.index([ts[0][0],species])
 				except ValueError:
 					#try undoing a mega evolution
-					if species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+					if species == 'Greninja-Ash':
+						speciesBase = 'Greninja'
+					elif species == 'Zygarde-Complete':
+						speciesBase = 'Zygarde'
+					elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
 						if species.endswith('-Mega'):
 							speciesBase = species[:-5]
 						else:
@@ -385,7 +391,11 @@ def LogReader(filename,tier,movesets,ratings):
 					active[1]=ts.index([ts[11][0],species])
 				except ValueError:
 					#try undoing a mega evolution
-					if species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
+					if species == 'Greninja-Ash':
+						speciesBase = 'Greninja'
+					elif species == 'Zygarde-Complete':
+						speciesBase = 'Zygarde'
+					elif species.endswith('-Mega') or species.endswith('-Mega-X') or species.endswith('-Mega-Y') or species.endswith('-Primal'):
 						if species.endswith('-Mega'):
 							speciesBase = species[:-5]
 						else:
