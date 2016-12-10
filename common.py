@@ -171,10 +171,24 @@ nonSinglesFormats = [
 	'vgc2014',
 	'vgc2015',
 	'vgc2016',
+	'vgc2017',
 	'battlespotspecial7',
 	'doublesou',
 	'doublesubers'
-	'doublesuu'
+	'doublesuu',
+	'gen7battlespotdoubles',
+	'gen7doublesanythinggoesbeta',
+	'gen7doublesanythinggoes',
+	'gen7doublesou',
+	'gen7doublesoubeta',
+	'gen7pokebankdoublesag',
+	'gen7pokebankdoublesanythinggoes',
+	'gen7pokebankdoubleaanythinggoes',
+	'gen7pokebankdoublesou',
+	'gen7pokebankdoublesoubeta',
+	'gen7randomdoublesbattle',
+	'gen7vgc2017',
+	'gen7vgc2017beta'
 ]
 
 non6v6Formats = [
@@ -186,6 +200,11 @@ non6v6Formats = [
 	'vgc2014',
 	'vgc2015',
 	'vgc2016',
+	'vgc2017',
 	'battlespotspecial7',
-	'pgllittlecup'
+	'pgllittlecup',
+	'gen7battlespotsingles',
+	'gen7battlespotdoubles',
+	'gen7vgc2017',
+	'gen7vgc2017beta'
 ]

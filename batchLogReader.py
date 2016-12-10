@@ -151,7 +151,7 @@ def getTeamsFromLog(log,mrayAllowed):
 
 def LogReader(filename,tier,movesets,ratings):
 
-	mrayAllowed = tier not in ['ubers','battlefactory','megamons']
+	mrayAllowed = tier not in ['ubers','battlefactory','megamons', 'gen6ubers', 'gen7ubers', 'gen7pokebankubers']
 
 	file = open(filename)
 	raw = file.readline()
