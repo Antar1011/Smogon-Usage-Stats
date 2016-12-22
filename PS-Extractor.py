@@ -16,8 +16,8 @@ types = {}
 for item in ctx.items.values():
     keyLookup[item['id']] = item['name']
 
-for move in ctx.moves.values():
-    keyLookup[move['id']] = move['name']
+for key, move in ctx.moves.values():
+    keyLookup[key] = move['name']
 
 for ability in ctx.abilities.values():
     keyLookup[ability['id']] = ability['name']
