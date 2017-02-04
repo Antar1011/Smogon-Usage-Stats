@@ -28,6 +28,7 @@ def makeTable(table,name,keyLookup):
 	print "[/CODE][/HIDE]"
 
 tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
+usageTiers = ['ou', 'uu', 'ru', 'nu', 'pu']
 
 def main(months):
 	file = open('keylookup.pickle')
@@ -61,7 +62,7 @@ def main(months):
 		if old == 'Illegal' or old == 'Unreleased':
 			continue
 		elif old not in tiers:
-			old = 'PU'
+			old = tiers[-1]
 		curTiers[poke]=old
 
 	usage = {} #track usage across all relevant tiers [OU,UU,RU,NU]
@@ -75,7 +76,7 @@ def main(months):
 			if i == 1:
 				weight = 3.0
 		remaining -= weight
-		usageTiers = ['ou','uu','ru','nu','pu']
+		
 		for j in xrange(len(usageTiers)):		
 
 			nRegular = nSuspect = 0
