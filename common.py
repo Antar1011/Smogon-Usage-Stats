@@ -188,7 +188,8 @@ nonSinglesFormats = [
 	'gen7pokebankdoublesoubeta',
 	'gen7randomdoublesbattle',
 	'gen7vgc2017',
-	'gen7vgc2017beta'
+	'gen7vgc2017beta',
+	'gen5doublesou',
 ]
 
 non6v6Formats = [
@@ -206,5 +207,8 @@ non6v6Formats = [
 	'gen7battlespotsingles',
 	'gen7battlespotdoubles',
 	'gen7vgc2017',
-	'gen7vgc2017beta'
+	'gen7vgc2017beta',
+	'gen7challengecup1v1',
+	'gen71v1',
+	'gen7alolafriendly',
 ]

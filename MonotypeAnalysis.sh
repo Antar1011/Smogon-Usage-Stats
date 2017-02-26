@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function process {
-	tier=monotype
+	tier=gen7monotype
 	tag=$1
 
 	echo "Processing "$tag >> log.log
@@ -31,9 +31,9 @@ export -f process
 
 parallel -j 3 process ::: mononormal monofighting monoflying monopoison monoground monorock monobug monoghost monosteel monofire monowater monograss monoelectric monopsychic monoice monodragon monodark monofairy
 mkdir Stats/monotype
-mv Stats/monotype-mono* Stats/monotype/.
+mv Stats/monotype-mono* Stats/gen7monotype/.
 for d in chaos leads metagame moveset
 do
-	mkdir Stats/monotype/$d
-	mv Stats/$d/monotype-mono* Stats/monotype/$d/.
+	mkdir Stats/gen7monotype/$d
+	mv Stats/$d/gen7monotype-mono* Stats/gen7monotype/$d/.
 done
