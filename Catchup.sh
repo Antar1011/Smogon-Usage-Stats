@@ -3,16 +3,21 @@
 #(or from run to run)
 
 logFolder=/home/ps/showdown/logs
-month="2015-04"
+month="2017-03"
 
 rm -r Raw
 mkdir Raw
 
-for day in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
+for d in {1..31}
 do
+	day=$(printf "%02d" $d)
 	for i in $logFolder/$month/*
 	do
 		tier=$(basename $i)
+		if [[ $tier == seasonal* ]] || [[ $tier == *random* ]]; then
+			echo Skipping $tier/$month-$day
+			continue
+		fi
 		if [ -d $logFolder/$month/$tier/$month-$day ]; then
 			echo Processing $tier/$month-$day
 			pypy batchLogReader.py $logFolder/$month/$tier/$month-$day/ $tier

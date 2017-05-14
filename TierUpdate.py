@@ -27,8 +27,10 @@ def makeTable(table,name,keyLookup):
 	print " + ---- + ------------------ + ------- + "
 	print "[/CODE][/HIDE]"
 
-tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
-usageTiers = ['ou', 'uu', 'ru', 'nu', 'pu']
+#tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
+#usageTiers = ['ou', 'uu', 'ru', 'nu', 'pu']
+tiers = ['Uber', 'OU', 'BL', 'UU', 'BL2', 'RU']
+usageTiers = ['ou', 'uu']
 
 def main(months):
 	file = open('keylookup.pickle')
@@ -37,6 +39,8 @@ def main(months):
 
 	rise =  [0.06696700846,0.04515839608,0.03406367107][len(months)-1]
 	drop =  [0.01717940145,0.02284003156,0.03406367107][len(months)-1]
+
+	rise = drop = 0.03406367107
 	
 	formatsData = getBattleFormatsData()
 
@@ -76,7 +80,7 @@ def main(months):
 			if i == 1:
 				weight = 3.0
 		remaining -= weight
-		
+
 		for j in xrange(len(usageTiers)):		
 
 			nRegular = nSuspect = 0
@@ -84,11 +88,11 @@ def main(months):
 			if usageTiers[j] in ['ou']:
 				baseline = "1695"
 			try:
-				usageRegular, nRegular = readTable(months[i]+"/Stats/"+usageTiers[j]+"-"+baseline+".txt")
+				usageRegular, nRegular = readTable(months[i]+"/Stats/gen7"+usageTiers[j]+"-"+baseline+".txt")
 			except IOError:
 				pass
 			try:
-				usageSuspect, nSuspect = readTable(months[i]+"/Stats/"+usageTiers[j]+"suspecttest-"+baseline+".txt")
+				usageSuspect, nSuspect = readTable(months[i]+"/Stats/gen7"+usageTiers[j]+"suspecttest-"+baseline+".txt")
 			except IOError:
 				pass
 
@@ -110,36 +114,48 @@ def main(months):
 
 	OU = []
 	UU = []
+	'''
 	RU = []
 	NU = []
 	PU = []
+	'''
 	for i in usage:
 		if usage[i][0] > 0.0:
 			OU.append([i,usage[i][0]])
 		if usage[i][1] > 0.0:
 			UU.append([i,usage[i][1]])
+		'''
 		if usage[i][2] > 0.0:
 			RU.append([i,usage[i][2]])
 		if usage[i][3] > 0.0:
 			NU.append([i,usage[i][3]])
 		if usage[i][4] > 0.0:
 			PU.append([i,usage[i][4]])
+		'''
 	OU = sorted(OU, key=lambda OU:-OU[1])
 	UU = sorted(UU, key=lambda UU:-UU[1])
+	'''
 	RU = sorted(RU, key=lambda RU:-RU[1])
 	NU = sorted(NU, key=lambda NU:-NU[1])
 	PU = sorted(PU, key=lambda PU:-PU[1])
+	'''
 
 	makeTable(OU,"OU",keyLookup)
 	makeTable(UU,"UU",keyLookup)
+	'''
 	makeTable(RU,"RU",keyLookup)
 	makeTable(NU,"NU",keyLookup)
+	'''
 
 	newTiers={}
 	#start with Ubers
 	for poke in curTiers.keys():
 		if curTiers[poke] == 'Uber':
 			newTiers[poke] = 'Uber'
+
+	for poke in curTiers.keys():
+		if poke not in usage:
+			newTiers[poke] = curTiers[poke]
 
 	#next do the OU rises
 	for poke in curTiers.keys():
@@ -150,6 +166,8 @@ def main(months):
 
 	#next do the UU drops
 	for poke in curTiers.keys():
+		if poke not in usage:
+			continue
 		if curTiers[poke] == 'OU' and poke not in newTiers.keys():
 			if usage[poke][0] < drop:
 				newTiers[poke] = 'UU'
@@ -158,9 +176,12 @@ def main(months):
 
 	#next do BL
 	for poke in curTiers.keys():
+		if poke not in usage:
+			continue
 		if curTiers[poke] == 'BL' and poke not in newTiers.keys():
 			newTiers[poke] = 'BL'
 
+	
 	#next do the UU rises
 	for poke in curTiers.keys():
 		if poke not in usage:
@@ -170,6 +191,8 @@ def main(months):
 
 	#next do the RU drops
 	for poke in curTiers.keys():
+		if poke not in usage:
+			continue
 		if curTiers[poke] == 'UU' and poke not in newTiers.keys():
 			if usage[poke][1] < drop:
 				newTiers[poke] = 'RU'
@@ -178,9 +201,11 @@ def main(months):
 
 	#next do BL2
 	for poke in curTiers.keys():
+		if poke not in usage:
+			continue
 		if curTiers[poke] == 'BL2' and poke not in newTiers.keys():
 			newTiers[poke] = 'BL2'
-
+	'''
 	#next do the RU rises
 	for poke in curTiers.keys():
 		if poke not in usage:
@@ -220,11 +245,11 @@ def main(months):
 	for poke in curTiers.keys():
 		if curTiers[poke] == 'BL4' and poke not in newTiers.keys():
 			newTiers[poke] = 'BL4'
-
-	#the rest are PU
+	'''
+	#the rest go in the lowest tier
 	for poke in curTiers.keys():
 		if poke not in newTiers.keys():
-			newTiers[poke] = 'PU'
+			newTiers[poke] = tiers[-1]
 
 	print ""
 	for poke in curTiers:
@@ -236,24 +261,6 @@ def main(months):
 					newTiers[poke] = newTiers[base]
 					continue
 			print species+" moved from "+curTiers[poke]+" to "+newTiers[poke]
-
-	print ""
-	print ""
-	print "[size=5][b]FU[/b][/size]"
-	print "FU is an unofficial tier. It is not currently supported on any simulator, but since [url=http://www.smogon.com/forums/forums/pu.327/?prefix_id=282]people have expressed interest in such a metagame[/url], here is a proper banlist:" 
-	makeTable(PU,"PU",keyLookup)
-	fuBanlist = []
-	for poke in usage.keys():
-		if poke in curTiers:
-			if newTiers[poke] == 'PU' and (usage[poke][4] >= drop or curTiers[poke] == 'NU'):
-				fuBanlist.append(poke)
-
-	fuBanlist = sorted(fuBanlist)
-	printme = "[b]Banlist:[/b] "
-	for poke in fuBanlist:
-		printme += keyLookup[poke]+', '
-	printme = printme[:-2]
-	print printme
 
 if __name__ == "__main__":
     main(sys.argv[1:])

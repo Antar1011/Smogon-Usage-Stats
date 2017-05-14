@@ -31,9 +31,9 @@ export -f process
 
 parallel -j 3 process ::: mononormal monofighting monoflying monopoison monoground monorock monobug monoghost monosteel monofire monowater monograss monoelectric monopsychic monoice monodragon monodark monofairy
 mkdir Stats/monotype
-mv Stats/monotype-mono* Stats/gen7monotype/.
+mv Stats/monotype-mono* Stats/monotype/.
 for d in chaos leads metagame moveset
 do
-	mkdir Stats/gen7monotype/$d
-	mv Stats/$d/gen7monotype-mono* Stats/gen7monotype/$d/.
+	mkdir Stats/monotype/$d
+	mv Stats/$d/monotype-mono* Stats/monotype/$d/.
 done

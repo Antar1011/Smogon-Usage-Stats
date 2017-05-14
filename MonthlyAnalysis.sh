@@ -13,7 +13,7 @@ function process {
 
 	echo "Processing "$tier >> log.log
 
-	if [[ $tier == "ou" ]] || [[ $tier == "doublesou" ]] || [[ $tier == "randombattle" || $tier == 'oususpecttest' ]] || [[ $tier == "smogondoublessuspecttest" ]] || [[ $tier == "doublesoususpecttest" ]] || [[ $tier == "gen7pokebankou" ]] || [[ $tier == "gen7ou" ]] || [[ $tier == "gen7pokebankdoublesou" ]]|| [[ $tier == "gen7pokebankoususpecttest" ]] || [[ $tier == "gen7oususpecttest" ]] || [[ $tier == "gen7pokebankdoublesoususpecttest" ]]; then
+	if [[ $tier == "ou" ]] || [[ $tier == "doublesou" ]] || [[ $tier == "randombattle" || $tier == 'oususpecttest' ]] || [[ $tier == "smogondoublessuspecttest" ]] || [[ $tier == "doublesoususpecttest" ]] || [[ $tier == "gen7pokebankou" ]] || [[ $tier == "gen7ou" ]] || [[ $tier == "gen7pokebankdoublesou" ]]|| [[ $tier == "gen7pokebankoususpecttest" ]] || [[ $tier == "gen7oususpecttest" ]] || [[ $tier == "gen7pokebankdoublesoususpecttest" ]] || [[ $tier == "gen7doublesoususpecttest" ]] || [[ $tier == "gen7doublesou" ]]; then
 		pypy StatCounter.py $tier 1695 &&
 		pypy batchMovesetCounter.py $tier 1695 > Stats/moveset/$tier-1695.txt
 #		pypy MegaCounter.py Stats/chaos/$tier-1695.json > Stats/mega/$tier-1695.txt
@@ -47,4 +47,4 @@ function process {
 export -f process
 
 ls -S Raw/ | parallel -j 3 process
-./MonotypeAnalysis.sh
+#./MonotypeAnalysis.sh
