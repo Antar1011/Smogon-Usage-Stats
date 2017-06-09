@@ -29,8 +29,8 @@ def makeTable(table,name,keyLookup):
 
 #tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
 #usageTiers = ['ou', 'uu', 'ru', 'nu', 'pu']
-tiers = ['Uber', 'OU', 'BL', 'UU', 'BL2', 'RU']
-usageTiers = ['ou', 'uu']
+tiers = ['Uber', 'OU', 'BL', 'UU', 'BL2', 'RU', 'BL3', 'NU']
+usageTiers = ['ou', 'uu', 'ru']
 
 def main(months):
 	file = open('keylookup.pickle')
@@ -39,8 +39,6 @@ def main(months):
 
 	rise =  [0.06696700846,0.04515839608,0.03406367107][len(months)-1]
 	drop =  [0.01717940145,0.02284003156,0.03406367107][len(months)-1]
-
-	rise = drop = 0.03406367107
 	
 	formatsData = getBattleFormatsData()
 
@@ -82,40 +80,33 @@ def main(months):
 		remaining -= weight
 
 		for j in xrange(len(usageTiers)):		
+			n = {}
+			u = {}
 
-			nRegular = nSuspect = 0
 			baseline = "1630"
 			if usageTiers[j] in ['ou']:
 				baseline = "1695"
-			try:
-				usageRegular, nRegular = readTable(months[i]+"/Stats/gen7"+usageTiers[j]+"-"+baseline+".txt")
-			except IOError:
-				pass
-			try:
-				usageSuspect, nSuspect = readTable(months[i]+"/Stats/gen7"+usageTiers[j]+"suspecttest-"+baseline+".txt")
-			except IOError:
-				pass
+			for k in ('', 'suspecttest', 'alpha', 'beta'):
+				try:
+					u[k], n[k] = readTable(months[i]+"/Stats/gen7"+usageTiers[j]+k+"-"+baseline+".txt")
 
-			if nRegular > 0:
-				for poke in usageRegular:
+				except IOError:
+					pass
+			ntot = sum(n.values())
+			
+			for k in u:
+				for poke in u[k]:
 					if keyify(poke) not in usage:
 						usage[keyify(poke)]=[0]*len(usageTiers)
 					if poke != 'empty':
-						usage[keyify(poke)][j] += weight*nRegular/(nRegular+nSuspect)*usageRegular[poke]/24
-
-			if nSuspect > 0:
-				for poke in usageSuspect:
-					if keyify(poke) not in usage:
-						usage[keyify(poke)]=[0]*len(usageTiers)
-					if poke != 'empty':
-						usage[keyify(poke)][j] += weight*nSuspect/(nRegular+nSuspect)*usageSuspect[poke]/24
+						usage[keyify(poke)][j] += weight*n[k]/ntot*u[k][poke]/24
 
 	#generate three-month tables and start working on that new tier list
 
 	OU = []
 	UU = []
-	'''
 	RU = []
+	'''
 	NU = []
 	PU = []
 	'''
@@ -124,9 +115,9 @@ def main(months):
 			OU.append([i,usage[i][0]])
 		if usage[i][1] > 0.0:
 			UU.append([i,usage[i][1]])
-		'''
 		if usage[i][2] > 0.0:
 			RU.append([i,usage[i][2]])
+		'''
 		if usage[i][3] > 0.0:
 			NU.append([i,usage[i][3]])
 		if usage[i][4] > 0.0:
@@ -134,16 +125,16 @@ def main(months):
 		'''
 	OU = sorted(OU, key=lambda OU:-OU[1])
 	UU = sorted(UU, key=lambda UU:-UU[1])
-	'''
 	RU = sorted(RU, key=lambda RU:-RU[1])
+	'''
 	NU = sorted(NU, key=lambda NU:-NU[1])
 	PU = sorted(PU, key=lambda PU:-PU[1])
 	'''
 
 	makeTable(OU,"OU",keyLookup)
 	makeTable(UU,"UU",keyLookup)
-	'''
 	makeTable(RU,"RU",keyLookup)
+	'''
 	makeTable(NU,"NU",keyLookup)
 	'''
 
@@ -205,7 +196,7 @@ def main(months):
 			continue
 		if curTiers[poke] == 'BL2' and poke not in newTiers.keys():
 			newTiers[poke] = 'BL2'
-	'''
+	
 	#next do the RU rises
 	for poke in curTiers.keys():
 		if poke not in usage:
@@ -225,7 +216,7 @@ def main(months):
 	for poke in curTiers.keys():
 		if curTiers[poke] == 'BL3' and poke not in newTiers.keys():
 			newTiers[poke] = 'BL3'
-
+	'''
 	#next do the NU rises
 	for poke in curTiers.keys():
 		if poke not in usage:
