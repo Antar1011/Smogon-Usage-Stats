@@ -3,12 +3,12 @@
 #(or from run to run)
 
 logFolder=/home/ps/showdown/logs
-month="2017-03"
+month="2017-07"
 
 rm -r Raw
 mkdir Raw
 
-for d in {1..31}
+for d in {1..27}
 do
 	day=$(printf "%02d" $d)
 	for i in $logFolder/$month/*
@@ -20,10 +20,10 @@ do
 		fi
 		if [ -d $logFolder/$month/$tier/$month-$day ]; then
 			echo Processing $tier/$month-$day
-			pypy batchLogReader.py $logFolder/$month/$tier/$month-$day/ $tier
+			python batchLogReader.py $logFolder/$month/$tier/$month-$day/ $tier
 		fi
 	done
 done
 echo $(date)
-./MonthlyAnalysis.sh
-echo $(date)
+#./MonthlyAnalysis.sh
+#echo $(date)
