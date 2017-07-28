@@ -95,7 +95,7 @@ def main(months):
 	formats = json.load(open('formats.json'))
 
 	banlists={}
-	for format in ('lc','lcuu','doublesou', 'doublesuu'):
+	for format in ('gen7doublesou', 'gen7doublesuu'):
 		banlist=[]
 		for entry in formats[format]['banlist']:
 			keyified=keyify(entry)
@@ -104,16 +104,16 @@ def main(months):
 		banlists[formats[format]['name']]=banlist
 
 	curTiers= {}
-	curTiers['LC']={}
+	# curTiers['LC']={}
 	curTiers['Doubles']={}
-	for poke in banlists['LC']:
-		curTiers['LC'][poke]='Uber'
-	for poke in banlists['LC UU']:
-		if poke not in curTiers['LC'].keys():
-			curTiers['LC'][poke]='OU'
-	for poke in banlists['Doubles OU']:
+	# for poke in banlists['LC']:
+	# 	curTiers['LC'][poke]='Uber'
+	# for poke in banlists['LC UU']:
+	# 	if poke not in curTiers['LC'].keys():
+	# 		curTiers['LC'][poke]='OU'
+	for poke in banlists['[Gen 7] Doubles OU']:
 		curTiers['Doubles'][poke]='Uber'
-	for poke in banlists['Doubles UU']:
+	for poke in banlists['[Gen 7] Doubles UU']:
 		if poke not in curTiers['Doubles'].keys():
 			curTiers['Doubles'][poke]='OU'
 
@@ -135,28 +135,28 @@ def main(months):
 
 		nRegular = nSuspect = 0
 
-		try:
-			usageRegular, nRegular = readTable(months[i]+"/Stats/lc-1630.txt")
-		except IOError:
-			pass
-		try:
-			usageSuspect, nSuspect = readTable(months[i]+"/Stats/lcsuspecttest-1630.txt")
-		except IOError:
-			pass
+		# try:
+		# 	usageRegular, nRegular = readTable(months[i]+"/Stats/lc-1630.txt")
+		# except IOError:
+		# 	pass
+		# try:
+		# 	usageSuspect, nSuspect = readTable(months[i]+"/Stats/lcsuspecttest-1630.txt")
+		# except IOError:
+		# 	pass
 
-		if nRegular > 0:
-			for poke in usageRegular:
-				if keyify(poke) not in usageLC:
-					usageLC[keyify(poke)]=[0,0]
-				if poke != 'empty':
-					usageLC[keyify(poke)][0] += weight*nRegular/(nRegular+nSuspect)*usageRegular[poke]/24
+		# if nRegular > 0:
+		# 	for poke in usageRegular:
+		# 		if keyify(poke) not in usageLC:
+		# 			usageLC[keyify(poke)]=[0,0]
+		# 		if poke != 'empty':
+		# 			usageLC[keyify(poke)][0] += weight*nRegular/(nRegular+nSuspect)*usageRegular[poke]/24
 
-			if nSuspect > 0:
-				for poke in usageSuspect:
-					if keyify(poke) not in usageLC:
-						usageLC[keyify(poke)]=[0,0]
-					if poke != 'empty':
-						usageLC[keyify(poke)][0] += weight*nSuspect/(nRegular+nSuspect)*usageSuspect[poke]/24
+		# 	if nSuspect > 0:
+		# 		for poke in usageSuspect:
+		# 			if keyify(poke) not in usageLC:
+		# 				usageLC[keyify(poke)]=[0,0]
+		# 			if poke != 'empty':
+		# 				usageLC[keyify(poke)][0] += weight*nSuspect/(nRegular+nSuspect)*usageSuspect[poke]/24
 
 		usageTiers = ['doublesou','doublesuu']
 		for j in xrange(len(usageTiers)):
@@ -165,11 +165,11 @@ def main(months):
 			if usageTiers[j] in ['doublesou']:
 				baseline = "1695"
 			try:
-				usageRegular, nRegular = readTable(months[i]+"/Stats/"+usageTiers[j]+"-"+baseline+".txt")
+				usageRegular, nRegular = readTable(months[i]+"/Stats/gen7"+usageTiers[j]+"-"+baseline+".txt")
 			except IOError:
 				pass
 			try:
-				usageSuspect, nSuspect = readTable(months[i]+"/Stats/"+usageTiers[j]+"suspecttest-"+baseline+".txt")
+				usageSuspect, nSuspect = readTable(months[i]+"/Stats/gen7"+usageTiers[j]+"suspecttest-"+baseline+".txt")
 			except IOError:
 				pass
 
@@ -190,19 +190,19 @@ def main(months):
 	#generate three-month tables and start working on that new tier list
 	newTiers={}
 
-	print "[size=5][b]Little Cup[/b][/size]"
-	(LCOU,LCUU) = usageToTiers(usageLC)
-	makeTable(LCOU,"LC OU",keyLookup)
-	#makeTable(LCUU,"LC UU",keyLookup)
-	newTiers['LC']=raiseAndDrop(curTiers['LC'],usageLC,'UU',rise,drop)
-	print ""
-	for poke in curTiers['LC']:
-		if curTiers['LC'][poke] != newTiers['LC'][poke]:
-			if newTiers['LC'][poke] != 'NU':
-				print keyLookup[poke]+" moved from LC "+curTiers['LC'][poke]+" to LC "+newTiers['LC'][poke]
+	# print "[size=5][b]Little Cup[/b][/size]"
+	# (LCOU,LCUU) = usageToTiers(usageLC)
+	# makeTable(LCOU,"LC OU",keyLookup)
+	# #makeTable(LCUU,"LC UU",keyLookup)
+	# newTiers['LC']=raiseAndDrop(curTiers['LC'],usageLC,'UU',rise,drop)
+	# print ""
+	# for poke in curTiers['LC']:
+	# 	if curTiers['LC'][poke] != newTiers['LC'][poke]:
+	# 		if newTiers['LC'][poke] != 'NU':
+	# 			print keyLookup[poke]+" moved from LC "+curTiers['LC'][poke]+" to LC "+newTiers['LC'][poke]
 
-	print ""
-	print ""
+	# print ""
+	# print ""
 	print "[size=5][b]Doubles[/b][/size]"
 
 	(doublesOU,doublesUU) = usageToTiers(usageDoubles)

@@ -5,7 +5,7 @@
 
 import string
 import sys
-import json
+import ujson as json
 import gzip
 import copy
 #import cPickle as pickle

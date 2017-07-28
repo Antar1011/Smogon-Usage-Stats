@@ -25,7 +25,7 @@ import sys
 import math
 import cPickle as pickle
 import os
-import json
+import ujson as json
 import gzip
 
 from common import *

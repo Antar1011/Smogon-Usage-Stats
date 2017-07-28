@@ -6,7 +6,7 @@ import string
 import sys
 import math
 import cPickle as pickle
-import json
+import ujson as json
 import gzip
 import os
 import math
