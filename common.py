@@ -62,10 +62,12 @@ def readTable(filename):
 
 def getFormats():
 	js=urllib2.urlopen("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/config/formats.js").read()
+	print 'Updating tiers'
 	return json.loads(js2py.eval_js('exports={},'+js+'JSON.stringify(exports.Formats)'))
 
 def getBattleFormatsData():
 	js=urllib2.urlopen("https://raw.githubusercontent.com/Zarel/Pokemon-Showdown/master/data/formats-data.js").read()
+	print 'Updating tiers'
 	return json.loads(js2py.eval_js('exports={},'+js+'JSON.stringify(exports.BattleFormatsData)'))
 
 aliases={
@@ -139,7 +141,7 @@ aliases={
 	'Bisharp' : ['Bsharp'],
 	'Missingno' : ['Missingno.'],
 	'Vivillon' : ["Vivillon-Archipelago", "Vivillon-Continental", "Vivillon-Elegant", "Vivillon-Garden", "Vivillon-Highplains", "Vivillon-Icysnow", "Vivillon-Jungle", "Vivillon-Marine", "Vivillon-Modern", "Vivillon-Monsoon", "Vivillon-Ocean", "Vivillon-Polar", "Vivillon-River", "Vivillon-Sandstorm", "Vivillon-Savanna", "Vivillon-Sun", "Vivillon-Tundra", "Vivillon-Fancy", "Vivillon-Pokeball", "Vivillonarchipelago", "Vivilloncontinental", "Vivillonelegant", "Vivillongarden", "Vivillonhighplains", "Vivillonicysnow", "Vivillonjungle", "Vivillonmarine", "Vivillonmodern", "Vivillonmonsoon", "Vivillonocean", "Vivillonpolar", "Vivillonriver", "Vivillonsandstorm", "Vivillonsavanna", "Vivillonsun", "Vivillontundra", "Vivillonfancy", "Vivillonpokeball"],
-	'Flabebe' : ["Flabebeblue", "Flabebeorange", "Flabebewhite", "Flabebeyellow", "Flabebe-Blue", "Flabebe-Orange", "Flabebe-White", "Flabebe-Yellow"],
+	'Flabebe' : ["Flabebeblue", "Flabebeorange", "Flabebewhite", "Flabebeyellow", "Flabebe-Blue", "Flabebe-Orange", "Flabebe-White", "Flabebe-Yellow", u'Flabe\u0301be\u0301'],
 	'Floette' : ["Floetteblue", "Floetteorange", "Floettewhite", "Floetteyellow", "Floette-Blue", "Floette-Orange", "Floette-White", "Floette-Yellow"],
 	'Florges' : ["Florgesblue", "Florgesorange", "Florgeswhite", "Florgesyellow", "Florges-Blue", "Florges-Orange", "Florges-White", "Florges-Yellow"],
 	'Ditto': ['Dtto'],
