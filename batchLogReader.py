@@ -339,13 +339,14 @@ def LogReader(filename,tier,movesets,ratings):
 		#determine initial pokemon
 		active = [-1,-1]
 		for line in log['log']:
-			if (spacelog and line[0:13] == "| switch | p1") or (not spacelog and line[0:10] == "|switch|p1"):
-				if line[10+3*spacelog] == ':':
+			parsed_line = [segment.strip() for segment in line.split('|')]
+			if parsed_line[1].startswith('p1'):
+				if parsed_line[1][3] == ':':
 					doublelog = False
-				end = string.rfind(line,'|')-1*spacelog
-				species = line[string.rfind(line,'|',12+3*spacelog,end-1)+1+1*spacelog:end]
-				while ',' in species:
-					species = species[0:string.rfind(species,',')]
+				species = parsed_line[3]
+				# remove gender
+				species = species.split(',')[0]
+
 				for s in aliases: #combine appearance-only variations and weird PS quirks
 					if species in aliases[s]:
 						species = s
@@ -380,16 +381,18 @@ def LogReader(filename,tier,movesets,ratings):
 						sys.stderr.write('(Pokemon not in ts) (1)\n')
 						sys.stderr.write(str([ts[0][0],species])+'\n')
 						return False
-				
-			if (spacelog and line[0:13] == "| switch | p2") or (not spacelog and line[0:10] == "|switch|p2"):
-				end = string.rfind(line,'|')-1*spacelog
-				species = line[string.rfind(line,'|',12+3*spacelog,end-1)+1+1*spacelog:end]
-				while ',' in species:
-					species = species[0:string.rfind(species,',')]
+			
+			if parsed_line[1].startswith('p2'):
+				if parsed_line[1][3] == ':':
+					doublelog = False
+				species = parsed_line[3]
+				# remove gender
+				species = species.split(',')[0]
+
 				for s in aliases: #combine appearance-only variations and weird PS quirks
 					if species in aliases[s]:
 						species = s
-						break
+						break	
 
 				try:
 					active[1]=ts.index([ts[11][0],species])
@@ -442,7 +445,7 @@ def LogReader(filename,tier,movesets,ratings):
 		for line in log['log'][start:]:
 			#print line
 			#identify what kind of message is on this line
-			linetype = line[1+1*spacelog:string.find(line,'|',1+1*spacelog)-1*spacelog]
+			linetype = parsed_line[1]
 
 			if linetype == "turn":
 				matchups = matchups + mtemp
@@ -543,11 +546,11 @@ def LogReader(filename,tier,movesets,ratings):
 
 			elif linetype == "replace": #it was Zorua/Zoroark all along!
 				p=10+3*spacelog
+				
+				species = parsed_line[3]
+				# remove gender
+				species = species.split(',')[0]
 
-				end = string.rfind(line,'|')-1*spacelog
-				species = line[string.rfind(line,'|',0,end-1)+1+1*spacelog:end]
-				while ',' in species:
-					species = species[0:string.rfind(species,',')]
 				for s in aliases: #combine appearance-only variations and weird PS quirks
 					if species in aliases[s]:
 						species = s
@@ -639,9 +642,10 @@ def LogReader(filename,tier,movesets,ratings):
 				#new matchup!
 				uturn = roar = fodder = False
 				hazard = True
-				#it matters whether the poke is nicknamed or not
-				end = string.rfind(line,'|')-1*spacelog
-				species = line[string.rfind(line,'|',0,end-1)+1+1*spacelog:end]
+
+				species = parsed_line[3]
+				# remove gender
+				species = species.split(',')[0]
 				while ',' in species:
 					species = species[0:string.rfind(species,',')]
 				for s in aliases: #combine appearance-only variations and weird PS quirks
