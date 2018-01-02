@@ -339,8 +339,22 @@ def LogReader(filename,tier,movesets,ratings):
 		#determine initial pokemon
 		active = [-1,-1]
 		for line in log['log']:
+			if len(line) < 2 or not line.startswith('|'):
+				continue
 			parsed_line = [segment.strip() for segment in line.split('|')]
+			if len(parsed_line) < 2:
+				sys.stderr.write('Problem with '+filename+'\n')
+				sys.stderr.write('Could not parse line:\n')
+				sys.stderr.write(line + '\n')
+				return False
+
 			if parsed_line[1].startswith('p1'):
+				if len(parsed_line) < 4:
+					sys.stderr.write('Problem with '+filename+'\n')
+					sys.stderr.write('Could not parse line:\n')
+					sys.stderr.write(line + '\n')
+					return False
+
 				if parsed_line[1][3] == ':':
 					doublelog = False
 				species = parsed_line[3]
@@ -383,6 +397,12 @@ def LogReader(filename,tier,movesets,ratings):
 						return False
 			
 			if parsed_line[1].startswith('p2'):
+				if len(parsed_line) < 4:
+					sys.stderr.write('Problem with '+filename+'\n')
+					sys.stderr.write('Could not parse line:\n')
+					sys.stderr.write(line + '\n')
+					return False
+
 				if parsed_line[1][3] == ':':
 					doublelog = False
 				species = parsed_line[3]
@@ -443,8 +463,16 @@ def LogReader(filename,tier,movesets,ratings):
 		mtemp = []
 
 		for line in log['log'][start:]:
+			if len(line) < 2 or not line.startswith('|'):
+				continue
+			parsed_line = [segment.strip() for segment in line.split('|')]
 			#print line
 			#identify what kind of message is on this line
+			if len(parsed_line) < 2:
+				sys.stderr.write('Problem with '+filename+'\n')
+				sys.stderr.write('Could not parse line:\n')
+				sys.stderr.write(line)
+				return False
 			linetype = parsed_line[1]
 
 			if linetype == "turn":
@@ -546,7 +574,13 @@ def LogReader(filename,tier,movesets,ratings):
 
 			elif linetype == "replace": #it was Zorua/Zoroark all along!
 				p=10+3*spacelog
-				
+
+				if len(parsed_line) < 4:
+					sys.stderr.write('Problem with '+filename+'\n')
+					sys.stderr.write('Could not parse line:\n')
+					sys.stderr.write(line)
+					return False
+
 				species = parsed_line[3]
 				# remove gender
 				species = species.split(',')[0]
@@ -642,6 +676,12 @@ def LogReader(filename,tier,movesets,ratings):
 				#new matchup!
 				uturn = roar = fodder = False
 				hazard = True
+
+				if len(parsed_line) < 4:
+					sys.stderr.write('Problem with '+filename+'\n')
+					sys.stderr.write('Could not parse line:\n')
+					sys.stderr.write(line)
+					return False
 
 				species = parsed_line[3]
 				# remove gender
