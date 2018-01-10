@@ -348,15 +348,13 @@ def LogReader(filename,tier,movesets,ratings):
 				sys.stderr.write(line + '\n')
 				return False
 
-			if parsed_line[1].startswith('p1'):
+			if parsed_line[1] == 'switch' and parsed_line[2].startswith('p1'):
 				if len(parsed_line) < 4:
 					sys.stderr.write('Problem with '+filename+'\n')
 					sys.stderr.write('Could not parse line:\n')
 					sys.stderr.write(line + '\n')
 					return False
 
-				if parsed_line[1][3] == ':':
-					doublelog = False
 				species = parsed_line[3]
 				# remove gender
 				species = species.split(',')[0]
@@ -396,15 +394,13 @@ def LogReader(filename,tier,movesets,ratings):
 						sys.stderr.write(str([ts[0][0],species])+'\n')
 						return False
 			
-			if parsed_line[1].startswith('p2'):
+			if parsed_line[1] == 'switch' and parsed_line[2].startswith('p2'):
 				if len(parsed_line) < 4:
 					sys.stderr.write('Problem with '+filename+'\n')
 					sys.stderr.write('Could not parse line:\n')
 					sys.stderr.write(line + '\n')
 					return False
 
-				if parsed_line[1][3] == ':':
-					doublelog = False
 				species = parsed_line[3]
 				# remove gender
 				species = species.split(',')[0]
