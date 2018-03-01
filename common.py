@@ -155,7 +155,7 @@ aliases={
 	'Oricorio-Sensu': ['Oricorio-S'],
 	'Lycanroc': ['Lycanroc-Midday', 'Lycanrocmidday', 'Lycanroc-Day', 'Lycanrocday'],
 	'Lycanroc-Midnight': ['Lycanroc-Night', 'Lycanrocnight'],
-	'Furfrou': ['Furfrou{}'.format(trim) for trim in ("dandy", "debutante", "diamond", "heart", "kabuki", "lareine", "matron", "pharaoh", "star")]
+	'Furfrou': ['Furfrou{}'.format(trim) for trim in ("dandy", "debutante", "diamond", "heart", "kabuki", "lareine", "matron", "pharaoh", "star")] + ['Furfrou-{}'.format(trim.title()) for trim in ("dandy", "debutante", "diamond", "heart", "kabuki", "lareine", "matron", "pharaoh", "star")]
 }
 
 nonSinglesFormats = [
