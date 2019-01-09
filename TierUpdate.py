@@ -27,10 +27,8 @@ def makeTable(table,name,keyLookup):
 	print " + ---- + ------------------ + ------- + "
 	print "[/CODE][/HIDE]"
 
-#tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
-#usageTiers = ['ou', 'uu', 'ru', 'nu', 'pu']
-tiers = ['Uber', 'OU', 'BL', 'UU', 'BL2', 'RU', 'BL3', 'NU']
-usageTiers = ['ou', 'uu', 'ru']
+tiers = ['Uber','OU','BL','UU','BL2','RU','BL3','NU','BL4','PU']
+usageTiers = ['ou', 'uu', 'ru', 'nu', 'pu']
 
 def main(months):
 	file = open('keylookup.pickle')
@@ -39,7 +37,7 @@ def main(months):
 
 	rise =  [0.06696700846,0.04515839608,0.03406367107][len(months)-1]
 	drop =  [0.01717940145,0.02284003156,0.03406367107][len(months)-1]
-	
+
 	formatsData = getBattleFormatsData()
 
 	curTiers = {}
@@ -106,10 +104,9 @@ def main(months):
 	OU = []
 	UU = []
 	RU = []
-	'''
 	NU = []
 	PU = []
-	'''
+	
 	for i in usage:
 		if usage[i][0] > 0.0:
 			OU.append([i,usage[i][0]])
@@ -117,26 +114,22 @@ def main(months):
 			UU.append([i,usage[i][1]])
 		if usage[i][2] > 0.0:
 			RU.append([i,usage[i][2]])
-		'''
 		if usage[i][3] > 0.0:
 			NU.append([i,usage[i][3]])
 		if usage[i][4] > 0.0:
 			PU.append([i,usage[i][4]])
-		'''
+
 	OU = sorted(OU, key=lambda OU:-OU[1])
 	UU = sorted(UU, key=lambda UU:-UU[1])
 	RU = sorted(RU, key=lambda RU:-RU[1])
-	'''
 	NU = sorted(NU, key=lambda NU:-NU[1])
 	PU = sorted(PU, key=lambda PU:-PU[1])
-	'''
 
 	makeTable(OU,"OU",keyLookup)
 	makeTable(UU,"UU",keyLookup)
 	makeTable(RU,"RU",keyLookup)
-	'''
 	makeTable(NU,"NU",keyLookup)
-	'''
+	makeTable(PU,"PU",keyLookup)
 
 	newTiers={}
 	#start with Ubers
@@ -216,7 +209,7 @@ def main(months):
 	for poke in curTiers.keys():
 		if curTiers[poke] == 'BL3' and poke not in newTiers.keys():
 			newTiers[poke] = 'BL3'
-	'''
+	
 	#next do the NU rises
 	for poke in curTiers.keys():
 		if poke not in usage:
@@ -236,7 +229,7 @@ def main(months):
 	for poke in curTiers.keys():
 		if curTiers[poke] == 'BL4' and poke not in newTiers.keys():
 			newTiers[poke] = 'BL4'
-	'''
+	
 	#the rest go in the lowest tier
 	for poke in curTiers.keys():
 		if poke not in newTiers.keys():

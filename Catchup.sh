@@ -3,18 +3,17 @@
 #(or from run to run)
 
 logFolder=/home/ps/showdown/logs
-month="2017-07"
-
+month="2018-12"
 rm -r Raw
 mkdir Raw
 
-for d in {1..27}
+for d in {1..31}
 do
 	day=$(printf "%02d" $d)
 	for i in $logFolder/$month/*
 	do
 		tier=$(basename $i)
-		if [[ $tier == seasonal* ]] || [[ $tier == *random* ]]; then
+		if [[ $tier == seasonal* ]] || [[ $tier == *random* ]] || [[ $tier == *metronome* ]] || [[ $tier == *superstaff* ]]; then
 			echo Skipping $tier/$month-$day
 			continue
 		fi
@@ -25,5 +24,5 @@ do
 	done
 done
 echo $(date)
-#./MonthlyAnalysis.sh
-#echo $(date)
+./MonthlyAnalysis.sh
+echo $(date)
